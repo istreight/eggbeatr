@@ -1,0 +1,1023 @@
+/**
+ * FILENAME:    style.css
+ * AUTHOR:      Isaac Streight & PureCSS, Yahoo! Inc.
+ * START DATE:  October 19th, 2016
+ *
+ * This file contains the styling for the lesson calendar web application.
+ * This file is referenced in index.html.
+ *
+ *
+ * CHANGE LOG:
+ *  19/10/16:
+ *              Imported from Marketing template, downloaded at purecss.io.
+ *              Added footer stylings.
+ *
+ *  20/10/16:
+ *              Added #name- stylings for the Landing section for the app titles.
+ *
+ *  21/10/16:
+ *              Added table stylings for the Grid table (row colour change
+ *              on hover, cell text coloruing, fitting largest cell content).
+ *
+ *  22/10/16:
+ *              Added styling for the grid section.
+ *
+ *  23/10/16:
+ *              Modified placement of grid table.
+ *
+ *  25/10/16:
+ *              Added styling for descriptions and explanantions for each section.
+ *
+ *  26/10/16:
+ *              Added styling to the Intructors table
+ *              Added modal for preferences button.
+ *
+ *  01/11/16:
+ *              Added styling to the Private section.
+ *
+ *  02/11/16:
+ *              Added styling to the Lessons section.
+ *
+ *  06/11/16:
+ *              Restyled web app to place grid section at end, but keep
+ *              alternating colours (starting with navy) and title alignment.
+ *
+ *  11/11/16:
+ *              Added styling for the About section.
+ *
+ *  14/11/16:
+ *              Finished general styling around uniformity of the components.
+ *              Finished 'counter-styling' on section state change.
+ */
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    z-index: 10; /* Foreground */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #f0f0f0;
+    margin: 7.5% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid transparent;
+    width: 75%; /* Could be more or less, depending on screen size */
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 16px;
+    background-color: #2d3e50;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 2px 16px;
+    color: #2d3e50;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 16px;
+    background-color: #2d3e50;
+    color: white;
+    font-size: 0.75em;
+    text-align: right;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin: -1.25% -0.25% 0 0;
+}
+
+.close:hover {
+    color: red;
+}
+
+.add-preference {
+    color: #aaa;
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    margin: -1.25% -0.25% 0 0;
+}
+
+.add-preference:hover {
+    color: green;
+}
+
+
+
+/* -----    WRITTEN BY PURECSS   ----- */
+
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/*
+ * -- BASE STYLES --
+ * Most of these are inherited from Base, but I want to change a few.
+ */
+body {
+    line-height: 1.7em;
+    color: #7f8c8d;
+    font-size: 13px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+    color: #34495e;
+}
+
+.pure-img-responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+/*
+ * -- LAYOUT STYLES --
+ * These are some useful classes which I will need
+ */
+.l-box {
+    padding: 1em;
+}
+
+.l-box-lrg {
+    padding: 2em;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.is-center {
+    text-align: center;
+}
+
+
+
+/*
+ * -- PURE FORM STYLES --
+ * Style the form inputs and labels
+ */
+.pure-form label {
+    margin: 1em 0 0;
+    font-weight: bold;
+    font-size: 100%;
+}
+
+.pure-form input[type] {
+    border: 2px solid #ddd;
+    box-shadow: none;
+    font-size: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+/*
+ * -- PURE BUTTON STYLES --
+ * I want my pure-button elements to look a little different
+ */
+.pure-button {
+    background-color: #1f8dd6;
+    color: white;
+    padding: 0.5em 2em;
+    border-radius: 5px;
+}
+
+a.pure-button-primary {
+    background: white;
+    color: #1f8dd6;
+    border-radius: 5px;
+    font-size: 120%;
+}
+
+
+/*
+ * -- MENU STYLES --
+ * I want to customize how my .pure-menu looks at the top of the page
+ */
+
+.home-menu {
+    padding: 0.5em;
+    text-align: center;
+    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+}
+.home-menu {
+    background: #2d3e50;
+}
+.pure-menu.pure-menu-fixed {
+    /* Fixed menus normally have a border at the bottom. */
+    border-bottom: none;
+    /* I need a higher z-index here because of the scroll-over effect. */
+    z-index: 4;
+}
+
+.home-menu .pure-menu-heading {
+    color: white;
+    font-weight: 400;
+    font-size: 120%;
+}
+
+.home-menu .pure-menu-selected a {
+    color: white;
+}
+
+.home-menu a {
+    color: #6FBEF3;
+}
+.home-menu li a:hover,
+.home-menu li a:focus {
+    background: none;
+    border: none;
+    color: #AECFE5;
+}
+
+
+/*
+ * -- SPLASH STYLES --
+ * This is the blue top section that appears on the page.
+ */
+
+.splash-container {
+    background: #1f8dd6;
+    z-index: 1;
+    overflow: hidden;
+    /* The following styles are required for the "scroll-over" effect */
+    width: 100%;
+    height: 88%;
+    top: 0;
+    left: 0;
+    position: fixed !important;
+}
+
+.splash {
+    /* absolute center .splash within .splash-container */
+    width: 80%;
+    height: 50%;
+    margin: auto;
+    position: absolute;
+    top: 100px; left: 0; bottom: 0; right: 0;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* This is the main heading that appears on the blue section */
+.splash-head {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    border: 3px solid white;
+    padding: 1em 1.6em;
+    font-weight: 100;
+    border-radius: 5px;
+    line-height: 1em;
+}
+
+/* This is the subheading that appears on the blue section */
+.splash-subhead {
+    color: white;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    text-transform: lowercase;
+}
+
+/*
+ * -- CONTENT STYLES --
+ * This represents the content area (everything below the blue section)
+ */
+.content-wrapper {
+    /* These styles are required for the "scroll-over" effect */
+    position: absolute;
+    top: 87%;
+    width: 100%;
+    min-height: 12%;
+    z-index: 2;
+    background: white;
+}
+
+/* This is the class used for the main content headers (<h2>) */
+.content-head {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 2em 0 1em;
+}
+
+/* This is a modifier class used when the content-head is inside a ribbon */
+.content-head-ribbon {
+    color: white;
+}
+
+/* This is the class used for the content sub-headers (<h3>) */
+.content-subhead {
+    color: #1f8dd6;
+}
+.content-subhead i {
+    margin-right: 7px;
+}
+
+/* This is the class used for the dark-background areas. */
+.ribbon {
+    background: #2d3e50;
+    color: #aaa;
+}
+
+/* This is the class used for the footer */
+.footer {
+    background: #111;
+}
+
+/*
+ * -- TABLET (AND UP) MEDIA QUERIES --
+ * On tablets and other medium-sized devices, we want to customize some
+ * of the mobile styles.
+ */
+@media (min-width: 48em) {
+
+    /* We increase the body font size */
+    body {
+        font-size: 16px;
+    }
+    /* We want to give the content area some more padding */
+    .content {
+        padding: 1em;
+    }
+
+    /* We can align the menu header to the left, but float the
+    menu items to the right. */
+    .home-menu {
+        text-align: left;
+    }
+
+    .home-menu ul {
+        float: right;
+    }
+
+    /* We decrease the width of the .splash, since we have more width
+    to work with */
+    .splash {
+        width: 50%;
+        height: 50%;
+    }
+
+    .splash-head {
+        font-size: 250%;
+    }
+
+
+    /* We remove the border-separator assigned to .l-box-lrg */
+    .l-box-lrg {
+        border: none;
+    }
+}
+
+/*
+ * -- DESKTOP (AND UP) MEDIA QUERIES --
+ * On desktops and other large devices, we want to over-ride some
+ * of the mobile and tablet styles.
+ */
+@media (min-width: 78em) {
+    /* We increase the header font size even more */
+    .splash-head {
+        font-size: 300%;
+    }
+}
+
+
+
+
+
+/* -----    WRITTEN BY ISAAC STREIGHT   ----- */
+
+/* Show scrollbars */
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+/* Text input fields, with help from callmenick.com */
+input[type="text"] {
+    color: black;
+    width: 100%;
+
+    padding: 8px;
+    border: solid 1px #dcdcdc;
+}
+
+input[type="text"]:focus,
+input[type="text"].focus {
+    border: solid 1px #707070;
+    box-shadow: 0 0 5px 1px #969696;
+}
+
+html, body, .content, .ribbon, .modal {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Colour and size text in the main sections of the application */
+.ribbon-section-description {
+    color: #ccc;
+
+    width: 27.5%;
+}
+
+.ribbon-section-explanation {
+    color: #aaa;
+    font-size: 14px;
+
+    line-height: 20px;
+
+    list-style-type: none;
+}
+
+.ribbon-section-footer {
+    width: 100%;
+    height: 50px;
+
+    margin: 0 0 0 1.25%;
+
+    line-height: 12px;
+
+}
+
+.content-section-description {
+    color: #444;
+
+    width: 27.5%;
+}
+
+.content-section-explanation {
+    color: #666;
+    font-size: 14px;
+
+    line-height: 20px;
+
+    list-style-type: none;
+    direction: rtl;
+}
+
+.content-section-footer {
+    width: 100%;
+    height: 50px;
+
+    line-height: 12px;
+}
+
+.content-next-button {
+    margin: -2.5% 0 0 100%;
+
+    font-size: 120%
+}
+
+.is-left {
+    text-align: left;
+}
+
+.is-right {
+    text-align: right;
+}
+
+.right-text {
+    float: right;
+}
+
+/* Colour table rows, cells, and text, independent of background colour */
+.table-odd {
+    background-color: white;
+    color: #2d3e50;
+}
+
+.table-odd:hover {
+    background-color: lightgrey;
+}
+
+.table-even {
+    background-color: #2d3e50;
+    color: white;
+}
+
+.table-even:hover {
+    background-color: #747484;
+}
+
+table {
+    white-space: nowrap;
+}
+
+th, td {
+    text-align: right;
+}
+
+table tbody tr td:first-child {
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Centre table horizontally */
+.pure-table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+}
+
+
+
+/* HEADER */
+
+/* Style display of application name */
+#button-dynamicHeader {
+    text-transform: none;
+}
+
+
+
+/* LANDING */
+
+.splash-subhead {
+    line-height: 24px;
+}
+
+/* Styles of rotating text */
+.lowercase {
+    text-transform: lowercase;
+}
+
+#get-started {
+    margin: 5% 0 0 0;
+}
+
+
+
+/* ABOUT */
+
+.feature-description {
+    padding: 0 12.5%;
+
+    font-size: 14px;
+}
+
+#dynamicAbout {
+    padding: 45px;
+}
+
+#about-container {
+    width: 100%;
+    height: 90%;
+}
+
+#about-overview {
+    margin: 2.5% 0 0 30%;
+
+    width: 40%;
+
+    line-height: 28px;
+}
+
+#about-definition-container {
+    font-size: 22px;
+
+    line-height: 36px;
+}
+
+#about-explanation-container {
+    margin: 0 0 0 40px;
+
+    color: #666;
+    font-size: 14px;
+
+    line-height: 20px;
+
+    list-style-type: none;
+}
+
+#features {
+    margin: 7.5% 0 0 0;
+
+    padding: 32px;
+
+    width: 100%;
+
+    color: #2d3e50;
+    text-align: center;
+}
+
+#features div {
+    width: 25%;
+
+    display: inline-table;
+    vertical-align: top;
+}
+
+#features img {
+    width: 40%;
+}
+
+
+
+/* INSTRUCTOR */
+
+.remove {
+    font-size: 12px;
+
+    background-color: rgb(202, 60, 60);
+}
+
+.add {
+    font-size: 12px;
+
+    background-color: rgb(28, 184, 65);
+}
+
+#dynamicInstructors {
+    padding: 45px;
+}
+
+#instructor-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#edit-instructors {
+    margin: 5% 0 0 40px;
+}
+
+#instructor-table {
+    margin: -9.75% 0 0 27.5%;
+}
+
+
+#preference-table {
+    width: 80%;
+
+    margin: 40px auto 24px auto;
+}
+
+/* Normalize preference table cells */
+#preference-table th {
+    text-align: left;
+    height: 42px;
+}
+
+#preference-table td {
+    font-weight: normal;
+
+    height: 42px;
+}
+
+#instructor-footer {
+    position: absolute;
+    margin: auto auto auto 40px;
+    bottom: 64px;
+
+    display: none;
+}
+
+#instructor-next {
+    margin: -2.25% 0 0 85.2%;
+}
+
+
+
+/* LESSONS */
+
+.warning-table {
+    color: white;
+    background-color: goldenrod !important;
+}
+
+.error-table {
+    color: white;
+    background-color: indianred !important;
+}
+
+#dynamicLessons {
+    padding: 45px;
+}
+
+#lessons-container {
+    position: relative;
+    width: 100%;
+    height: 90%;
+}
+
+#save-lessons {
+    margin: 5% 40px 0 0;
+}
+
+#save-notification {
+    margin: 0.5% 40px 0 0;
+
+    color: #1f8dd6;
+
+    display: none;
+}
+
+#lessons-table {
+    margin: 6.25% 0 0 5%;
+
+    width: 65%;
+
+    table-layout: fixed;
+}
+
+/* Normalize preference table cells */
+#lessons-table th {
+    text-align: center;
+}
+
+#lessons-table td {
+    font-weight: normal;
+    text-align: left;
+}
+
+/* Places input field in-line with text of cell */
+#lessons-table input[type="text"] {
+    width: 28px;
+    height: 32px;
+
+    float: right;
+
+    text-align: right;
+}
+
+#lessons-footer {
+    position: absolute;
+    margin: auto auto auto 40px;
+    bottom: 55px;
+
+    display: none;
+}
+
+#lessons-next {
+    margin: -2.25% 0 0 85.2%;
+}
+
+
+
+/* PRIVATE */
+
+/* Alter hovering based on dropdown */
+.menu-odd {
+    color: #2d3e50;
+
+    background-color: #f4f4f4;
+}
+
+.menu-even {
+    color: white;
+
+    background-color: #3a5068;
+}
+
+.menu-even:hover {
+    background-color: #343444;
+}
+
+#dynamicPrivate {
+    padding: 45px;
+}
+
+#private-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#edit-private {
+    margin: 5% 0 0 40px;
+}
+
+#private-table {
+    margin: -9.75% 0 0 27.5%;
+
+    table-layout: fixed;
+}
+
+#private-table th {
+    width: 125px;
+}
+
+#private-table .pure-menu-link {
+    width: 100px;
+}
+
+#private-footer {
+    position: absolute;
+    margin: auto auto auto 40px;
+    bottom: 64px;
+
+    display: none;
+}
+
+#private-next {
+    margin: -2.25% 0 0 85.2%;
+}
+
+
+
+/* GRID */
+
+.pure-menu-selected {
+    color: #1f8dd6;
+}
+
+.pure-menu-disabled {
+    color: #2d3e50;
+}
+
+.vertical-line {
+    position: absolute;
+
+    width: 0;
+    height: 43px;
+
+    border: 0.75px solid lightgrey;
+}
+
+.vertical-line-center {
+    margin: -21.5px 0 0 47px;
+}
+
+.vertical-line-left {
+    margin: -8px 0 0 47px;
+}
+
+.vertical-line-right {
+    margin: -35px 0 0 47px;
+}
+
+.vertical-line-hover {
+    border: 0.75px solid #cbcbcb;
+}
+
+.quarter-activity-left {
+    margin: 0 0 0 -7.5px;
+
+    text-align: left;
+}
+
+.quarter-activity-right {
+    margin: 0 -11px 0 0;
+
+    text-align: right;
+}
+
+.private-lesson-cell {
+    color: white;
+    background: #767676 !important;
+}
+
+.half-private-lesson-cell-left {
+    background: linear-gradient(to right, #767676 50%, transparent 50%);
+
+    border: none;
+}
+
+.half-private-lesson-cell-right {
+    background: linear-gradient(to left, #767676 50%, transparent 50%);
+}
+
+.no-border {
+    border: none !important;
+}
+
+#dynamicGrid {
+    padding: 45px;
+}
+
+#grid-container {
+    position: relative;
+    width: 100%;
+    height: 90%;
+}
+
+#create-grid {
+    margin: 5% 40px 0 0;
+}
+
+#timeslot-duration-container {
+    margin: -5% 0 0 29.5%;
+}
+
+#grid-table {
+    margin: 0 0 0 3.5%;
+    width: 576px;
+}
+
+#grid-table ul, #grid-table li {
+    overflow: scroll;
+    width: 100%
+}
+
+
+#grid-table table {
+    table-layout: fixed;
+}
+
+#grid-table th, #grid-table td {
+    width: 128px;
+    height: 40px;
+}
+
+#grid-checklist {
+    position: absolute;
+    bottom: 2%;
+}
+
+#grid-checklist-title {
+    margin: 0 0 0 9%;
+}
+
+#grid-checklist-table {
+    margin: 5% 0 0 17%;
+
+    table-layout: fixed;
+}
+
+#grid-checklist-table th, #grid-checklist-table td {
+    width: 160px;
+    height: 40px;
+}
+
+#modal-grid-container {
+    padding: 16px;
+
+    font-size: 18px;
+}
+
+#modal-grid-container th, #modal-grid-container td {
+    width: 128px;
+    height: 64px;
+}
+
+#modal-grid-container table {
+    table-layout: fixed;
+
+    padding: 32px;
+}
+
+#grid-footer {
+    position: absolute;
+    margin: auto auto auto 40px;
+    bottom: 55px;
+
+    display: none;
+}
+
+
+
+/* FOOTER */
+
+#about {
+    height: 40px;
+
+    font-size: 14px;
+    line-height: 23px;
+}
+
+/* Styling build setting */
+#construction {
+    position: absolute;
+    margin: -48px 0;
+
+    text-align: left;
+}
+
+/* Styling build tools */
+#tools {
+    margin: -48px 0;
+
+    text-align: right;
+}
+
+#tools a {
+    text-decoration: none;
+    color: white;
+}
