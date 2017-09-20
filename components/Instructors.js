@@ -6,7 +6,7 @@
  * This file contains the Intructors class for the collection of instructors for
  * the lesson calendar web application. The Instructors class is exported.
  */
- 
+
 import React from 'react';
 import InstructorPreferences from './InstructorPreferences';
 
@@ -27,9 +27,9 @@ class Instructors extends React.Component {
             this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
         } else {
             // For default table display.
-            this.instructors["Alfa"] = ["01/02/11", "03/04/16"];
-            this.instructors["Bravo"] = ["05/06/12", "07/08/17"];
-            this.instructors["Charlie"] = ["09/10/13", "11/12/18"];
+            this.instructors["Alfa"] = ["01/02/11", "03/04/21"];
+            this.instructors["Bravo"] = ["05/06/12", "07/08/22"];
+            this.instructors["Charlie"] = ["09/10/13", "11/12/23"];
         }
 
         // Make component size of window.
@@ -225,6 +225,7 @@ class Instructors extends React.Component {
             var newData = firstChild.val() || firstChild.attr("placeholder");
             newData = newData.replace(/^\s+|\s+$/g, "");
 
+            var expiryTime;
             var isValidData = false;
             if ($(that).is(":first-child")) {
                 isValidData = /^[A-Za-z\s]+$/.test(newData);
@@ -236,13 +237,16 @@ class Instructors extends React.Component {
                 var reYear = new RegExp(/^[0-9]?[0-9]$/);
                 var [day, month, year] = newData.split("/");
 
+                // Date objects use 'Month/Day/Year' order with forward slash seperated values.
+                expiryTime = Date.parse([month, day, year].join("/"));
+
                 // Expect first & second values to by day/month.
                 testDay = reDay.test(day);
                 testMonth = reMonth.test(month);
                 if (!(testDay && testMonth)) {
                     // Accept first & second value to be month/day.
                     testMonth = reMonth.test(day);
-                    testDay = reDay.test(month)
+                    testDay = reDay.test(month);
                 }
 
                 testYear = reYear.test(year);
@@ -253,6 +257,21 @@ class Instructors extends React.Component {
             if (isValidData) {
                 $(that).empty().append(newData);
                 $(that).removeClass("error-table");
+
+                const thrityDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000
+
+                var cellIndex = $(that).index();
+                var thCells = $(that).closest("table").find("th");
+                if (thCells.eq(cellIndex).text() === "WSI Expiration Date") {
+                    // Only check expiration of WSI certification column.
+                    if (expiryTime < Date.now()) {
+                        // Date has expired.
+                        $(that).addClass("error-table");
+                    } else if (expiryTime < Date.now() + thrityDaysInMilliseconds) {
+                        // Date is expiring in 30 days.
+                        $(that).addClass("warning-table");
+                    }
+                }
             } else {
                 $(that).hide().addClass("error-table").fadeIn(800);
                 firstChild.val("");
