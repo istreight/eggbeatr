@@ -4,27 +4,6 @@
  * START DATE:  October 18th, 2016
  *
  * This file is the entry point for the lesson calendar web application.
- *
- *
- * CHANGE LOG:
- *  18/10/16:
- *              Added imports from React, ReactDOM, PureCSS, style.css, and
- *              the Header & About components.
- *              Rendered the Header and About components to statically
- *              defined div tags in index.html.
- *
- *  19/10/16:
- *              Added Landing class import and render to 'dynamicLanding'.
- *              Added Grid class to import and render to 'dynamicGrid'.
- *
- *  25/10/16:
- *              Added Instructors class import and render to 'dynamicInstructors'.
- *
- *  01/11/16:
- *              Added Private class import and render to 'dynamicPrivate'.
- *
- *  02/11/16:
- *              Added Lessons class import and render to 'dynamicLessons'.
  */
 
 

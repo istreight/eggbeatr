@@ -5,20 +5,6 @@
  *
  * This file contains the Intructors class for the collection of instructors for
  * the lesson calendar web application. The Instructors class is exported.
- *
- *
- * CHANGE LOG:
- *  02/11/16:
- *              Migrated code from Instructors.js & altered naming, etc.
- *              Added 'lessons-table', displaying each level type with
- *              input field to record quantity of lesson type.
- *
- *  09/11/16:
- *              Added 'privateLessons' object to store contents of table.
- *              Added communication via props & callbacks to LIPReader.js.
- *
- *  12/11/16:
- *              Added dynamic sizing so component takes up window.
  */
 
 import React from 'react';

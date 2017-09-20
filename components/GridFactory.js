@@ -6,32 +6,6 @@
  * This file contains the GridFactory class that generates an array of the grid
  * for the lesson calendar web application. This class requires input props.
  * The result array from the generateGrid() function is exported.
- *
- *
- * CHANGE LOG:
- *  26/10/16:
- *              Exports sample array for testing.
- *
- *  16/11/16:
- *              Migrated code from Lesson_Calendar/Prototyping/Scheduler.java.
- *              Translated Java to JavaScript, altered display functions, &
- *              removed statistics, error checks, & type transformation methods.
- *              Exports dynamic array based on input; sample array commented out.
- *
- *  18/11/16:
- *              Added private lessons to grid creation. Private lessons can be
- *              added dynamically from the Private section and will reserve
- *              time slots if set to "Weekly" ("Yes").
- *
- *  21/11/16:
- *              Added condensation of generated grid, mapped to 30-minute slots.
- *
- *  22/11/16:
- *              Modifed to account for "private" section of props.lipData passing
- *              array for each instructor.
- *
- *  03/12/16:
- *              Removed 3/4 hour lessons starting at the first 1/4 slot.
  */
 
 import React, {Component, PropTypes} from 'react';

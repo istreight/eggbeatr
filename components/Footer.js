@@ -5,17 +5,6 @@
  *
  * This file contains the About class that displays content about the contruction
  * of the lesson calendar web application. The Footer class is exported.
- *
- *
- * CHANGE LOG:
- *  19/10/16:
- *              Transfered code from index.html, written by PureCSS, Yahoo! Inc.
- *              Added Facebook & Instagram icons and links to personal accounts.
- *              Added React, Webpack, Babel, and PureCSS links.
- *              Added description on location of construction.
- *
- *  11/11/16:
- *              Changed name to Footer.
  */
 
 import React from 'react';

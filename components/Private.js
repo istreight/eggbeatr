@@ -5,36 +5,6 @@
  *
  * This file contains the Private class for the collection of private lessons
  * for the lesson calendar web application. The Private class is exported.
- *
- *
- * CHANGE LOG:
- *  01/11/16:
- *              Migrated code from Instructors.js & altered naming, etc.
- *              Added dropdown menu in Repeat (include) column of
- *              'private-table'.
- *
- *  06/11/16:
- *              Changed ordering of sections (grid to bottom).
- *              Changed styling of colours and positionong accordingly.
- *
- *  09/11/16:
- *              Added 'privateLessons' object to store contents of table.
- *              Added communication via props & callbacks to LIPReader.js.
- *
- *  11/11/16:
- *              Remove addition of new rows on click of 'edit-private'.
- *              Resized section on addition of new rows.
- *
- *  12/11/16:
- *              Added dynamic sizing so component takes up window.
- *
- *  18/11/16:
- *              Added syncronization between stored data and display of drop
- *              down buttons.
- *
- *  22/11/16:
- *              Modified privateLessons object to all multiple private lessons
- *              per instructor.
  */
 
 import React from 'react';

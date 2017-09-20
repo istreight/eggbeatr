@@ -5,34 +5,6 @@
  *
  * This file contains the Landing class for the landing page content of the
  * lesson calendar web application. The Landing class is exported.
- *
- *
- * CHANGE LOG:
- *  19/10/16:
- *              Transfered code from index.html, written by PureCSS, Yahoo! Inc.
- *              Placed temporary name and added description of application.
- *
- *  20/10/16:
- *              Added the componentDidMount, cycle functions and the div tag
- *              nested in the 'splash' h1 tag. The goal of this pair of
- *              functions is to cycle through CSS stylings of the name of the
- *              application.
- *              NOTE: the name of the application is undecided.
- *
- *  21/10/16:
- *              Added "Welcome" on page load. Cycle now starts at 0,
- *              with the related "name-0" div tag.
- *              Changed cycle() timeout to 3410.
- *                  (IF FADE THEN CHANGE, DECREASE; IF CHANGE THEN FADE, INCREASE)
- *              Added fade in (timed halfway through delay of application name)
- *              and onclick event for "Get Started" anchor.
- *
- *  23/10/16:
- *              Changed cycle() timeout to 3415 [WAS: div-tag change then fade].
- *              Changed cycle() timeout to 3414.
- *
- *  26/10/16:
- *              Changed bind("click", function() {}) to click().
  */
 
 import React from 'react';

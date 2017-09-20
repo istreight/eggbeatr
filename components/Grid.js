@@ -8,42 +8,6 @@
  *
  * The content is displayed here as a table, but the values will be generated in
  * another component.
- *
- *
- * CHANGE LOG:
- *  18/10/16:
- *              Added div-tag to simulate placement of table.
- *
- *  22/10/16:
- *              Added button to generate grid.
- *              Added table, dynamically appended via button.
- *
- *  25/10/16:
- *              Modified dynamic CSS for the grid table.
- *              Added section description.
- *
- *  31/10/16:
- *              Added horizontal sliding list of generated grids.
- *              Improved changing grid duration.
- *              Moved the list of grids to align center-right & position by size.
- *
- *  06/11/16:
- *              Placed grid section at bottom of web app.
- *              Added modal option for viewing grids after generation.
- *
- *  09/11/16:
- *              Removed alterGrid.
- *              Added cut-off of grid duration based on props attribute.
- *              Moved CSS styling for 'grid-table' width into generateGrid.
- *
- *  16/11/16:
- *              Added notification if no grids are created.
- *
- *  04/12/16:
- *              Added randomly sorted list for assigning lessons to instructors.
- *
- *  07/12/16:
- *              Added lesson selection based on preferences.
  */
 
 import React from 'react';

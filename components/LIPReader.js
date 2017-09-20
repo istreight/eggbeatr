@@ -7,19 +7,6 @@
  * and Private sections of the lesson calendar web application.
  * This class requires input props.
  * A function, not React class, is exported.
- *
- *
- * CHANGE LOG:
- *  08/11/16:
- *              Added callback and reference props to the Lessons, Instructor, &
- *              Private components, and the returned objects are stored in the
- *              state of the LIPReader object.
- *
- *  10/11/16:
- *              Added minimization of data for instructors (Instructors.js gives
- *              only the keys of the object), preferences (empty strings and
- *              arrays are removed), and lessons (lesson typess with 0 classes
- *              are removed from the object).
  */
 
 import React, { Component, PropTypes } from 'react';

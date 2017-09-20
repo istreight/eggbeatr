@@ -5,25 +5,6 @@
  *
  * This file contains the Header class for the header content of the
  * lesson calendar web application. The Header class is exported.
- *
- *
- * CHANGE LOG:
- *  18/10/16:
- *              Added title text, "Create Calendar" button, and ROB logo.
- *              NOTE: "Create Calendar" button has no functional onClick event.
- *
- * 19/10/16:
- *              Transfered code from index.html, written by PureCSS, Yahoo! Inc.
- *              Placed temporary name.
- *
- * 20/10/16:
- *              Added componentDidMount function. The goal of this function is to
- *              allow smooth scrolling within the page to a div tag by it's
- *              unique ID from an anchor tag.
- *
- * 21/10/16:
- *              Added disable and re-enable of input mouse scroll during scroll
- *              animation after clicking on anchor tags in componentDidMount.
  */
 
 import React from 'react';

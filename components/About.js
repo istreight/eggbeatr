@@ -5,21 +5,6 @@
  *
  * This file contains the About class, displaying a description of the lesson
  * calendar web application. The About class is exported.
- *
- * Icons from
- *  iconarchive.com/show/flat-finance-icons-by-graphicloads.html
- *  iconarchive.com/show/100-flat-icons-by-graphicloads.html
- *
- *
- * CHANGE LOG:
- *  11/11/16:
- *              Added description about web application.
- *              Added images & descriptions for features.
- *
- *              ALTERNATE: "<i>(informal)</i> an incomplete kitchen utensil".
- *
- *  12/11/16:
- *              Added dynamic sizing so component takes up window.
  */
 
 import React from 'react';

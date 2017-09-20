@@ -5,64 +5,8 @@
  *
  * This file contains the Intructors class for the collection of instructors for
  * the lesson calendar web application. The Instructors class is exported.
- *
- *
- * CHANGE LOG:
- *  25/10/16:
- *              Added the Instructors table. The header is not rendered
- *              dynamicaly.
- *              Added section description.
- *
- *  26/10/16:
- *              Statically defined header in render().
- *              Added button to display 'Preferences' modal, with 'Edit'
- *              button in modal. 'Edit' button randomizes the order of the
- *              preselected table elements.
- *              Added names to preferences modal header.
- *              Changed bind("click", function() {}) to click(function() {}).
- *              Added button to edit table of instructors.
- *              Added ability to add & remove instructors.
- *
- *  27/10/16:
- *              Added dynamic movement of the table when adding or removing rows.
- *              Added ability to dynamically add an individual instructor to
- *              the table.
- *              Added recolouring of table when the 'Add' or 'Finish Editing'
- *              buttons are clicked.
- *              Added all lessons to 'preferences-table'.
- *              Added instructor's name to 'order-description'.
- *              Added ability to remove preferences and recolour table properly.
- *
- *  28/10/16:
- *              Removed 'x' to close modal.
- *              Created & deleted _Instructors.js.
- *
- *  29/10/16:
- *              Added state; contains default preferences and unique data for
- *              each instructor in the table.
- *              Added ability to re-add items to preferences table.
- *              NOTE: if an instructor is removed from the table, their
- *              preferenecs remain, so they can be re-added.
- *
- *  30/10/16:
- *              Added infinite loop to add and remove items in 'preference-table'.
- *              Store 'preferences' as key-value object.
- *
- *  09/11/16:
- *              Added 'instructors' object to store contents of table.
- *              Added communication via props & callbacks to LIPReader.js.
- *
- *  11/11/16:
- *              Remove addition of new rows on click of 'edit-instructors'.
- *              Resized section on addition of new rows.
- *
- *  12/11/16:
- *              Added dynamic sizing so component takes up window.
- *
- *  07/12/16:
- *              Added storage of instructor preferences upon clicking
- *              'Finish Editing' in the 'preferences' modal.
  */
+ 
 import React from 'react';
 
 class InstructorPreferences extends React.Component {
