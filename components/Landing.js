@@ -93,7 +93,7 @@ class Landing extends React.Component {
                 </h1>
                 <p className="splash-subhead">
                     a calendar application for organizing swim lessons<br />
-                    that the heavy lifting while leaving you with creative control
+                    doing the heavy lifting while leaving you with creative control
                 </p>
                 <a id="get-started" className="pure-button pure-button-primary">
                     Get Started
