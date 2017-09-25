@@ -23,8 +23,6 @@ class Instructors extends React.Component {
             this.instructors = JSON.parse(sessionStorage.getItem("instructors"));
 
             this.numInstructors = Object.keys(this.instructors).length;
-
-            this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
         } else {
             // For default table display.
             this.instructors["Alfa"] = ["01/02/11", "03/04/21"];
@@ -32,15 +30,21 @@ class Instructors extends React.Component {
             this.instructors["Charlie"] = ["09/10/13", "11/12/23"];
         }
 
+        this.props.callback(this.instructors, this.props.lipReader);
+
+        this.props.instructorPreferences.togglePreferencesButtons(true);
+
+        // Number of table rows, not including header, in '#instructor-table'.
+        this.numInstructors = this.generateGrid();
+
+        this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
+
         // Make component size of window.
         $("#dynamicInstructors").css({
             "height": ($(window).height() - 55) + "px"
         });
 
         $("#edit-instructors").click(this.editInstructors.bind(this));
-
-        // Number of table rows, not including header, in '#instructor-table'.
-        this.numInstructors = this.generateGrid();
 
         // Link tutorital button to next section.
         $("#instructor-next").click(function() {
@@ -59,8 +63,6 @@ class Instructors extends React.Component {
                 });
             });
         });
-
-        this.props.instructorPreferences.togglePreferencesButtons(true);
     }
 
     /**
@@ -129,34 +131,12 @@ class Instructors extends React.Component {
             // Remove from 'instructors' object.
             delete that.instructors[$(this.closest("tr")).children().children()[0].placeholder];
 
-            that.removeInstructorRow(this);
+            this.closest("tr").remove();
 
             that.recolourTable();
         });
 
-        //this.props.instructorPreferences.togglePreferencesButtons(false);
-    }
-
-    /**
-     * Removes the row of the table of a clicked 'remove' button.
-     * Moves the 'instructor' table down the page.
-     */
-    removeInstructorRow(that) {
-        // Increase size of section.
-        if ($("#instructor-table tr").length > 5) {
-            $("#dynamicInstructors").css({
-                "height": ($("#dynamicInstructors").height() + 38) + "px"
-            });
-        }
-
-        that.closest("tr").remove();
-
-        // Reposition table based on number of rows.
-        if ($("#instructor-table tr").length < 5) {
-            $("#instructor-table-container").css({
-                "padding": "0 0 " + (parseInt($("#instructor-table").css("padding-bottom").replace("px", "")) - 8.75) + "px 0"
-            });
-        }
+        this.props.instructorPreferences.togglePreferencesButtons(false);
     }
 
     /**
@@ -198,7 +178,7 @@ class Instructors extends React.Component {
             // Remove from 'instructors' object.
             delete that.instructors[$(this.closest("tr")).children().children()[0].placeholder];
 
-            that.removeInstructorRow(this);
+            this.closest("tr").remove();
 
             that.recolourTable();
         });

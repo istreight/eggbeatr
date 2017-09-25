@@ -21,14 +21,12 @@ class Private extends React.Component {
         if (sessionStorage.getItem("private") && sessionStorage.getItem("private") !== "{}") {
             this.privateLessons = JSON.parse(sessionStorage.getItem("private"));
 
-            this.numPrivate = this.getNumPrivates();
-
             this.props.gridChecklist.checkComplete($("#private-checklist"), this.numPrivate);
         } else {
             // For default table display.
             this.privateLessons = {
                 "Alfa": {
-                    "9:00": ["30", "No"]
+                    "9:00": ["30", "Yes"]
                 },
                 "Bravo": {
                     "9:30": ["30", "No"]
@@ -39,7 +37,13 @@ class Private extends React.Component {
             };
         }
 
+        this.props.callback(this.privateLessons, this.props.lipReader);
+
+        this.numPrivate = this.getNumPrivates();
+
         this.generatePrivate();
+
+        this.props.gridChecklist.checkComplete($("#private-checklist"), this.numPrivate);
 
         // Make component size of window.
         $("#dynamicPrivate").css({

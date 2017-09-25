@@ -25,12 +25,20 @@ class Lessons extends React.Component {
             for (var lessonQuantity in this.lessonSet) {
                 this.numLessons += this.lessonSet[lessonQuantity];
             }
+        } else {
+            this.lessonSet = {
+                "Level 5": 1,
+                "Level 6": 1
+            };
 
-            this.setLessonValues();
-
-            this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);
-
+            this.numLessons = 2;
         }
+
+        this.props.callback(this.lessonSet, this.props.lipReader);
+
+        this.setLessonValues();
+
+        this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);
 
         // Make component size of window.
         $("#dynamicLessons").css({
