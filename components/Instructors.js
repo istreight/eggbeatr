@@ -14,8 +14,8 @@ class Instructors extends React.Component {
     constructor(props) {
         super(props);
 
-        this.numInstructors = 0;
         this.instructors = {};
+        this.numInstructors = 0;
     }
 
     componentDidMount() {
@@ -32,12 +32,24 @@ class Instructors extends React.Component {
 
         this.props.callback(this.instructors, this.props.lipReader);
 
-        this.props.instructorPreferences.togglePreferencesButtons(true);
-
         // Number of table rows, not including header, in '#instructor-table'.
-        this.numInstructors = this.generateGrid();
+        this.generateGrid();
+
+        this.numInstructors = this.getNumInstructors();
 
         this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
+
+        $("#instructor-table").find("tr").each((index, element) => {
+            var wsiDateCell = $(element).find("td").eq(2);
+            var expiryTime = wsiDateCell.text();
+
+            if (expiryTime !== "") {
+                var [day, month, year] = expiryTime.split("/");
+                expiryTime = Date.parse([month, day, year].join("/"));
+
+                this.checkWSIExpiration(wsiDateCell, expiryTime);
+            }
+        })
 
         // Make component size of window.
         $("#dynamicInstructors").css({
@@ -66,19 +78,14 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Appends a row of input fields to the instructor table.
+     * Replaces the text of the Instructor table cells
+     *  with input fields.
+     * The placeholder values of the existing fields are
+     *  their text values.
      */
     inputifyRows() {
         var instructorTable = $("#instructor-table");
-        var numRows = instructorTable.find("tr").length - 1;
 
-        // Append row of input fields and 'add' button.
-        instructorTable.append("<tr id='instructor" + numRows + "' " + ((numRows % 2 == 0) ? "class='table-odd'" : "class='table-even'") + "><td>" + "<td></td><td></td><td><a id='preferences" + numRows + "' class='pure-button pure-button-disabled preferences'>...</a></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
-
-        // Bind 'Add' buttons for new rows.
-        instructorTable.find(".add").click(this.addRow.bind(this));
-
-        // Replace text with input fields, customized placeholder based on text.
         instructorTable.find("td").each(function() {
             var firstChild = $(this).children().eq(0);
 
@@ -90,6 +97,20 @@ class Instructors extends React.Component {
                 $(this).empty().append("<input type='text' placeholder='" + placeholder + "'>");
             }
         });
+    }
+
+    /**
+     * Appends new input row to the Instructors table.
+     */
+    addInputRow() {
+        var instructorTable = $("#instructor-table");
+        var numRows = instructorTable.find("tr").length - 1;
+
+        // Append row of input fields and 'add' button.
+        instructorTable.append("<tr id='instructor" + numRows + "' " + ((numRows % 2 == 0) ? "class='table-odd'" : "class='table-even'") + "><td>" + "<td></td><td></td><td><a id='preferences" + numRows + "' class='pure-button pure-button-disabled preferences'>...</a></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+
+        // Bind 'Add' buttons for new rows.
+        instructorTable.find(".add").click(this.addRow.bind(this));
     }
 
     /**
@@ -124,6 +145,7 @@ class Instructors extends React.Component {
         $("#instructor-table thead tr").append("<th class='is-center'>Modify</th>");
         $("#instructor-table tbody tr").append("<td class='is-center'><a class='pure-button remove'>Remove</a></td>");
 
+        this.addInputRow()
         this.inputifyRows();
 
         var that = this;
@@ -153,20 +175,26 @@ class Instructors extends React.Component {
 
         // Add row to table.
         var that = this;
+        var addedCells = true;
         $("#instructor-table tbody tr td").each(function() {
-            that.addCells(this, false);
+            addedCells = that.addCells(this, false) && addedCells;
         });
 
-        this.numInstructors++;
+        if (!addedCells) {
+            this.inputifyRows();
+            return;
+        }
 
-        // Add row to 'privateLessons' object.
+        this.numInstructors = this.getNumInstructors();
+
+        // Add row to 'instructors' object.
         var instructorRow = $("#instructor-table tbody tr:last").children();
         var instructorName = $(instructorRow[0]).text();
         if (instructorName !== "...") {
-            this.instructors[instructorName] = [$(instructorRow[1]).text(), $(instructorRow[2]).text(),];
+            this.instructors[instructorName] = [$(instructorRow[1]).text(), $(instructorRow[2]).text()];
         }
 
-        // Append new row to allow multiple additions.
+        this.addInputRow();
         this.inputifyRows();
 
         // Put 'remove' in the last cell of the row.
@@ -227,6 +255,7 @@ class Instructors extends React.Component {
                     // Accept first & second value to be month/day.
                     testMonth = reMonth.test(day);
                     testDay = reDay.test(month);
+                    expiryTime = Date.parse([day, month, year].join("/"));
                 }
 
                 testYear = reYear.test(year);
@@ -238,20 +267,7 @@ class Instructors extends React.Component {
                 $(that).empty().append(newData);
                 $(that).removeClass("error-table");
 
-                const thrityDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000
-
-                var cellIndex = $(that).index();
-                var thCells = $(that).closest("table").find("th");
-                if (thCells.eq(cellIndex).text() === "WSI Expiration Date") {
-                    // Only check expiration of WSI certification column.
-                    if (expiryTime < Date.now()) {
-                        // Date has expired.
-                        $(that).addClass("error-table");
-                    } else if (expiryTime < Date.now() + thrityDaysInMilliseconds) {
-                        // Date is expiring in 30 days.
-                        $(that).addClass("warning-table");
-                    }
-                }
+                this.checkWSIExpiration(that, expiryTime);
             } else {
                 $(that).hide().addClass("error-table").fadeIn(800);
                 firstChild.val("");
@@ -285,6 +301,7 @@ class Instructors extends React.Component {
         instructorTable.find("td").each(function() {
             addedCells = that.addCells(this, true) && addedCells;
         });
+
         if (!addedCells) {
             this.editInstructors();
             return;
@@ -294,6 +311,8 @@ class Instructors extends React.Component {
         var editInstructorsButton = $("#edit-instructors");
         editInstructorsButton.empty().append("Edit Instructors");
         editInstructorsButton.unbind("click").click(this.editInstructors.bind(this));
+
+        this.numInstructors = this.getNumInstructors();
 
         this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
 
@@ -331,8 +350,33 @@ class Instructors extends React.Component {
 
         // Reposition container on new HTML table.
         $("#instructor-table tbody").append(newTable);
+    }
 
-        return gridArray.length;
+    checkWSIExpiration(cell, expiryTime) {
+        const ninetyDaysInMilliseconds = 90 * 24 * 60 * 60 * 1000
+
+        var cellIndex = $(cell).index();
+        var thCells = $(cell).closest("table").find("th");
+        if (thCells.eq(cellIndex).text() === "WSI Expiration Date") {
+            // Only check expiration of WSI certification column.
+            if (expiryTime < Date.now()) {
+                // Date has expired.
+                $(cell).addClass("error-table");
+            } else if (expiryTime < Date.now() + ninetyDaysInMilliseconds) {
+                // Date is expiring in 30 days.
+                $(cell).addClass("warning-table");
+            }
+        }
+    }
+
+    getNumInstructors() {
+        var numInstructors = 0;
+
+        for (var instructor in this.instructors) {
+            numInstructors++;
+        }
+
+        return numInstructors;
     }
 
     render() {

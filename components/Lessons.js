@@ -23,7 +23,9 @@ class Lessons extends React.Component {
             this.lessonSet = JSON.parse(sessionStorage.getItem("lessons"));
 
             for (var lessonQuantity in this.lessonSet) {
-                this.numLessons += this.lessonSet[lessonQuantity];
+                if (this.lessonSet[lessonQuantity] > 0) {
+                    this.numLessons += this.lessonSet[lessonQuantity];
+                }
             }
         } else {
             this.lessonSet = {
@@ -108,6 +110,12 @@ class Lessons extends React.Component {
                 }
             }
         });
+
+        if (this.numLessons === 0) {
+            this.lessonSet = {
+                "empty": -1
+            }
+        }
 
         this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);
 

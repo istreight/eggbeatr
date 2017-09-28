@@ -24,6 +24,13 @@ class LIPReader extends React.Component {
         // Object to be passed to GridFactory.
         this.lipData = {};
 
+        // Clear storage from query string.
+        var searchParams = new URLSearchParams(window.location.search);
+        console.log()
+        if (searchParams.get("clearStorage") === "session") {
+            sessionStorage.clear();
+        }
+
         this.instructors = JSON.parse(sessionStorage.instructors || "{}");
         this.instructorPreferences = JSON.parse(sessionStorage.instructorPreferences || "{}");
         this.lessons = JSON.parse(sessionStorage.lessons || "{}");
@@ -137,7 +144,7 @@ class LIPReader extends React.Component {
         for (var lesson = 0; lesson < lessonTypes.length; lesson++) {
             if (threeQuarterLessons.includes(lessonTypes[lesson])) {
                 numLessonTypes[1] += this.lessons[lessonTypes[lesson]];
-            } else {
+            } else if (lesson !== "empty") {
                 numLessonTypes[0] += this.lessons[lessonTypes[lesson]];
             }
         }

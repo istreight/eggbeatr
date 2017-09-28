@@ -3,4 +3,3 @@ node_modules
 default
 package.json
 webpack.config.js
-math_analysis.txt

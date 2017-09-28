@@ -6,7 +6,7 @@
  * This file contains the Intructors class for the collection of instructors for
  * the lesson calendar web application. The Instructors class is exported.
  */
- 
+
 import React from 'react';
 
 class InstructorPreferences extends React.Component {
@@ -44,16 +44,21 @@ class InstructorPreferences extends React.Component {
     togglePreferencesButtons(enable) {
         var numInstructors = $("#instructor-table").find("tr").length - 1;
 
-        if (enable) {
-            // Click events to display 'preferences' modal and style table in modal.
-            for (var instructorPreferenceID = 0; instructorPreferenceID < numInstructors; instructorPreferenceID++) {
-                $("#preferences".concat(instructorPreferenceID)).click(this.displayPreferenceModal).click(this.levelPreferences.bind(this));
-                $("#preferences".concat(instructorPreferenceID)).removeClass("pure-button-disabled");
-            }
-        } else {
-            for (var instructorPreferenceID = 0; instructorPreferenceID < numInstructors; instructorPreferenceID++) {
-                $("#preferences".concat(instructorPreferenceID)).unbind("click");
-                $("#preferences".concat(instructorPreferenceID)).addClass("pure-button-disabled");
+        for (var preferenceID = 0; preferenceID < numInstructors; preferenceID++) {
+            var preferenceButton = $("#preferences".concat(preferenceID));
+
+            if (enable) {
+                // Click events to display 'preferences' modal and style table in modal.
+                if (preferenceButton.length === 0) {
+                    numInstructors++;
+                    continue;
+                }
+
+                preferenceButton.click(this.displayPreferenceModal).click(this.levelPreferences.bind(this));
+                preferenceButton.removeClass("pure-button-disabled");
+            } else {
+                preferenceButton.unbind("click");
+                preferenceButton.addClass("pure-button-disabled");
             }
         }
 

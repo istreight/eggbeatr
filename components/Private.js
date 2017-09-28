@@ -115,9 +115,19 @@ class Private extends React.Component {
     getNumPrivates() {
         var numPrivate = 0;
 
+        var instructors = [];
+        var instructorTable = $("#instructor-table");
+        instructorTable.find("tr").each((index, element) => {
+            var cell = $(element).find("td:first-child");
+
+            if (cell.length > 0) {
+                instructors.push(cell.text());
+            }
+        });
+
         for (var instructor in this.privateLessons) {
             for (var timeSlot in this.privateLessons[instructor]) {
-                if (this.privateLessons[instructor][timeSlot][1] === "Yes") {
+                if (this.privateLessons[instructor][timeSlot][1] === "Yes" && instructors.includes(instructor)) {
                     numPrivate++;
                 }
             }

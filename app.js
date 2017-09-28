@@ -13,6 +13,7 @@ import ReactDOM from 'react-dom';
 
 // CSS
 import { buttons, grids } from 'pure-css';
+import './css/pure.css';
 import './css/style.css';
 
 // Components
@@ -24,24 +25,20 @@ import Grid from './components/Grid';
 import GridChecklist from './components/GridChecklist';
 import Footer from './components/Footer';
 
-var lipReader;
-var gridChecklist;
+
+var lipReader = new LIPReader();
+var gridChecklist = new GridChecklist();
 
 // Render components to static div tags.
 ReactDOM.render(<Header />, document.getElementById('dynamicHeader'));
 ReactDOM.render(<Landing />, document.getElementById('dynamicLanding'));
 ReactDOM.render(<About />, document.getElementById('dynamicAbout'));
+ReactDOM.render(<Footer />, document.getElementById('dynamicFooter'));
 
-lipReader = new LIPReader();
 
 ReactDOM.render(<Grid
     lipData={lipReader.manipulateData()}
 />, document.getElementById('dynamicGrid'));
 
-// Create a single GridChecklist for components to reference.
-gridChecklist = (new GridChecklist()).renderComponent();
-
 // renderComponents renders Lessons, Instructors, and Private to static div tags.
-lipReader.renderComponents(gridChecklist);
-
-ReactDOM.render(<Footer />, document.getElementById('dynamicFooter'));
+lipReader.renderComponents(gridChecklist.renderComponent());

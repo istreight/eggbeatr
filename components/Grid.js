@@ -3,7 +3,7 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 18th, 2016
  *
- * This file contains the Gird class for the schedule content of the
+ * This file contains the Grid class for the schedule content of the
  * lesson calendar web application. The Grid class is exported.
  *
  * The content is displayed here as a table, but the values will be generated in
@@ -46,18 +46,17 @@ class Grid extends React.Component {
         $("#create-grid").click(this.generateGrid.bind(this));
 
         // Disable grid duration buttons.
-        $("#duration0").addClass("pure-menu-disabled").click(function() {
-            this.props.lipData["duration"] = 1.5;
-            this.generateGrid();
-        }.bind(this));
-        $("#duration1").addClass("pure-menu-disabled").click(function() {
-            this.props.lipData["duration"] = 2;
-            this.generateGrid();
-        }.bind(this));
-        $("#duration2").addClass("pure-menu-disabled").click(function() {
-            this.props.lipData["duration"] = 2.5;
-            this.generateGrid();
-        }.bind(this));
+        $("#duration0").addClass("pure-menu-selected");
+
+        $("#duration0").click((event) => {
+            this.updateDuration(1.5, event.target);
+        });
+        $("#duration1").click(() => {
+            this.updateDuration(2, event.target);
+        });
+        $("#duration2").click(() => {
+            this.updateDuration(2.5, event.target);
+        });
 
         // Hide modal on click outside of modal.
         $(window).click(function(e) {
@@ -80,6 +79,41 @@ class Grid extends React.Component {
                 });
             }
         });
+    }
+
+    updateDuration(duration, target) {
+        //Find previously selected duration and remove "selected" class.
+        $(target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
+
+        $(target).addClass("pure-menu-selected");
+
+        this.props.lipData["duration"] = duration;
+
+        // If a grid exists, generate a new one with the new duration.
+        if ($("#grid-table ul li").length > 0) {
+            this.generateGrid();
+        }
+    }
+
+    noGridsNotification(duration, numInstructors, numHalfLessons, numThreeQuarterLessons) {
+        var noGridsString = "No Grids were created<br />Add 0 Instructors";
+
+        var instructorTime = duration * numInstructors;
+        var lessonTime = 0.5 * numHalfLessons + 0.75 * numThreeQuarterLessons;
+
+        var numAddInstructors = Math.ceil((lessonTime - instructorTime) / duration);
+
+        var notification = noGridsString.replace(/[0-9]?[0-9]/, numAddInstructors);
+
+        if (numAddInstructors == 1) {
+            notification = notification.slice(0, -1);
+        } else if (notification[notification.length - 1] !== "s") {
+            notification = notification.concat("s");
+        }
+
+        $("#nogrids-notification").empty().hide();
+        $("#nogrids-notification").append(notification);
+        $("#nogrids-notification").fadeIn(800);
     }
 
     /*
@@ -160,6 +194,7 @@ class Grid extends React.Component {
                  return newInstructorOrder.indexOf(index) === -1 && index > 0
              }.bind(this)))
          );
+
         return newInstructorOrder;
     }
 
@@ -244,6 +279,18 @@ class Grid extends React.Component {
         // Get base array to represent grid.
         var gridArrays = this.generateGridArrays();
 
+        if (gridArrays.length === 0) {
+            this.noGridsNotification(
+                this.props.lipData.duration,
+                this.props.lipData.instructors.length,
+                this.props.lipData.lessons.half,
+                this.props.lipData.lessons.threequater
+            );
+            return;
+        } else {
+            $("#nogrids-notification").hide();
+        }
+
         // Display buttons appropriately.
         for (var duration = 0; duration < 3; duration++) {
             if (duration === 2 * this.props.lipData["duration"] - 3) {
@@ -304,6 +351,13 @@ class Grid extends React.Component {
             "width": (128 * (2 * this.props.lipData["duration"] + 1.5)) + "px"
         });
 
+        // Eliminate conflict with the GridChecklist.
+        if (this.props.lipData.instructors.length > 3) {
+             $("#dynamicGrid").css({
+                 "height": ($(window).height() - 55 + (40 * (this.props.lipData.instructors.length - 3))) + "px"
+             });
+        }
+
         // Click to make modal of list element
         $("#grid-table a").click(function() {
             $("#grid-modal").css({
@@ -341,6 +395,7 @@ class Grid extends React.Component {
                     <a id="create-grid" className="pure-button">
                         Create Grid
                     </a>
+                    <p id="nogrids-notification"></p>
                 </div>
                 <div id="timeslot-duration-container" className="pure-menu pure-menu-horizontal">
                     <a className="pure-menu-heading">Time Slot Duration</a>

@@ -34,7 +34,11 @@ class GridChecklist extends React.Component {
 
             // Update selector content.
             $(selectorChildren[1]).html(value);
-            $(selectorChildren[1]).removeClass("error-table");
+            if (value !== 0) {
+                $(selectorChildren[1]).removeClass("error-table");
+            } else if (selector.attr("id") !== "private-checklist") {
+                $(selectorChildren[1]).addClass("error-table");
+            }
 
             // Place warning if quantity of lessons is 0 and quantity of privates is greater than 0.
             if ($(numLessonsCell).hasClass("error-table")) {
@@ -55,6 +59,7 @@ class GridChecklist extends React.Component {
                 createGridButton.removeClass("pure-button-disabled");
                 createGridButton.unbind("click").click(this.createGridHandler);
             } else {
+                createGridButton.addClass("pure-button-disabled");
                 createGridButton.unbind("click");
             }
         }

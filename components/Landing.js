@@ -12,11 +12,6 @@ import Header from './Header';
 
 class Landing extends React.Component {
     componentDidMount() {
-        var searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get("clearStorage") === "session") {
-            sessionStorage.clear();
-        }
-
         // Fade in 'WELCOME', then cycle through 3 name styles.
         $("#get-started").hide();
         $("#name").addClass("lowercase");
