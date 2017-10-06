@@ -27,7 +27,7 @@ class Header extends React.Component {
 
         // Auto-scroll to desired section.
         $("html, body").animate({
-            scrollTop: $("#".concat(this.getAttribute("id").substring(7))).offset().top - 57
+            scrollTop: $("#".concat(this.getAttribute("id").substring(7))).offset().top - 60
         }, 2000, function() {
             $("body").off("mousewheel DOMMouseScroll");
         });

@@ -26,7 +26,6 @@ class LIPReader extends React.Component {
 
         // Clear storage from query string.
         var searchParams = new URLSearchParams(window.location.search);
-        console.log()
         if (searchParams.get("clearStorage") === "session") {
             sessionStorage.clear();
         }
@@ -138,7 +137,14 @@ class LIPReader extends React.Component {
         var numLessonTypes = [0, 0];
         var lessonTypes = Object.keys(this.lessons);
         var threeQuarterLessons = [
-            "Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Basics I", "Basics II", "Strokes"
+            "Level 6",
+            "Level 7",
+            "Level 8",
+            "Level 9",
+            "Level 10",
+            "Basics I",
+            "Basics II",
+            "Strokes"
         ];
 
         for (var lesson = 0; lesson < lessonTypes.length; lesson++) {

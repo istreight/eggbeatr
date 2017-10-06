@@ -10,13 +10,6 @@
 import React from 'react';
 
 class About extends React.Component {
-    componentDidMount() {
-        // Make component size of window.
-        $("#dynamicAbout").css({
-            "height": ($(window).height() - 55) + "px"
-        });
-    }
-
     render() {
         return (
             <div id="about-container">
@@ -25,7 +18,7 @@ class About extends React.Component {
                 </h2>
                 <div id="about-definition-container" className="content-section-description">
                     eggbeatr
-                    <div id="about-explanation-container">
+                    <div id="about-explanation-container" className="content-section-explanation">
                         an application designed to build a calendar of swim lessons using customizable sets of instructors and lessons.
                     </div>
                 </div>

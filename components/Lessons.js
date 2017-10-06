@@ -115,6 +115,8 @@ class Lessons extends React.Component {
             this.lessonSet = {
                 "empty": -1
             }
+        } else {
+            delete this.lessonSet.empty;
         }
 
         this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);

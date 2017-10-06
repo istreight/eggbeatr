@@ -13,12 +13,13 @@ class Footer extends React.Component {
     render() {
         return (
             <div id="about">
-                Made with &hearts;<br />by Isaac Streight
-                <div id="construction">
+                Made with &hearts;<br />
+                by Isaac Streight
+                <p>
                     Created during Winter 2016<br />
                     on BC&#39;s beautiful coast
-                </div>
-                <div id="tools">
+                </p>
+                <div>
                     Powered by<br />
                     <a href="https://facebook.github.io/react/">React</a>,
                     <a href="https://webpack.github.io"> Webpack</a>,
