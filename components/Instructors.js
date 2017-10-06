@@ -30,12 +30,14 @@ class Instructors extends React.Component {
             this.instructors["Charlie"] = ["09/10/13", "11/12/23"];
         }
 
-        this.props.callback(this.instructors, this.props.lipReader);
-
         // Number of table rows, not including header, in '#instructor-table'.
         this.generateGrid();
 
         this.numInstructors = this.getNumInstructors();
+
+        this.props.callback(this.instructors, this.props.lipReader);
+
+        this.props.instructorPreferences.togglePreferencesButtons(true);
 
         this.props.gridChecklist.checkComplete($("#instructors-checklist"), this.numInstructors);
 
@@ -49,11 +51,6 @@ class Instructors extends React.Component {
 
                 this.checkWSIExpiration(wsiDateCell, expiryTime);
             }
-        })
-
-        // Make component size of window.
-        $("#dynamicInstructors").css({
-            "height": ($(window).height() - 55) + "px"
         });
 
         $("#edit-instructors").click(this.editInstructors.bind(this));

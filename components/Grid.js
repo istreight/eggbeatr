@@ -35,11 +35,6 @@ class Grid extends React.Component {
     }
 
     componentDidMount() {
-        // Make component size of window.
-        $("#dynamicGrid").css({
-            "height": ($(window).height() - 55) + "px"
-        });
-
         // Default duration is 1.5 hours.
         this.props.lipData["duration"] = 1.5;
 
@@ -48,7 +43,7 @@ class Grid extends React.Component {
         // Disable grid duration buttons.
         $("#duration0").addClass("pure-menu-selected");
 
-        $("#duration0").click((event) => {
+        $("#duration0").click(() => {
             this.updateDuration(1.5, event.target);
         });
         $("#duration1").click(() => {
@@ -59,30 +54,37 @@ class Grid extends React.Component {
         });
 
         // Hide modal on click outside of modal.
-        $(window).click(function(e) {
-            if (e.target === $("#grid-modal")[0]) {
+        $(window).click(() => {
+            // Target is HTML object.
+            if (event.target === $("#grid-modal")[0]) {
                 $("#modal-grid-container").empty();
+
                 $("#grid-modal").css({
                     "display": "none"
                 });
+
+                $(".vertical-line").css({
+                    "height": "43px"
+                });
                 $(".vertical-line-center").css({
-                    "height": "43px",
                     "margin": "-21.5px 0 0 50px"
                 });
                 $(".vertical-line-left").css({
-                    "height": "43px",
                     "margin": "-8px 0 0 50px"
                 });
                 $(".vertical-line-right").css({
-                    "height": "43px",
                     "margin": "-35px 0 0 50px"
                 });
             }
         });
     }
 
+    /**
+     * Update the object duration value and display the
+     * correct button as selected.
+     */
     updateDuration(duration, target) {
-        //Find previously selected duration and remove "selected" class.
+        // Find previously selected duration and remove "selected" class.
         $(target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
 
         $(target).addClass("pure-menu-selected");
@@ -95,19 +97,23 @@ class Grid extends React.Component {
         }
     }
 
+    /**
+     * Display a notification if no Grids are created.
+     * Display the number of instructors to be added to
+     * create a Grid, given duration and lesson quantities
+     * are constant.
+     */
     noGridsNotification(duration, numInstructors, numHalfLessons, numThreeQuarterLessons) {
-        var noGridsString = "No Grids were created<br />Add 0 Instructors";
+        var noGridsString = "No Grids were created<br />Add 0 Instructor";
 
         var instructorTime = duration * numInstructors;
         var lessonTime = 0.5 * numHalfLessons + 0.75 * numThreeQuarterLessons;
 
         var numAddInstructors = Math.ceil((lessonTime - instructorTime) / duration);
 
-        var notification = noGridsString.replace(/[0-9]?[0-9]/, numAddInstructors);
+        var notification = noGridsString.replace(/[0-9]/, numAddInstructors);
 
-        if (numAddInstructors == 1) {
-            notification = notification.slice(0, -1);
-        } else if (notification[notification.length - 1] !== "s") {
+        if (numAddInstructors !== 1) {
             notification = notification.concat("s");
         }
 
@@ -116,8 +122,9 @@ class Grid extends React.Component {
         $("#nogrids-notification").fadeIn(800);
     }
 
-    /*
-     * Returns an HTML to style a table cell based on code for split cell.
+    /**
+     * Returns an HTML to style a table cell based on
+     * code for split cell.
      */
     getSplitCell(code) {
         if (this.lessonQueue[2].length === 2 && this.lessonCodes[code].includes("quarter-activity")) {
@@ -127,112 +134,158 @@ class Grid extends React.Component {
         return this.lessonCodes[code];
     }
 
-    /*
-     * Creates a array of lessons, divided to two arrays (1/2 hour and 3/4 hour).
+    /**
+     * Creates an array of lessons, divided to two arrays:
+     * 1/2 hour & 3/4 hour.
      */
     generateLessonQueue() {
-        // Reset lesson queue
+        // Reset lesson queue.
         this.lessonQueue = [[], [], ["Hosing", "Assess"]];
 
-        for (var key in this.props.lipData["lessons"]) {
-            if (key !== "half" && key !== "threequater") {
-                for (var numLessons = 0; numLessons < this.props.lipData["lessons"][key]; numLessons++) {
-                    this.lessonQueue[(["Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Basics I", "Basics II", "Strokes"].indexOf(key) > -1) ? 1 : 0].push(key);
-                }
+        // Lessons of 3/4 hour length.
+        var threeQuarterLessons = [
+            "Level 6",
+            "Level 7",
+            "Level 8",
+            "Level 9",
+            "Level 10",
+            "Basics I",
+            "Basics II",
+            "Strokes"
+        ];
+
+        for (var key in this.props.lipData.lessons) {
+            if (key === "half" || key === "threequater") {
+                continue;
+            }
+
+            var value = this.props.lipData.lessons[key];
+            var keyArray = Array(value).fill(key);
+
+            if (threeQuarterLessons.includes(key)) {
+                this.lessonQueue[1] = this.lessonQueue[1].concat(keyArray);
+            } else {
+                this.lessonQueue[0] = this.lessonQueue[0].concat(keyArray);
             }
         }
     }
 
-    /*
-     * Sums the number of individual preferred lessons.
+    /**
+     * Sums the number of preferred lessons.
      */
-    preferenceSizeDifference(newInstructor, element) {
-        return
-                this.props.lipData["instructorPreferences"][newInstructor].reduce(function(sum, next) {
-                        return sum + next.length;
-                    }, 0)
-                <
-                this.props.lipData["instructorPreferences"][element].reduce(function(sum, next) {
-                        return sum + next.length;
-                    }, 0)
-        ;
+    getPreferenceLength(newInstructor) {
+        return this.props.lipData.instructorPreferences[newInstructor].reduce(function(sum, next) {
+            return sum + next.length;
+        }, 0);
     }
 
-    /*
-     *  Orders the instructors by the length of their related element in
-     *  this.props.lipData["instructorPreferences"], in ascending order.
-     *  Instructors with empty preference objects are appended to the array.
+    /**
+     * Randomizes the contents of the array.
+     */
+    randomizeArray(array) {
+        var i, tmp;
+        var l = array.length;
+
+        // While there remain elements to shuffle.
+        while (l > 0) {
+            // Pick a remaining element.
+            i = Math.floor(Math.random() * l--);
+
+            // Swap with the current element.
+            tmp = array[l];
+            array[l] = array[i];
+            array[i] = tmp;
+        }
+
+        return array;
+    }
+
+    /**
+     * Orders the instructors by the length of their
+     * preferences, in ascending order.
+     * Instructors with empty preference objects are
+     * appended randomly to the array.
      */
     orderInstructorsByPreferencesSize() {
         var newInstructorOrder = [];
+        var instructorPreferenceLengths = [];
 
-        // Append instructors with preferences' index in sorted order.
-        for (var newInstructor = 0; newInstructor < Object.keys(this.props.lipData["instructorPreferences"]).length; newInstructor++) {
-            // Find sorted index of new instructor.
-            for (var index = 0; index < newInstructorOrder.length && !this.preferenceSizeDifference(Object.keys(this.props.lipData["instructorPreferences"])[newInstructor], newInstructorOrder[index]); index++);
+        for (var instructor in this.props.lipData.instructorPreferences) {
 
-            // Insert new instructor.
-             newInstructorOrder.splice(index, 0, newInstructor + 1);
+            var preferenceSize = this.getPreferenceLength(instructor);
+
+            instructorPreferenceLengths.push([instructor, preferenceSize]);
         }
 
+        instructorPreferenceLengths.sort((current, previous) => {
+            return current[1] - previous[1];
+        });
+
+        for (var i = 0; i < instructorPreferenceLengths.length; i++) {
+            newInstructorOrder.push(instructorPreferenceLengths[i][0]);
+        }
+
+        var noPreferenceInstructors = this.props.lipData.instructors.filter((instructor) => {
+            return !newInstructorOrder.includes(instructor);
+        });
+
+        var randomOrderInstructors = this.randomizeArray(noPreferenceInstructors);
+
         // Append instructors without preferences' index in random order.
-         newInstructorOrder = newInstructorOrder.concat(
-             (function(array) {
-                 var m = array.length, i;
-
-                 // While there remain elements to shuffle.
-                 while (m) {
-                     // Pick a remaining element.
-                     i = Math.floor(Math.random() * m--);
-
-                     // Swap with the current element.
-                     array[m] = [array[i], array[i] = array[m]][0];
-                 }
-
-                 return array;
-             }.bind(this))([...Array(this.props.lipData["instructors"].length + 1).keys()].filter(function(index) {
-                 return newInstructorOrder.indexOf(index) === -1 && index > 0
-             }.bind(this)))
-         );
-
-        return newInstructorOrder;
+        return newInstructorOrder.concat(randomOrderInstructors);;
     }
 
-    /*
+    /**
      * Assigns lessons to slots based on the instructors' preferences
      */
     assignLessons(instructor, index, q) {
-        if (typeof instructor[index] === "string") {
-            instructor[index] = this.getSplitCell(instructor[index]);
+        var lessonCode = instructor[index];
+        var prefs = this.props.lipData.instructorPreferences;
+
+        // If the slot locarion is a code (string), it isn't a lesson.
+        if (typeof lessonCode === "string") {
+            instructor[index] = this.getSplitCell(lessonCode);
 
             return q;
         }
 
-        // Cell is an integer, no stand alone '3' cell; default is an empty cell.
-        if (instructor[index] === 1 || instructor[index] === 2) {
-            var newLesson;
+        // There are no stand alone '3' cells.
+        if (lessonCode === 1 || lessonCode === 2) {
+            var prefLessonsByCode;
             var assigned = false;
+            var instructorName = instructor[0];
+            var typedLessons = q[lessonCode - 1];
 
-            // If instructor has preferences.
-            if (Object.keys(this.props.lipData["instructorPreferences"]).indexOf(instructor[0]) !== -1) {
-                for (var lesson = 0; !assigned && lesson < q[instructor[index] - 1].length; lesson++) {
-                    if (this.props.lipData["instructorPreferences"][instructor[0]][instructor[index] - 1].indexOf(q[instructor[index] - 1][lesson]) !== -1) {
-                        instructor[index] = q[instructor[index] - 1].splice(lesson, 1)[0];
+            if (lessonCode === 1) {
+                prefLessonsByCode = prefs[instructorName][0].concat(prefs[instructorName][1]).concat(prefs[instructorName][2]);
+            } else if (lessonCode === 2) {
+                prefLessonsByCode = prefs[instructorName][3].concat(prefs[instructorName][4]);
+            }
+
+            if (instructorName in prefs) {
+                for (var lesson = 0; lesson < typedLessons.length; lesson++) {
+                    if (prefLessonsByCode.includes(typedLessons[lesson])) {
+                        lessonCode = typedLessons.splice(lesson, 1)[0];
 
                         assigned = true;
+                        break;
                     }
                 }
             }
 
             // No preferred lesson is found.
             if (!assigned) {
-                instructor[index] = q[instructor[index] - 1].splice(0, 1)[0];
+                lessonCode = typedLessons.splice(0, 1)[0];
             }
-        } else if (instructor[index] === 4) {
-            instructor[index] = "Private";
+        } else if (lessonCode === 4) {
+            lessonCode = "Private";
         } else {
-            instructor[index] = "";
+            // Default is an empty cell.
+            lessonCode = "";
         }
+
+        instructor[index] = lessonCode;
+        q[lessonCode - 1] = typedLessons;
 
         return q;
     }
@@ -248,9 +301,17 @@ class Grid extends React.Component {
         // Set allocated lessons slots to Red Cross & private lessons.
         for (var grid = 0; grid < newGrids.length; grid++) {
             var queue = jQuery.extend(true, [], this.lessonQueue);
+
             for (var slot = 1; slot < newGrids[grid][1].length; slot++) {
                 for (var instructor = 1; instructor < newGrids[grid].length; instructor++) {
-                    this.assignLessons(newGrids[grid][instructorOrder[instructor - 1]], slot, queue);
+
+                    // For object-based grids, the inner for loop isn't necessary.
+                    for (var instructorRow = 1; instructorRow < newGrids[grid].length; instructorRow++) {
+                        if (newGrids[grid][instructorRow][0] === instructorOrder[instructor - 1]) {
+                            this.assignLessons(newGrids[grid][instructorRow], slot, queue);
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -311,9 +372,9 @@ class Grid extends React.Component {
                     } else {
                         if (slot > 0 &&
                             (
-                                (gridArrays[gridIndex][instructor][slot][0] === "<" && this.lessonQueue[1].indexOf(gridArrays[gridIndex][instructor][slot - 1]) > -1)
+                                (gridArrays[gridIndex][instructor][slot][0] === "<" && this.lessonQueue[1].includes(gridArrays[gridIndex][instructor][slot - 1]))
                                 ||
-                                (gridArrays[gridIndex][instructor][slot - 1][0] === "<" && this.lessonQueue[1].indexOf(gridArrays[gridIndex][instructor][slot]) > -1)
+                                (gridArrays[gridIndex][instructor][slot - 1][0] === "<" && this.lessonQueue[1].includes(gridArrays[gridIndex][instructor][slot]))
                              )
                         ) {
                             newTable += "<td class='no-border'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
@@ -359,23 +420,25 @@ class Grid extends React.Component {
         }
 
         // Click to make modal of list element
-        $("#grid-table a").click(function() {
+        $("#grid-table a").click(() => {
             $("#grid-modal").css({
                 "display": "block"
             });
+
+            $(".vertical-line").css({
+                "height": "63px"
+            });
             $(".vertical-line-center").css({
-                "height": "63px",
                 "margin": "-31.5px 0 0 50px"
             });
             $(".vertical-line-left").css({
-                "height": "63px",
                 "margin": "-18px 0 0 40px"
             });
             $(".vertical-line-right").css({
-                "height": "63px",
                 "margin": "-45px 0 0 55px"
             });
-            $("#modal-grid-container").append($($(this).children()[0]).clone());
+
+            $("#modal-grid-container").append($(event.target).closest("table").clone());
         });
     }
 

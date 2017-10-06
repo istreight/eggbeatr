@@ -12,7 +12,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 // CSS
-import { buttons, grids } from 'pure-css';
+import { buttons } from 'pure-css';
 import './css/pure.css';
 import './css/style.css';
 

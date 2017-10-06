@@ -29,14 +29,15 @@ class InstructorPreferences extends React.Component {
         }
 
         // Hide modal on click outside of modal.
-        $(window).click(function(e) {
-            if (e.target === $("#instructorPreferences-modal")[0]) {
+        $(window).click(() => {
+            if (event.target === $("#instructorPreferences-modal")[0]) {
                 $("#instructorPreferences-modal").css({
                     "display": "none"
                 });
+
                 this.finishEditingPreferences();
             }
-        }.bind(this));
+        });
 
         $("#edit-preferences").click(this.editPreferences.bind(this));
     }
@@ -108,25 +109,30 @@ class InstructorPreferences extends React.Component {
         $("#preference-table tbody tr td").each(function() {
             // col30, col34, col40, col44 are designed to be empty.
             if (this.id !== "col30" && this.id !== "col34" && this.id !== "col40" && this.id !== "col44") {
-                if (this.innerHTML !== "")
+                if (this.innerHTML !== "") {
                     $(this).append("<span class='close'>×</span>");
-                else
+                } else {
                     $(this).append("<span class='add-preference'>&#10003;</span>");
+                }
             }
         });
 
-        // For calling class functions in annonymous functions without binding.
+        // Bind removal and re-adding buttons.
         var that = this;
         $("#preference-table .close").click(function() {
             that.removePreferenceCell(this);
         });
+        $("#preference-table .add-preference").unbind("click").click(function() {
+            that.addPreferenceCell(this);
+        });
 
-        $("#edit-preferences").empty().append("Finish Editing").unbind("click").click(this.finishEditingPreferences.bind(this));
+        $("#edit-preferences").empty().append("Finish Editing");
+        $("#edit-preferences").unbind("click").click(this.finishEditingPreferences.bind(this));
     }
 
     /**
-     * Removes contents from the cell in 'preference-table' and replaces with
-     * an 'add-preference' object.
+     * Removes contents from the cell in 'preference-table'
+     * and replaces with an 'add-preference' object.
      */
     removePreferenceCell(that) {
         // Location of data in the 2-dimensional defaultPreferences array.
