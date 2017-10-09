@@ -32,7 +32,7 @@ class Landing extends React.Component {
             return false;
         });
         $("html, body").animate({
-            scrollTop: $("#dynamicInstructors").offset().top - 57
+            scrollTop: $("#dynamicInstructors").offset().top - 60
         }, 3200, function() {
             $("body").off("mousewheel DOMMouseScroll");
         });

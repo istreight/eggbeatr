@@ -214,6 +214,14 @@
     color: green;
 }
 
+.left-button {
+    margin: 5% 0 0 40px;
+}
+
+.right-button {
+    margin: 5% 40px 0 0;
+}
+
 #dynamicLanding, #dynamicAbout, #dynamicInstructors, #dynamicLessons, #dynamicPrivate, #dynamicGrid {
     height: 92vh;
 }
@@ -222,7 +230,6 @@
 
 /* HEADER */
 
-/* Style display of application name */
 #button-dynamicHeader {
     text-transform: none;
 }
@@ -332,10 +339,6 @@
     height: 100%;
 }
 
-#edit-instructors {
-    margin: 5% 0 0 40px;
-}
-
 #instructor-table {
     margin: -9.75% 0 0 27.5%;
 }
@@ -393,10 +396,6 @@
     position: relative;
     width: 100%;
     height: 90%;
-}
-
-#save-lessons {
-    margin: 5% 40px 0 0;
 }
 
 #save-notification {
@@ -478,10 +477,6 @@
     height: 100%;
 }
 
-#edit-private {
-    margin: 5% 0 0 40px;
-}
-
 #private-table {
     margin: -9.75% 0 0 27.5%;
 
@@ -516,14 +511,9 @@
     color: #1f8dd6;
 }
 
-.pure-menu-disabled {
-    color: #2d3e50;
-}
-
 .vertical-line {
     position: absolute;
 
-    width: 0;
     height: 43px;
 
     border: 0.75px solid lightgrey;
@@ -564,8 +554,6 @@
 
 .half-private-lesson-cell-left {
     background: linear-gradient(to right, #767676 50%, transparent 50%);
-
-    border: none;
 }
 
 .half-private-lesson-cell-right {
@@ -578,40 +566,25 @@
 
 #dynamicGrid {
     padding: 45px;
-}
 
-#grid-container {
     position: relative;
-    width: 100%;
-    height: 90%;
 }
 
-#create-grid {
-    margin: 5% 40px 0 0;
-}
-
-#timeslot-duration-container {
-    margin: -5% 0 0 29.5%;
+#duration-container {
+    margin: -5% 0 0 32.25%;
 }
 
 #nogrids-notification {
-    margin: 5% 40px 0 0;
-
     color: #1f8dd6;
-
-    display: none;
 }
 
 #grid-table {
     margin: 0 0 0 3.5%;
-    width: 576px;
 }
 
 #grid-table ul, #grid-table li {
     overflow: scroll;
-    width: 100%
 }
-
 
 #grid-table table {
     table-layout: fixed;
@@ -624,7 +597,8 @@
 
 #grid-checklist {
     position: absolute;
-    bottom: 2%;
+
+    bottom: 8%;
 }
 
 #grid-checklist-title {
@@ -655,14 +629,14 @@
 
 #modal-grid-container table {
     table-layout: fixed;
-
-    padding: 32px;
 }
 
 #grid-footer {
     position: absolute;
-    margin: auto auto auto 40px;
-    bottom: 55px;
+
+    margin: 0 0 5% 35%;
+
+    bottom: 2%;
 
     display: none;
 }
@@ -671,24 +645,24 @@
 
 /* FOOTER */
 
-#about {
+#footer-container {
     height: 40px;
 
     font-size: 14px;
     line-height: 23px;
 }
 
-#about a {
+#footer-container a {
     text-decoration: none;
     color: white;
 }
 
-#about div {
+#footer-container div {
     margin: -48px 0;
     text-align: right;
 }
 
-#about p {
+#footer-container p {
     margin: -48px 0;
     text-align: left;
 }
