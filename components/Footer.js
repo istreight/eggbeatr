@@ -12,7 +12,7 @@ import React from 'react';
 class Footer extends React.Component {
     render() {
         return (
-            <div id="about">
+            <div id="footer-container">
                 Made with &hearts;<br />
                 by Isaac Streight
                 <p>

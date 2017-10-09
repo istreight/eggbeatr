@@ -173,8 +173,9 @@ class Instructors extends React.Component {
         // Add row to table.
         var that = this;
         var addedCells = true;
+        var instructorList = [];
         $("#instructor-table tbody tr td").each(function() {
-            addedCells = that.addCells(this, false) && addedCells;
+            addedCells = that.addCells(this, instructorList, false) && addedCells;
         });
 
         if (!addedCells) {
@@ -184,7 +185,7 @@ class Instructors extends React.Component {
 
         this.numInstructors = this.getNumInstructors();
 
-        // Add row to 'instructors' object.
+        // Add row to instructors object.
         var instructorRow = $("#instructor-table tbody tr:last").children();
         var instructorName = $(instructorRow[0]).text();
         if (instructorName !== "...") {
@@ -216,7 +217,7 @@ class Instructors extends React.Component {
      * with data from the input fields.
      * Moves the 'instructor' table up the page.
      */
-    addCells(that, removeInputRow) {
+    addCells(that, instructorList, removeInputRow) {
         var firstChild = $(that).children().eq(0);
 
         if (firstChild.is("input")) {
@@ -233,7 +234,9 @@ class Instructors extends React.Component {
             var expiryTime;
             var isValidData = false;
             if ($(that).is(":first-child")) {
-                isValidData = /^[A-Za-z\s]+$/.test(newData);
+                isValidData = /^[A-Za-z\s]+$/.test(newData) && !instructorList.includes(newData);
+
+                instructorList.push(newData);
             } else if (newData.split("/").length === 3) {
                 // Order could be day/month/year or month/day/year.
                 var testDay, testMonth, testYear;
@@ -295,8 +298,9 @@ class Instructors extends React.Component {
         // Add row to table.
         var that = this;
         var addedCells = true;
+        var instructorList = [];
         instructorTable.find("td").each(function() {
-            addedCells = that.addCells(this, true) && addedCells;
+            addedCells = that.addCells(this, instructorList, true) && addedCells;
         });
 
         if (!addedCells) {
@@ -389,7 +393,7 @@ class Instructors extends React.Component {
                             <li>Say a little bit about them</li>
                             <li>Modify their teaching preferences</li>
                         </ul>
-                        <a id="edit-instructors" className="pure-button">
+                        <a id="edit-instructors" className="pure-button left-button">
                             Edit Instructors
                         </a>
                     </div>

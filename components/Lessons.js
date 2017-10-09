@@ -151,7 +151,7 @@ class Lessons extends React.Component {
                             <li>Use any numeric quantity</li>
                             <li>Cache the quantities only when you want</li>
                         </ul>
-                        <a id="save-lessons" className="pure-button">
+                        <a id="save-lessons" className="pure-button right-button">
                             Save Lessons
                         </a>
                         <div id="save-notification">

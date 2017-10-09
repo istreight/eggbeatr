@@ -397,6 +397,7 @@ class Private extends React.Component {
         privateTable.find("td").each(function() {
             addedCells = that.addCells(this, true) && addedCells;
         });
+
         if (!addedCells) {
             this.editPrivate();
             return;
@@ -405,16 +406,37 @@ class Private extends React.Component {
         $("#edit-private").empty().append("Edit Private").unbind("click").click(this.editPrivate.bind(this));
 
         // Update privateLessons.
-        var instructor;
         var timeSlot;
+        var instructor;
+        var instructorName;
+        var privateTimeSlots = {};
+        var privateInstructors = {};
         var row = $("#private-table").find("tbody").find("tr").children();
-        row.each(function(index, element) {
+        row.each((index, element) => {
             if (index % 4 === 0) {
-                instructor = that.privateLessons[$(element).text()];
-                return instructor !== undefined;
+                instructorName = $(element).text();
+                instructor = this.privateLessons[instructorName];
+
+                if (instructor === undefined) {
+                    instructor = {};
+                    this.privateLessons[instructorName] = instructor;
+                }
             } else if (index % 4 === 1) {
-                timeSlot = instructor[$(element).text()];
-                return timeSlot !== undefined;
+                var startTime = $(element).text();
+
+                if (instructor[startTime] === undefined) {
+                    instructor[startTime] = [];
+                }
+
+                if (privateTimeSlots[instructorName] == undefined) {
+                    var newPrivate = {};
+                    newPrivate[startTime] = instructor[startTime];
+                    privateTimeSlots[instructorName] = newPrivate;
+                } else {
+                    privateTimeSlots[instructorName][startTime] = instructor[startTime];
+                }
+
+                timeSlot = instructor[startTime];
             } else {
                 if ($(element).children().length === 0) {
                     timeSlot[0] = $(element).text();
@@ -423,6 +445,19 @@ class Private extends React.Component {
                 }
             }
         });
+
+        // Remove overwritten lesson time slots.
+        for (var instructor in this.privateLessons) {
+            if (!(instructor in privateTimeSlots)) {
+                delete this.privateLessons[instructor];
+            }
+
+            for (var time in this.privateLessons[instructor]) {
+                if (!(time in privateTimeSlots[instructor])) {
+                    delete this.privateLessons[instructor][time];
+                }
+            }
+        }
 
         this.numPrivate = this.getNumPrivates();
 
@@ -480,7 +515,7 @@ class Private extends React.Component {
                             <li>Specify the who, when, and how long</li>
                             <li>Modify their frequencies</li>
                         </ul>
-                        <a id="edit-private" className="pure-button">
+                        <a id="edit-private" className="pure-button left-button">
                             Edit Private
                         </a>
                     </div>
