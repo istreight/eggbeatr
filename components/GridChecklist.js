@@ -11,10 +11,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class GridChecklist extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         // Store the "Create Grid" function locally to re-apply when components are complete.
         this.createGridHandler = jQuery._data($("#create-grid")[0], "events").click[0].handler;
@@ -24,38 +20,36 @@ class GridChecklist extends React.Component {
     }
 
     checkComplete(selector, value) {
-        var selectorChildren = selector.children();
+        var selectorChild = selector.children()[1];
 
-        if (selectorChildren.length > 0) {
+        if ($(selectorChild).length > 0) {
             var createGridButton = $("#create-grid");
             var numLessonsCell = $("#lessons-checklist").children()[1];
             var numPrivateCell = $("#private-checklist").children()[1];
             var numInstructorsCell = $("#instructors-checklist").children()[1];
 
             // Update selector content.
-            $(selectorChildren[1]).html(value);
+            $(selectorChild).html(value);
+
             if (value !== 0) {
-                $(selectorChildren[1]).removeClass("error-table");
+                $(selectorChild).removeClass("error-table");
             } else if (selector.attr("id") !== "private-checklist") {
-                $(selectorChildren[1]).addClass("error-table");
+                $(selectorChild).addClass("error-table");
             }
 
-            // Place warning if quantity of lessons is 0 and quantity of privates is greater than 0.
-            if ($(numLessonsCell).hasClass("error-table")) {
+            // Place warning if quantity of lessons is 0 and quantity of privates is not 0.
+            if ($(numLessonsCell).html() === "0") {
                 if ($(numPrivateCell).html() === "0") {
                     $(numLessonsCell).removeClass("warning-table").addClass("error-table");
                 } else {
                     $(numLessonsCell).removeClass("error-table").addClass("warning-table");
                 }
-            }
-
-            if ($(numLessonsCell).html() !== "0") {
+            } else {
                 $(numLessonsCell).removeClass("warning-table");
             }
 
-            // Verify others.
+            // Verify condition to enable/disable "Create Grid" button.
             if ($(numInstructorsCell).html() !== "0" && ($(numLessonsCell).html() !== "0" || $(numPrivateCell).html() !== "0")) {
-                // Bind button, if complete.
                 createGridButton.removeClass("pure-button-disabled");
                 createGridButton.unbind("click").click(this.createGridHandler);
             } else {
@@ -68,8 +62,8 @@ class GridChecklist extends React.Component {
     render() {
         return (
             <div id="grid-checklist">
-                <h3 id="grid-checklist-title" className="content-head">Grid Checklist</h3>
-                <table id="grid-checklist-table" className="pure-table">
+                <h3 className="content-head">Grid Checklist</h3>
+                <table className="pure-table">
                     <thead>
                         <tr>
                             <th>
@@ -81,7 +75,7 @@ class GridChecklist extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="table-odd" id="instructors-checklist">
+                        <tr id="instructors-checklist" className="table-odd">
                             <td>
                                 Instructors
                             </td>
@@ -89,7 +83,7 @@ class GridChecklist extends React.Component {
                                 0
                             </td>
                         </tr>
-                        <tr className="table-even" id="lessons-checklist">
+                        <tr id="lessons-checklist" className="table-even">
                             <td>
                                 Lessons
                             </td>
@@ -97,7 +91,7 @@ class GridChecklist extends React.Component {
                                 0
                             </td>
                         </tr>
-                        <tr className="table-odd" id="private-checklist">
+                        <tr id="private-checklist" className="table-odd">
                             <td>
                                 Privates
                             </td>
