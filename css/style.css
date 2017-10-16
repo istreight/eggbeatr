@@ -601,17 +601,17 @@
     bottom: 8%;
 }
 
-#grid-checklist-title {
+#grid-checklist h3 {
     margin: 0 0 0 9%;
 }
 
-#grid-checklist-table {
+#grid-checklist table {
     margin: 5% 0 0 17%;
 
     table-layout: fixed;
 }
 
-#grid-checklist-table th, #grid-checklist-table td {
+#grid-checklist th, #grid-checklist td {
     width: 160px;
     height: 40px;
 }
