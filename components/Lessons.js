@@ -40,7 +40,7 @@ class Lessons extends React.Component {
 
         this.setLessonValues();
 
-        this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);
+        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
 
         // Make component size of window.
         $("#dynamicLessons").css({
@@ -119,7 +119,7 @@ class Lessons extends React.Component {
             delete this.lessonSet.empty;
         }
 
-        this.props.gridChecklist.checkComplete($("#lessons-checklist"), this.numLessons);
+        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
 
         this.props.callback(this.lessonSet, this.props.lipReader);
     }

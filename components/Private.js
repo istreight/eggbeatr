@@ -20,8 +20,6 @@ class Private extends React.Component {
     componentDidMount() {
         if (sessionStorage.getItem("private") && sessionStorage.getItem("private") !== "{}") {
             this.privateLessons = JSON.parse(sessionStorage.getItem("private"));
-
-            this.props.gridChecklist.checkComplete($("#private-checklist"), this.numPrivate);
         } else {
             // For default table display.
             this.privateLessons = {
@@ -37,13 +35,12 @@ class Private extends React.Component {
             };
         }
 
-        this.props.callback(this.privateLessons, this.props.lipReader);
-
         this.numPrivate = this.getNumPrivates();
 
         this.generatePrivate();
 
-        this.props.gridChecklist.checkComplete($("#private-checklist"), this.numPrivate);
+        this.props.callback(this.privateLessons, this.props.lipReader);
+        this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
         // Make component size of window.
         $("#dynamicPrivate").css({
@@ -82,7 +79,7 @@ class Private extends React.Component {
 
             that.numPrivate = that.getNumPrivates();
 
-            that.props.gridChecklist.checkComplete($("#private-checklist"), that.numPrivate);
+            that.props.gridChecklist.setQuantity("privates", that.numPrivate);
 
             if (timeSlot !== undefined) {
                 that.props.callback(that.privateLessons, that.props.lipReader);
@@ -94,7 +91,7 @@ class Private extends React.Component {
             $("body").on("mousewheel DOMMouseScroll", function() {
                 return false;
             });
-            $("#grid-footer").css({
+            $("#dynamicGrid .content-section-footer").css({
                 "display": "block"
             });
 
@@ -116,8 +113,8 @@ class Private extends React.Component {
         var numPrivate = 0;
 
         var instructors = [];
-        var instructorTable = $("#instructor-table");
-        instructorTable.find("tr").each((index, element) => {
+        var instructorRows = $("#dynamicInstructors tr");
+        instructorRows.each((index, element) => {
             var cell = $(element).find("td:first-child");
 
             if (cell.length > 0) {
@@ -144,7 +141,7 @@ class Private extends React.Component {
         var numRows = privateTable.find("tr").length - 1;
 
         // Append row of input fields and 'add' button.
-        privateTable.append("<tr " + ((numRows % 2 == 0) ? " class='table-odd'" : " class='table-even'") + "><td><td></td><td></td><td><div></div></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+        privateTable.append("<tr " + ((numRows % 2 === 0) ? " class='table-odd'" : " class='table-even'") + "><td><td></td><td></td><td><div></div></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
 
         // Bind 'Add' buttons for new rows.
         privateTable.find(".add").click(this.addRow.bind(this));
@@ -166,7 +163,7 @@ class Private extends React.Component {
     /*
      * Resets the table to appropriate colour scheme.
      */
-    recolourTable() {
+    colourTable() {
         // Recolour rows.
         $("#private-table").find("tr").each(function(index, element) {
             if (index === 0) {
@@ -210,22 +207,14 @@ class Private extends React.Component {
      */
     removePrivateRow(that) {
         // Increase size of section.
-        if ($("#private-table tr").length > 4) {
+        if ($("#private-table tr").length > 5) {
             $("#dynamicPrivate").css({
                 "height": ($("#dynamicPrivate").height() + 30) + "px"
             });
         }
 
         that.closest("tr").remove();
-
-        // Reposition table based on number of rows.
-        if ($("#private-table tr").length < 5) {
-            $("#private-table").css({
-                "padding": "0 0 " + (parseInt($("#private-table").css("padding-bottom").replace("px", "")) - 8.75) + "px 0"
-            });
-        }
-
-        this.recolourTable();
+        this.colourTable();
     }
 
     /*
@@ -234,7 +223,7 @@ class Private extends React.Component {
      */
     addRow() {
         // Increase size of section.
-        if ($("#private-table tbody tr").length > 5) {
+        if ($("#private-table tr").length > 5) {
             $("#dynamicPrivate").css({
                 "height": ($("#dynamicPrivate").height() + 150) + "px"
             });
@@ -289,7 +278,7 @@ class Private extends React.Component {
         // Append new row to allow multiple additions.
         this.inputifyRows();
 
-        this.recolourTable();
+        this.colourTable();
     }
 
     /*
@@ -428,7 +417,7 @@ class Private extends React.Component {
                     instructor[startTime] = [];
                 }
 
-                if (privateTimeSlots[instructorName] == undefined) {
+                if (privateTimeSlots[instructorName] === undefined) {
                     var newPrivate = {};
                     newPrivate[startTime] = instructor[startTime];
                     privateTimeSlots[instructorName] = newPrivate;
@@ -461,9 +450,8 @@ class Private extends React.Component {
 
         this.numPrivate = this.getNumPrivates();
 
-        this.props.gridChecklist.checkComplete($("#private-checklist"), this.numPrivate);
-
         this.props.callback(this.privateLessons, this.props.lipReader);
+        this.props.gridChecklist.setQuantity("privates", this.numPrivate);
     }
 
     /*
@@ -492,7 +480,7 @@ class Private extends React.Component {
         // Transform array to HTML table, with PureCSS styling.
         var newTable = "";
         for (var privateLesson = 0; privateLesson < gridArray.length; privateLesson++) {
-            newTable += "<tr"  + ((privateLesson % 2 == 0) ? " class='table-odd'" : " class='table-even'") + ">";
+            newTable += "<tr"  + ((privateLesson % 2 === 0) ? " class='table-odd'" : " class='table-even'") + ">";
             for (var slot = 0; slot < gridArray[0].length; slot++) {
                 newTable += "<td>" + gridArray[privateLesson][slot] + "</td>";
             }
@@ -543,11 +531,11 @@ class Private extends React.Component {
                     </div>
                     <div id="private-footer" className="ribbon-section-footer">
                         <h2 className="content-head content-head-ribbon">
-                            <font color="white">Step #3:</font>
+                            Step #3:
                         </h2>
-                        <font color="#ddd">
+                        <p>
                             List any private lessons occuring during this set.
-                        </font>
+                        </p>
                         <a id="private-next" className="pure-button pure-button-primary">
                             &rarr;
                         </a>

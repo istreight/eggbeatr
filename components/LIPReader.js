@@ -213,13 +213,7 @@ class LIPReader extends React.Component {
         for (var keyIndex = 0, isConsistent = 0; keyIndex < Object.keys(this.instructorPreferences).length; keyIndex++, isConsistent = 0) {
             for (var lessonGroup = 0; lessonGroup < this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]].length; lessonGroup++) {
                 for (var lesson = 0; lesson < this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup].length; lesson++) {
-                    isConsistent += (this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup][lesson] === "") ? -1 : 1;
-
-                    // Remove empty elements from the array.
-                    if (this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup][lesson] === "") {
-                        this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup].splice(lesson, 1);
-                        lesson--;
-                    }
+                    isConsistent += (this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup][lesson].charAt(0) === "r") ? -1 : 1;
                 }
             }
 
@@ -236,7 +230,7 @@ class LIPReader extends React.Component {
             }
         }
 
-        // Remove private lessons without 'Yes' repetition.
+        // Remove instructors in Privates without private lessons.
         for (var instructor in this.private) {
             if (jQuery.isEmptyObject(this.private[instructor])) {
                 delete this.private[instructor];

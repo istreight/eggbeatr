@@ -36,30 +36,24 @@ class Grid extends React.Component {
 
     componentDidMount() {
         // Default duration is 1.5 hours.
-        this.props.lipData["duration"] = 1.5;
+        this.props.lipData.duration = 1.5;
 
-        $("#create-grid").click(this.generateGrid.bind(this));
+        $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
 
         // Disable grid duration buttons.
-        $("#duration0").addClass("pure-menu-selected");
+        $(".duration-button").eq(0).addClass("pure-menu-selected");
 
-        $("#duration0").click(() => {
-            this.updateDuration(1.5, event.target);
-        });
-        $("#duration1").click(() => {
-            this.updateDuration(2, event.target);
-        });
-        $("#duration2").click(() => {
-            this.updateDuration(2.5, event.target);
+        $(".duration-button").click(() => {
+            this.updateDuration(event.target);
         });
 
         // Hide modal on click outside of modal.
         $(window).click(() => {
             // Target is HTML object.
-            if (event.target === $("#grid-modal")[0]) {
-                $("#modal-grid-container").empty();
+            if (event.target === $("#dynamicGrid .modal")[0]) {
+                $("#dynamicGrid .modal-body").empty();
 
-                $("#grid-modal").css({
+                $("#dynamicGrid .modal").css({
                     "display": "none"
                 });
 
@@ -83,19 +77,27 @@ class Grid extends React.Component {
      * Update the object duration value and display the
      * correct button as selected.
      */
-    updateDuration(duration, target) {
+    updateDuration(target) {
+        var duration;
+        var durationIndex;
+        var durationContainer = $("#dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable)");
+        console.log(durationContainer);
+
         // Find previously selected duration and remove "selected" class.
         $(target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
 
         $(target).addClass("pure-menu-selected");
 
-        this.props.lipData["duration"] = duration;
+        durationIndex = durationContainer.find("li a").index(target);
+        duration = (durationIndex / 2.0) + 1;
+
+        this.props.lipData.duration = duration;
 
         // If a grid exists, generate a new one with the new duration.
-        if ($("#grid-table ul li").length > 0) {
+        if ($("#dynamicGrid .pure-menu-scrollable ul li").length > 0) {
             this.generateGrid();
         }
-    }
+     }
 
     /**
      * Display a notification if no Grids are created.
@@ -117,9 +119,9 @@ class Grid extends React.Component {
             notification = notification.concat("s");
         }
 
-        $("#nogrids-notification").empty().hide();
-        $("#nogrids-notification").append(notification);
-        $("#nogrids-notification").fadeIn(800);
+        $("#dynamicGrid p").empty().hide();
+        $("#dynamicGrid p").append(notification);
+        $("#dynamicGrid p").fadeIn(800);
     }
 
     /**
@@ -154,7 +156,7 @@ class Grid extends React.Component {
         ];
 
         for (var key in this.props.lipData.lessons) {
-            if (key === "half" || key === "threequater") {
+            if (key === "half" || key === "threequater" || key === "empty") {
                 continue;
             }
 
@@ -212,7 +214,6 @@ class Grid extends React.Component {
         var instructorPreferenceLengths = [];
 
         for (var instructor in this.props.lipData.instructorPreferences) {
-
             var preferenceSize = this.getPreferenceLength(instructor);
 
             instructorPreferenceLengths.push([instructor, preferenceSize]);
@@ -331,7 +332,7 @@ class Grid extends React.Component {
      */
     generateGrid() {
         // Hide tutorial message, error notification, & current grids.
-        $("#grid-footer").css({
+        $("#dynamicGrid .content-section-footer").css({
             "display": "none"
         });
 
@@ -351,11 +352,11 @@ class Grid extends React.Component {
 
             return;
         } else {
-            $("#nogrids-notification").hide();
+            $("#dynamicGrid p").hide();
         }
 
         // Empty list of Grids.
-        $("#grid-table ul").empty();
+        $("#dynamicGrid .pure-menu-scrollable ul").empty();
 
         // Transform array to HTML table with PureCSS styling
         for (var gridIndex = 0; gridIndex < gridArrays.length; gridIndex++) {
@@ -417,7 +418,7 @@ class Grid extends React.Component {
                 }
             }
 
-            $("#grid-table ul").append(newTable + "</tbody></table></a></li>");
+            $("#dynamicGrid .pure-menu-scrollable ul").append(newTable + "</tbody></table></a></li>");
 
             // hover
             $(".table-odd").hover(function() {
@@ -427,8 +428,8 @@ class Grid extends React.Component {
             });
         }
 
-        // Fit window to Grids to the Grids' size.
-        $("#grid-table").css({
+        // Fit window to the Grids' size.
+        $("#dynamicGrid .pure-menu-scrollable").css({
             "width": (125 * (2 * this.props.lipData.duration + 1.5)) + "px"
         });
 
@@ -440,13 +441,13 @@ class Grid extends React.Component {
         }
 
         // Click to make modal of list element
-        $("#grid-table a").click(() => {
-            $("#grid-modal").css({
+        $("#dynamicGrid .pure-menu-scrollable a").click(() => {
+            $("#dynamicGrid .modal").css({
                 "display": "block"
             });
 
             $(".vertical-line").css({
-                "height": "63px"
+                "height": "64px"
             });
             $(".vertical-line-center").css({
                 "margin": "-31.5px 0 0 50px"
@@ -458,13 +459,13 @@ class Grid extends React.Component {
                 "margin": "-45px 0 0 55px"
             });
 
-            $("#modal-grid-container").append($(event.target).closest("a").clone());
+            $("#dynamicGrid .modal-body").append($(event.target).closest("a").clone());
         });
     }
 
     render() {
         return (
-            <div id="grid-container">
+            <div>
                 <h2 className="content-head is-right">
                     The grid
                 </h2>
@@ -475,31 +476,44 @@ class Grid extends React.Component {
                         <li>Cycle through the possible grids</li>
                         <li>Inspect each grid</li>
                     </ul>
-                    <a id="create-grid" className="pure-button right-button">
+                    <a className="pure-button right-button">
                         Create Grid
                     </a>
-                    <p id="nogrids-notification" className="right-button"></p>
+                    <p className="right-button"></p>
                 </div>
-                <div id="duration-container" className="pure-menu pure-menu-horizontal">
-                    <a className="pure-menu-heading">Duration</a>
+                <div className="pure-menu pure-menu-horizontal">
                     <ul className="pure-menu-list">
-                        <li className="pure-menu-item"><a id="duration0" className="pure-menu-link">1&frac12; hours</a></li>
-                        <li className="pure-menu-item"><a id="duration1" className="pure-menu-link">2 hours</a></li>
-                        <li className="pure-menu-item"><a id="duration2" className="pure-menu-link">2&frac12; hours</a></li>
+                        <li className="pure-menu-item">
+                            <a className="pure-menu-heading">Duration</a>
+                        </li>
+                        <li className="pure-menu-item">
+                            <a className="duration-button pure-menu-link">
+                                1&frac12; hours
+                            </a>
+                        </li>
+                        <li className="pure-menu-item">
+                            <a className="duration-button pure-menu-link">
+                                2 hours
+                            </a>
+                        </li>
+                        <li className="pure-menu-item">
+                            <a className="duration-button pure-menu-link">
+                                2&frac12; hours
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <div id="grid-table" className="pure-menu pure-menu-horizontal pure-menu-scrollable">
+                <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
                     <ul className="pure-menu-list"></ul>
                 </div>
-                <div id="dynamicGridChecklist"></div>
-                <div id="grid-modal" className="modal">
+                <div className="modal">
                     <div className="modal-content">
                         <div className="modal-header">The Grid</div>
-                        <div id="modal-grid-container" className="modal-body"></div>
-                        <div className="modal-footer">&nbsp;</div>
+                        <div className="modal-body"></div>
+                        <div className="modal-footer"></div>
                     </div>
                 </div>
-                <div id="grid-footer" className="content-section-footer">
+                <div className="content-section-footer">
                     <h2 className="content-head">
                         <font color="#2d3e50">Step #4:</font>
                     </h2>

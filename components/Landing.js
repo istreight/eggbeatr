@@ -38,7 +38,7 @@ class Landing extends React.Component {
         });
 
         // Display only first tutorial message.
-        $("#instructor-footer").css({
+        $("#dynamicInstructors .ribbon-section-footer").css({
             "display": "block"
         });
         $("#lessons-footer").css({
@@ -47,7 +47,7 @@ class Landing extends React.Component {
         $("#private-footer").css({
             "display": "none"
         });
-        $("#grid-footer").css({
+        $("#dynamicGrid .content-section-footer").css({
             "display": "none"
         });
 

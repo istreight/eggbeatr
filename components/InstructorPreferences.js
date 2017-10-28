@@ -24,228 +24,210 @@ class InstructorPreferences extends React.Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("instructorPreferences") && sessionStorage.getItem("instructorPreferences") !== "{}") {
-            this.preferences = JSON.parse(sessionStorage.getItem("instructorPreferences"));
+        var sessionPreference = sessionStorage.getItem("instructorPreferences");
+        if (sessionPreference && sessionPreference !== "{}") {
+            this.preferences = JSON.parse(sessionPreference);
         }
+
+        $(".modal-footer a").click(this.editPreferences.bind(this));
 
         // Hide modal on click outside of modal.
         $(window).click(() => {
-            if (event.target === $("#instructorPreferences-modal")[0]) {
-                $("#instructorPreferences-modal").css({
+            if (event.target === $("#dynamicInstructorPreferences div")[0]) {
+                $("#dynamicInstructorPreferences div").css({
                     "display": "none"
                 });
 
                 this.finishEditingPreferences();
             }
         });
-
-        $("#edit-preferences").click(this.editPreferences.bind(this));
     }
 
-    togglePreferencesButtons(enable) {
-        var numInstructors = $("#instructor-table").find("tr").length - 1;
+    setPreferencesButtons(enable) {
+        var preferenceButtons = $(".preferences");
 
-        for (var preferenceID = 0; preferenceID < numInstructors; preferenceID++) {
-            var preferenceButton = $("#preferences".concat(preferenceID));
-
-            if (enable) {
-                // Click events to display 'preferences' modal and style table in modal.
-                if (preferenceButton.length === 0) {
-                    numInstructors++;
-                    continue;
-                }
-
-                preferenceButton.click(this.displayPreferenceModal).click(this.levelPreferences.bind(this));
-                preferenceButton.removeClass("pure-button-disabled");
-            } else {
-                preferenceButton.unbind("click");
-                preferenceButton.addClass("pure-button-disabled");
-            }
+        if (enable) {
+            preferenceButtons.click(this.displayPreferenceModal.bind(this));
+            preferenceButtons.removeClass("pure-button-disabled");
+        } else {
+            preferenceButtons.unbind("click");
+            preferenceButtons.addClass("pure-button-disabled");
         }
-
     }
 
     /**
-     * Displays preference modal
+     * Displays preference modal.
      */
     displayPreferenceModal() {
-        // Show modal.
-        $("#instructorPreferences-modal").css({
+        $("#dynamicInstructorPreferences div").css({
             "display": "block"
         });
 
-        // Place contents of first cell of row in modal header and decription.
-        var instructorName = $("#instructor-table tbody tr:eq(" +  this.id.replace("preferences", "") + ") td:eq(0)").text();
-        $("#instructor-name").empty().append(instructorName);
-        $("#order-description").empty().prepend("The following table outlines " + instructorName + "'s level preference in descending order.");
+        var instructor = $(event.target).closest("tr").find("td").eq(0).html();
+        $(".modal-header").html(instructor);
+        $(".modal-body p").html("The following table outlines " + instructor + "'s level preferences.");
+
+        this.levelPreferences(instructor);
     }
 
     /**
-     * Generates the list of all lesson types in the body of 'preference-table'.
+     * Generates the list of all lesson types in the Preferences table.
      */
-    levelPreferences() {
-        var name = $("#preference-table tbody").parent().parent().parent().children().children()[0].innerHTML;
+    levelPreferences(instructor) {
+        if (!(instructor in this.preferences)) {
+            this.preferences[instructor] = jQuery.extend(true, [], this.defaultPreferences);
+        }
 
-        if (!(name in this.preferences))
-            this.preferences[name] = jQuery.extend(true, [], this.defaultPreferences);
-
-        // Create HTML table from the related preferences.
+        // Create HTML table from the Preferences object.
         var newTable = "";
-        for (var levels = 0; levels < 5; levels++) {
-            newTable += "<tr" + ((levels % 2 == 0) ? " class='table-odd'" : " class='table-even'") + ">";
-            for (var col = 0; col < 5; col++)
-                newTable += "<td id='col" + levels + "" + col + "'" + "class='is-left'>" + (this.preferences[name][col][levels] ? this.preferences[name][col][levels] : "") + "</td>";
+        for (var row = 0; row < 5; row++) {
+            var rowClass = (row % 2 === 0) ? "table-odd" : "table-even";
+            
+            newTable += "<tr class='" + rowClass + "'>";
+
+            for (var col = 0; col < 5; col++) {
+                var className = "is-left ";
+                var lessonType = this.preferences[instructor][col][row] || "";
+
+                if (lessonType.charAt(0) === "r") {
+                    lessonType = lessonType.slice(1);
+                    className += (row % 2 === 0) ? "remove-preference-odd" : "remove-preference-even";
+                }
+
+                newTable += "<td class='" + className + "'>" + lessonType + "</td>";
+            }
+
             newTable += "</tr>";
         }
 
-        $("#preference-table tbody").empty().append(newTable);
+        $(".modal table tbody").html(newTable);
     }
 
     /**
-     * Sets the state of 'preference-table' to allow removal and movemen of rows.
+     * Sets the state of the Preferences table to allow removal of cells.
      */
     editPreferences() {
-        // Place 'add' or 'close' buttons in each table cell, depending on text.
-        $("#preference-table tbody tr td").each(function() {
-            // col30, col34, col40, col44 are designed to be empty.
-            if (this.id !== "col30" && this.id !== "col34" && this.id !== "col40" && this.id !== "col44") {
-                if (this.innerHTML !== "") {
-                    $(this).append("<span class='close'>×</span>");
-                } else {
-                    $(this).append("<span class='add-preference'>&#10003;</span>");
-                }
+        var lessonCells = $(".modal td").filter((cell) => {
+            return cell < 15 || (cell % 5 !== 0 && cell % 5 !== 4);
+        });
+
+        // Place 'add-preference' or 'remove-preference' buttons in each table cell, depending on text.
+        lessonCells.each((index, element) => {
+            if ($(element).is(".remove-preference-odd", ".remove-preference-even")) {
+                $(element).append("<span class='add-preference'>&#10003;</span>");
+            } else {
+                $(element).append("<span class='remove-preference'>×</span>");
+
             }
         });
 
         // Bind removal and re-adding buttons.
-        var that = this;
-        $("#preference-table .close").click(function() {
-            that.removePreferenceCell(this);
+        $(".modal table .remove-preference").click(() => {
+            this.togglePreferenceCell(true);
         });
-        $("#preference-table .add-preference").unbind("click").click(function() {
-            that.addPreferenceCell(this);
+        $(".modal table .add-preference").unbind("click").click(() => {
+            this.togglePreferenceCell(false);
         });
 
-        $("#edit-preferences").empty().append("Finish Editing");
-        $("#edit-preferences").unbind("click").click(this.finishEditingPreferences.bind(this));
+        $(".modal-footer a").unbind("click");
+        $(".modal-footer a").html("Finish Editing");
+        $(".modal-footer a").click(this.finishEditingPreferences.bind(this));
     }
 
     /**
-     * Removes contents from the cell in 'preference-table'
-     * and replaces with an 'add-preference' object.
+     * Toggles contents to the cell in the Preferences table and appends
+     * 'remove-preference' or 'add-preference' span.
      */
-    removePreferenceCell(that) {
-        // Location of data in the 2-dimensional defaultPreferences array.
-        var col = parseInt(that.closest("td").id.replace("col", "").charAt(0));
-        var row = parseInt(that.closest("td").id.replace("col", "").charAt(1));
+    togglePreferenceCell(remove) {
+        var className;
+        var name = $(".modal-header").html();
+        var row = $(event.target).closest("tr");
+        var cell = $(event.target).closest("td");
+        var cellIndex = row.children().index(cell);
+        var rowIndex = $(".modal-body tr").index(row) - 1;
 
-        // Key in preferences to add updated value.
-        var name = $("#" + that.closest("td").id).parent().parent().parent().parent().parent().children().children()[0].innerHTML;
+        if (row.hasClass("table-odd")) {
+            className = "remove-preference-odd";
+        } else if (row.hasClass("table-even")) {
+            className = "remove-preference-even";
+        }
 
-        // Replace preferences cell with updated preferences.
-        this.preferences[name][row][col] = "";
+        $(event.target).remove();
 
-        // Replace HTML of cell to 'add' button.
-        $("#" + that.closest("td").id)[0].innerHTML = "<span class='add-preference'>&#10003;</span>";
+        if (remove) {
+            this.preferences[name][cellIndex][rowIndex] = "r" + cell.html();
 
-        // Rebind each 'add' to their new cell.
-        that = this;
-        $("#preference-table .add-preference").unbind("click").click(function() {
-            that.addPreferenceCell(this);
-        });
+            cell.addClass(className);
+            cell.append("<span class='add-preference'>&#10003;</span>");
+
+            // Rebind each 'add-preference' to their new cell.
+            $(".modal .add-preference").unbind("click").click(() => {
+                this.togglePreferenceCell(false);
+            });
+        } else {
+            this.preferences[name][cellIndex][rowIndex] = cell.html();
+
+            cell.removeClass(className);
+            cell.append("<span class='remove-preference'>×</span>");
+
+            // Rebind each 'remove-preference' to react to their new cell.
+            $(".modal .remove-preference").unbind("click").click(() => {
+                this.togglePreferenceCell(true);
+            });
+        }
     }
 
     /**
-     * Adds contents to the cell in 'preference-table' and appends a
-     * 'close' object.
-     *
-     * The Instructors React class object is passed as a parameter.
-     */
-    addPreferenceCell(that) {
-        // Location of data in the 2-dimensional defaultPreferences array.
-        var col = parseInt(that.closest("td").id.replace("col", "").charAt(0));
-        var row = parseInt(that.closest("td").id.replace("col", "").charAt(1));
-
-        // Key in preferences to add updated value.
-        var name = $("#" + that.closest("td").id).parent().parent().parent().parent().parent().children().children()[0].innerHTML;
-
-        $("#" + that.closest("td").id)[0].innerHTML = this.defaultPreferences[row][col].concat("<span class='close'>×</span>");
-
-        // Replace preferences cell with updated preferences.
-        this.preferences[name][row][col] = this.defaultPreferences[row][col];
-
-        // Rebind each 'close' to react to their new cell.
-        that = this;
-        $("#preference-table .close").unbind("click").click(function() {
-            that.removePreferenceCell(this);
-        });
-    }
-
-    /**
-     * Removes the 'x' spans from each cell in 'preference-table'.
+     * Removes the 'remove-preference' and 'add-preference' spans from
+     * the Preferences table .
      */
     finishEditingPreferences() {
         // Key in preferences to add updated value.
-        var name = $("#preference-table").parent().parent().children().children()[0].innerHTML;
+        var name = $(".modal-header").html();
 
-        // Temporary array to update preferences and protect preferences.
-        var prefArray = jQuery.extend(true, {}, this.preferences[name]);
+        // Remove 'add-preference' or 'remove-preference' buttons.
+        $(".modal span").remove();
 
-        // Remove 'add' or 'close' buttons.
-        $("#preference-table tr td span").remove();
-
-        $("#preference-table tr").each(function () {
-            $("td", this).each(function () {
-                if (this.id !== "col30" && this.id !== "col34" && this.id !== "col40" && this.id !== "col44")
-                    prefArray[parseInt(this.id.replace("col", "").charAt(1))][parseInt(this.id.replace("col", "").charAt(0))] = $(this).text();
-            });
-        });
-
-        // Replace preferences array with updated preferences.
-        this.preferences[name] = jQuery.extend(true, [], prefArray);
-
-        $("#edit-preferences").empty().append("Edit").unbind("click").click(this.editPreferences.bind(this));
+        $(".modal-footer a").unbind("click");
+        $(".modal-footer a").html("Edit");
+        $(".modal-footer a").click(this.editPreferences.bind(this));
 
         this.props.callback(this.preferences, this.props.lipReader);
     }
 
     render() {
         return (
-                <div id="instructorPreferences-container">
-                    <div id="instructorPreferences-modal" className="modal">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <div id="instructor-name"></div>
-                            </div>
-                            <div className="modal-body">
-                                <p id="order-description"></p>
-                                <table id="preference-table" className="pure-table">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                Parent & Tot
-                                            </th>
-                                            <th>
-                                                Pre-School
-                                            </th>
-                                            <th>
-                                                Swim Kids
-                                            </th>
-                                            <th>
-                                                Swim Kids
-                                            </th>
-                                            <th>
-                                                Teens & Adults
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="modal-footer">
-                                <a id="edit-preferences" className="pure-button">Edit</a>
-                            </div>
+                <div className="modal">
+                    <div className="modal-content">
+                        <div className="modal-header"></div>
+                        <div className="modal-body">
+                            <p></p>
+                            <table className="pure-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Parent & Tot
+                                        </th>
+                                        <th>
+                                            Pre-School
+                                        </th>
+                                        <th>
+                                            Swim Kids
+                                        </th>
+                                        <th>
+                                            Swim Kids
+                                        </th>
+                                        <th>
+                                            Teens & Adults
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="modal-footer">
+                            <a className="pure-button">Edit</a>
                         </div>
                     </div>
                 </div>
