@@ -12,20 +12,24 @@ import React from 'react';
 class Footer extends React.Component {
     render() {
         return (
-            <div id="footer-container">
+            <div>
                 Made with &hearts;<br />
                 by Isaac Streight
                 <p>
                     Created during Winter 2016<br />
                     on BC&#39;s beautiful coast
                 </p>
-                <div>
-                    Powered by<br />
-                    <a href="https://facebook.github.io/react/">React</a>,
-                    <a href="https://webpack.github.io"> Webpack</a>,
-                    <a href="https://babeljs.io"> Babel</a>, &
-                    <a href="http://purecss.io"> PureCSS</a>
-                </div>
+                <ul>
+                    <li>
+                        Powered by
+                    </li>
+                    <li>
+                        <a href="https://facebook.github.io/react/">React</a>,
+                        <a href="https://webpack.github.io"> Webpack</a>,
+                        <a href="https://babeljs.io"> Babel</a>, &
+                        <a href="http://purecss.io"> PureCSS</a>
+                    </li>
+                </ul>
             </div>
         );
     }

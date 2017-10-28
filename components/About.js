@@ -12,42 +12,42 @@ import React from 'react';
 class About extends React.Component {
     render() {
         return (
-            <div id="about-container">
+            <div>
                 <h2 className="content-head is-center">
                     About
                 </h2>
-                <div id="about-definition-container" className="content-section-description">
+                <div className="content-section-description">
                     eggbeatr
-                    <div id="about-explanation-container" className="content-section-explanation">
+                    <div className="content-section-explanation">
                         an application designed to build a calendar of swim lessons using customizable sets of instructors and lessons.
                     </div>
                 </div>
-                <div id="features">
-                    <div>
+                <ul>
+                    <li>
                         <img src="./img/settings-icon.png" />
                         <p className="feature-description">
                             Our algorithm pairs your instructors with your lessons just like you would.
                         </p>
-                    </div>
-                    <div>
+                    </li>
+                    <li>
                         <img src="./img/person-icon.png" />
                         <p className="feature-description">
                             Schedule private lessons at a specific time and we&#039;ll make sure nothing conflicts.
                         </p>
-                    </div>
-                    <div>
+                    </li>
+                    <li>
                         <img src="./img/timer-icon.png" />
                         <p className="feature-description">
                             eggbeatr makes the most of your instructors by using their time between lessons.
                         </p>
-                    </div>
-                    <div>
+                    </li>
+                    <li>
                         <img src="./img/stats-icon.png" />
                         <p className="feature-description">
                             We&#039;ll do the monotonous work so you can spend more time on what you enjoy.
                         </p>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
         );
     }

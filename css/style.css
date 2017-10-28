@@ -61,7 +61,14 @@
      margin: 0 0 0 1.25%;
 
      line-height: 12px;
+ }
 
+ .ribbon-section-footer h2 {
+     color: white;
+ }
+
+ .ribbon-section-footer p {
+     color: #ddd;
  }
 
  .content-section-description {
@@ -172,6 +179,8 @@
     color: white;
     font-size: 1.5em;
     font-weight: bold;
+
+    height: 64px;
 }
 
 /* Modal Body */
@@ -187,10 +196,11 @@
     color: white;
     font-size: 0.75em;
     text-align: right;
+
+    height: 64px;
 }
 
-/* The Close Button */
-.close {
+.remove-preference {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -198,7 +208,7 @@
     margin: -1.25% -0.25% 0 0;
 }
 
-.close:hover {
+.remove-preference:hover {
     color: red;
 }
 
@@ -230,7 +240,7 @@
 
 /* HEADER */
 
-#button-dynamicHeader {
+#dynamicHeader a {
     text-transform: none;
 }
 
@@ -265,33 +275,12 @@
     padding: 45px;
 }
 
-#about-container {
+#dynamicAbout > div {
     width: 100%;
     height: 90%;
 }
 
-#about-overview {
-    margin: 2.5% 0 0 30%;
-
-    width: 40%;
-
-    line-height: 28px;
-}
-
-#about-definition-container {
-    font-size: 22px;
-
-    line-height: 36px;
-}
-
-#about-explanation-container {
-    margin: 0 0 0 40px;
-
-    direction: ltr;
-}
-
-/* PureCSS Grids */
-#features {
+#dynamicAbout ul {
     margin: 7.5% 0 0 0;
 
     padding: 32px;
@@ -300,69 +289,71 @@
 
     color: #2d3e50;
     text-align: center;
+
+    list-style-type: none;
 }
 
-#features div {
+#dynamicAbout ul li {
     width: 25%;
 
     display: inline-table;
     vertical-align: top;
 }
 
-#features img {
+#dynamicAbout ul img {
     width: 40%;
+}
+
+#dynamicAbout .content-section-description {
+    font-size: 22px;
+
+    line-height: 36px;
+}
+
+#dynamicAbout .content-section-explanation {
+    margin: 0 0 0 40px;
+
+    direction: ltr;
 }
 
 
 
 /* INSTRUCTOR */
 
+.add {
+    font-size: 12px;
+
+    background-color: rgb(28, 184, 65);
+}
 .remove {
     font-size: 12px;
 
     background-color: rgb(202, 60, 60);
 }
 
-.add {
-    font-size: 12px;
+.remove-preference-even {
+    color: lightgrey;
+}
 
-    background-color: rgb(28, 184, 65);
+.remove-preference-odd {
+    color: grey;
 }
 
 #dynamicInstructors {
     padding: 45px;
 }
 
-#instructor-container {
+#dynamicInstructors > div {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-#instructor-table {
+#dynamicInstructors table {
     margin: -9.75% 0 0 27.5%;
 }
 
-
-#preference-table {
-    width: 80%;
-
-    margin: 40px auto 24px auto;
-}
-
-/* Normalize preference table cells */
-#preference-table th {
-    text-align: left;
-    height: 42px;
-}
-
-#preference-table td {
-    font-weight: normal;
-
-    height: 42px;
-}
-
-#instructor-footer {
+#dynamicInstructors .ribbon-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 64px;
@@ -370,8 +361,30 @@
     display: none;
 }
 
-#instructor-next {
+#dynamicInstructors .pure-button-primary {
     margin: -2.25% 0 0 85.2%;
+}
+
+
+
+/* INSTRUCTOR PREFERENCES */
+
+#dynamicInstructorPreferences table {
+    width: 80%;
+
+    margin: 40px auto 24px auto;
+}
+
+#dynamicInstructorPreferences th {
+    text-align: left;
+
+    width: 150px;
+}
+
+#dynamicInstructorPreferences td {
+    font-weight: normal;
+
+    height: 44px;
 }
 
 
@@ -414,7 +427,6 @@
     table-layout: fixed;
 }
 
-/* Normalize preference table cells */
 #lessons-table th {
     text-align: center;
 }
@@ -450,7 +462,6 @@
 
 /* PRIVATE */
 
-/* Alter hovering based on dropdown */
 .menu-odd {
     color: #2d3e50;
 
@@ -570,68 +581,47 @@
     position: relative;
 }
 
-#duration-container {
-    margin: -5% 0 0 32.25%;
-}
-
-#nogrids-notification {
+#dynamicGrid p {
     color: #1f8dd6;
 }
 
-#grid-table {
-    margin: 0 0 0 3.5%;
-}
-
-#grid-table ul, #grid-table li {
-    overflow: scroll;
-}
-
-#grid-table table {
-    table-layout: fixed;
-}
-
-#grid-table th, #grid-table td {
-    width: 128px;
-    height: 40px;
-}
-
-#grid-checklist {
-    position: absolute;
-
-    bottom: 8%;
-}
-
-#grid-checklist h3 {
-    margin: 0 0 0 9%;
-}
-
-#grid-checklist table {
-    margin: 5% 0 0 17%;
-
-    table-layout: fixed;
-}
-
-#grid-checklist th, #grid-checklist td {
-    width: 160px;
-    height: 40px;
-}
-
-#modal-grid-container {
+#dynamicGrid .modal-body {
     padding: 16px;
 
     font-size: 18px;
 }
 
-#modal-grid-container th, #modal-grid-container td {
+#dynamicGrid .modal-body table {
+    table-layout: fixed;
+}
+
+#dynamicGrid .modal-body th, #dynamicGrid .modal-body td {
     width: 128px;
     height: 64px;
 }
 
-#modal-grid-container table {
+#dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable) {
+    margin: -5% 0 0 32.25%;
+}
+
+#dynamicGrid .pure-menu-scrollable {
+    margin: 0 0 0 3.5%;
+}
+
+#dynamicGrid .pure-menu-scrollable ul, #dynamicGrid .pure-menu-scrollable li {
+    overflow: scroll;
+}
+
+#dynamicGrid .pure-menu-scrollable table {
     table-layout: fixed;
 }
 
-#grid-footer {
+#dynamicGrid .pure-menu-scrollable th, #dynamicGrid .pure-menu-scrollable td {
+    width: 128px;
+    height: 40px;
+}
+
+#dynamicGrid .content-section-footer {
     position: absolute;
 
     margin: 0 0 5% 35%;
@@ -643,26 +633,55 @@
 
 
 
+/* GRID CHECKLIST */
+
+
+#dynamicGridChecklist div {
+    position: absolute;
+    margin: 0 0 0 3%;
+
+    bottom: 4.5%;
+}
+
+#dynamicGridChecklist h3 {
+    margin: 0 0 0 9%;
+}
+
+#dynamicGridChecklist table {
+    margin: 5% 0 0 17%;
+
+    table-layout: fixed;
+}
+
+#dynamicGridChecklist th, #dynamicGridChecklist td {
+    width: 160px;
+    height: 40px;
+}
+
+
+
 /* FOOTER */
 
-#footer-container {
+#dynamicFooter div {
     height: 40px;
 
     font-size: 14px;
     line-height: 23px;
 }
 
-#footer-container a {
+#dynamicFooter a {
     text-decoration: none;
     color: white;
 }
 
-#footer-container div {
-    margin: -48px 0;
-    text-align: right;
-}
-
-#footer-container p {
+#dynamicFooter p {
     margin: -48px 0;
     text-align: left;
+}
+
+#dynamicFooter ul {
+    margin: -48px 0;
+    text-align: right;
+
+    list-style-type: none;
 }

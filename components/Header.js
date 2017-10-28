@@ -17,18 +17,22 @@ class Header extends React.Component {
     }
 
     /**
-     * Scrolls page to div tag based on div tag of clicked item.
-     * The div tag of the clickable item should follow the id name pattern
-     * "button-x", and will scroll the page to a div tag with the id of "x".
+     * Scrolls page to div tag based on contents of clicked item.
      */
-    scrollToDiv(event) {
+    scrollToDiv() {
+        var locationSelector = "#dynamic" + $(this).html();
+
+        if (locationSelector.includes("eggbeatr")) {
+            locationSelector = "#dynamicHeader";
+        }
+
         // Disable scrolling.
         $("body").on("mousewheel DOMMouseScroll", false);
 
         // Auto-scroll to desired section.
         $("html, body").animate({
-            scrollTop: $("#".concat(this.getAttribute("id").substring(7))).offset().top - 60
-        }, 2000, function() {
+            scrollTop: $(locationSelector).offset().top - 60
+        }, 2000, () => {
             $("body").off("mousewheel DOMMouseScroll");
         });
     }
@@ -36,14 +40,35 @@ class Header extends React.Component {
     render() {
         return (
             <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-                <a id="button-dynamicHeader" className="pure-menu-heading">eggbeatr &ndash; BETA
+                <a className="pure-menu-heading">
+                    eggbeatr &ndash; BETA
                 </a>
                 <ul className="pure-menu-list">
-                    <li className="pure-menu-item"><a id="button-dynamicAbout" className="pure-menu-link">About</a></li>
-                    <li className="pure-menu-item"><a id="button-dynamicInstructors" className="pure-menu-link">Instructors</a></li>
-                    <li className="pure-menu-item"><a id="button-dynamicLessons" className="pure-menu-link">Lessons</a></li>
-                    <li className="pure-menu-item"><a id="button-dynamicPrivate" className="pure-menu-link">Private</a></li>
-                    <li className="pure-menu-item"><a id="button-dynamicGrid" className="pure-menu-link">Grid</a></li>
+                    <li className="pure-menu-item">
+                        <a className="pure-menu-link">
+                            About
+                        </a>
+                    </li>
+                    <li className="pure-menu-item">
+                        <a className="pure-menu-link">
+                            Instructors
+                        </a>
+                    </li>
+                    <li className="pure-menu-item">
+                        <a className="pure-menu-link">
+                            Lessons
+                        </a>
+                    </li>
+                    <li className="pure-menu-item">
+                        <a className="pure-menu-link">
+                            Private
+                        </a>
+                    </li>
+                    <li className="pure-menu-item">
+                        <a className="pure-menu-link">
+                            Grid
+                        </a>
+                    </li>
                 </ul>
             </div>
         );

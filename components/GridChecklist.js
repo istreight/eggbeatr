@@ -11,93 +11,112 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class GridChecklist extends React.Component {
-    componentDidMount() {
-        // Store the "Create Grid" function locally to re-apply when components are complete.
-        this.createGridHandler = jQuery._data($("#create-grid")[0], "events").click[0].handler;
+    constructor(props) {
+        super(props);
 
-        // Unbind "Create Grid" button.
-        $("#create-grid").unbind("click");
+        this.checklistQuantities = {
+            "instructors": 0,
+            "lessons": 0,
+            "privates": 0
+        };
     }
 
-    checkComplete(selector, value) {
-        var selectorChild = selector.children()[1];
+    componentDidMount() {
+        // Store the "Create Grid" function locally to re-apply when components are complete.
+        this.createGridHandler = jQuery._data($("#dynamicGrid .content-section-description a")[0], "events").click[0].handler;
 
-        if ($(selectorChild).length > 0) {
-            var createGridButton = $("#create-grid");
-            var numLessonsCell = $("#lessons-checklist").children()[1];
-            var numPrivateCell = $("#private-checklist").children()[1];
-            var numInstructorsCell = $("#instructors-checklist").children()[1];
+        // Unbind "Create Grid" button.
+        $("#dynamicGrid .content-section-description a").unbind("click");
+    }
 
-            // Update selector content.
-            $(selectorChild).html(value);
+    setQuantity(key, value) {
+        this.checklistQuantities[key] = value;
 
-            if (value !== 0) {
-                $(selectorChild).removeClass("error-table");
-            } else if (selector.attr("id") !== "private-checklist") {
-                $(selectorChild).addClass("error-table");
-            }
+        this.checkComplete(key);
+    }
 
-            // Place warning if quantity of lessons is 0 and quantity of privates is not 0.
-            if ($(numLessonsCell).html() === "0") {
-                if ($(numPrivateCell).html() === "0") {
-                    $(numLessonsCell).removeClass("warning-table").addClass("error-table");
-                } else {
-                    $(numLessonsCell).removeClass("error-table").addClass("warning-table");
+    checkComplete(key) {
+        var isLessonsValid;
+        var isInstructorsValid;
+        var gridChecklist = $("#dynamicGridChecklist td");
+
+        gridChecklist.each((index, element) => {
+            var key = $(element).html().toLowerCase();
+
+            if (key in this.checklistQuantities) {
+                var isValid;
+                var valueCell = $(element).next();
+                var value = this.checklistQuantities[key];
+
+                if (key === "instructors") {
+                    isInstructorsValid = (value !== 0);
+                } else if (key === "lessons") {
+                    isLessonsValid = (value !== 0) || isLessonsValid;
+                } else if (key === "privates") {
+                    isLessonsValid = (value !== 0) || isLessonsValid;
                 }
-            } else {
-                $(numLessonsCell).removeClass("warning-table");
-            }
 
-            // Verify condition to enable/disable "Create Grid" button.
-            if ($(numInstructorsCell).html() !== "0" && ($(numLessonsCell).html() !== "0" || $(numPrivateCell).html() !== "0")) {
-                createGridButton.removeClass("pure-button-disabled");
-                createGridButton.unbind("click").click(this.createGridHandler);
-            } else {
-                createGridButton.addClass("pure-button-disabled");
-                createGridButton.unbind("click");
+                isValid = isLessonsValid && isInstructorsValid;
+
+                this.updateGridChecklist(key, value, valueCell, isValid);
             }
+        });
+    }
+
+    updateGridChecklist(key, value, valueCell, isValid) {
+        var createGridButton = $("#dynamicGrid .content-section-description a");
+
+        createGridButton.unbind("click");
+
+        valueCell.html(value);
+
+        if (value !== 0) {
+            valueCell.removeClass("error-table warning-table");
+        } else if (key !== "privates") {
+            valueCell.addClass("error-table");
+        }
+
+        // Place warning if quantity of lessons is 0 and quantity of privates is not 0.
+        if (key === "lessons" && value === 0) {
+            if (this.checklistQuantities.privates !== 0) {
+                valueCell.removeClass("error-table").addClass("warning-table");
+            } else {
+                valueCell.removeClass("warning-table").addClass("error-table");
+            }
+        }
+
+        // Verify condition to enable/disable "Create Grid" button.
+        if (isValid) {
+            createGridButton.removeClass("pure-button-disabled");
+            createGridButton.click(this.createGridHandler);
+        } else {
+            createGridButton.addClass("pure-button-disabled");
         }
     }
 
     render() {
         return (
-            <div id="grid-checklist">
+            <div>
                 <h3 className="content-head">Grid Checklist</h3>
                 <table className="pure-table">
                     <thead>
                         <tr>
-                            <th>
-                                Requirements
-                            </th>
-                            <th>
-                                Quantity
-                            </th>
+                            <th className="is-center">Requirements</th>
+                            <th className="is-center">Quantity</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr id="instructors-checklist" className="table-odd">
-                            <td>
-                                Instructors
-                            </td>
-                            <td className="error-table">
-                                0
-                            </td>
+                        <tr className="table-odd">
+                            <td>Instructors</td>
+                            <td>0</td>
                         </tr>
-                        <tr id="lessons-checklist" className="table-even">
-                            <td>
-                                Lessons
-                            </td>
-                            <td className="error-table">
-                                0
-                            </td>
+                        <tr className="table-even">
+                            <td>Lessons</td>
+                            <td>0</td>
                         </tr>
-                        <tr id="private-checklist" className="table-odd">
-                            <td>
-                                Privates
-                            </td>
-                            <td>
-                                0
-                            </td>
+                        <tr className="table-odd">
+                            <td>Privates</td>
+                            <td>0</td>
                         </tr>
                     </tbody>
                 </table>
