@@ -257,7 +257,7 @@
     text-transform: lowercase;
 }
 
-#get-started {
+#dynamicLanding a {
     margin: 5% 0 0 0;
 }
 
@@ -396,7 +396,7 @@
     background-color: goldenrod !important;
 }
 
-.error-table {
+.error-cell {
     color: white;
     background-color: indianred !important;
 }
@@ -405,21 +405,13 @@
     padding: 45px;
 }
 
-#lessons-container {
+#dynamicLessons > div {
     position: relative;
     width: 100%;
     height: 90%;
 }
 
-#save-notification {
-    margin: 0.5% 40px 0 0;
-
-    color: #1f8dd6;
-
-    display: none;
-}
-
-#lessons-table {
+#dynamicLessons table {
     margin: 6.25% 0 0 5%;
 
     width: 65%;
@@ -427,17 +419,17 @@
     table-layout: fixed;
 }
 
-#lessons-table th {
+#dynamicLessons th {
     text-align: center;
 }
 
-#lessons-table td {
+#dynamicLessons td {
     font-weight: normal;
     text-align: left;
 }
 
 /* Places input field in-line with text of cell */
-#lessons-table input[type="text"] {
+#dynamicLessons table input[type="text"] {
     width: 28px;
     height: 32px;
 
@@ -446,7 +438,15 @@
     text-align: right;
 }
 
-#lessons-footer {
+#dynamicLessons .content-section-description div {
+    margin: 0.5% 40px 0 0;
+
+    color: #1f8dd6;
+
+    display: none;
+}
+
+#dynamicLessons .content-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 55px;
@@ -454,8 +454,16 @@
     display: none;
 }
 
-#lessons-next {
+#dynamicLessons .content-section-footer a {
     margin: -2.25% 0 0 85.2%;
+}
+
+#dynamicLessons .content-section-footer h2 {
+    color: #2d3e50;
+}
+
+#dynamicLessons .content-section-footer p {
+    color: #333333;
 }
 
 
@@ -482,27 +490,27 @@
     padding: 45px;
 }
 
-#private-container {
+#dynamicPrivate > div {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-#private-table {
+#dynamicPrivate table {
     margin: -9.75% 0 0 27.5%;
 
     table-layout: fixed;
 }
 
-#private-table th {
+#dynamicPrivate table th {
     width: 125px;
 }
 
-#private-table .pure-menu-link {
+#dynamicPrivate table .pure-menu-link {
     width: 100px;
 }
 
-#private-footer {
+#dynamicPrivate .ribbon-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 64px;
@@ -510,7 +518,7 @@
     display: none;
 }
 
-#private-next {
+#dynamicPrivate .ribbon-section-footer a {
     margin: -2.25% 0 0 85.2%;
 }
 

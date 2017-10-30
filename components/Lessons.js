@@ -21,95 +21,107 @@ class Lessons extends React.Component {
     componentDidMount() {
         if (sessionStorage.getItem("lessons") && sessionStorage.getItem("lessons") !== "{}") {
             this.lessonSet = JSON.parse(sessionStorage.getItem("lessons"));
-
-            for (var lessonQuantity in this.lessonSet) {
-                if (this.lessonSet[lessonQuantity] > 0) {
-                    this.numLessons += this.lessonSet[lessonQuantity];
-                }
-            }
         } else {
             this.lessonSet = {
                 "Level 5": 1,
                 "Level 6": 1
             };
-
-            this.numLessons = 2;
         }
 
-        this.props.callback(this.lessonSet, this.props.lipReader);
-
         this.setLessonValues();
+        this.numLessons = this.getNumLessons();
 
+        this.props.callback(this.lessonSet, this.props.lipReader);
         this.props.gridChecklist.setQuantity("lessons", this.numLessons);
 
-        // Make component size of window.
-        $("#dynamicLessons").css({
-            "height": ($(window).height() - 55) + "px"
-        });
-
         // Save on button click or on input deselect ('blur').
-        $("#save-lessons").click(this.storeLessonValues.bind(this));
+        $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
         $("input").blur(this.storeLessonValues.bind(this));
 
         // Link tutorital button to next section.
-        $("#lessons-next").click(function() {
-            $("body").on("mousewheel DOMMouseScroll", function() {
-                return false;
-            });
-            $("#private-footer").css({
+        $("#dynamicLessons .content-section-footer a").click(() => {
+            // Disable scrolling.
+            $("body").on("mousewheel DOMMouseScroll", false);
+
+            $("#dynamicPrivate .ribbon-section-footer").css({
                 "display": "block"
             });
+
             $("html, body").animate({
-                scrollTop: $("#dynamicPrivate").offset().top - 57
-            }, 1600, function() {
+                scrollTop: $("#dynamicPrivate").offset().top - 60
+            }, 1600, () => {
                 $("body").off("mousewheel DOMMouseScroll");
-                $("#lessons-footer").css({
+
+                $("#dynamicLessons .content-section-footer").css({
                     "display": "none"
                 });
             });
         });
     }
 
-    /*
+    /**
+     * Get number of stored lessons.
+     */
+    getNumLessons() {
+        var numLessons = 0;
+
+        for (var lesson in this.lessonSet) {
+            if (lesson === "half" || lesson === "threequarter") {
+                continue;
+            }
+
+            var lessonQuantity = this.lessonSet[lesson];
+            
+            if (lessonQuantity > 0) {
+                numLessons += lessonQuantity;
+            }
+        }
+
+        return numLessons;
+    }
+
+    /**
      * Finds the value in the input field and stores it in lessonSet.
      */
     storeLessonValues() {
-        this.numLessons = 0;
+        // Disable 'Save Lessons' button.
+        $("#dynamicLessons .content-section-description a").unbind("click");
 
-        // Disable "Save Lessons" button.
-        $("#save-lessons").unbind("click");
-
-        // Display notification.
-        $("#save-notification").fadeIn(800).delay(800).fadeOut(800);
+        // Display 'Saved!' notification.
+        $("#dynamicLessons .content-section-description div").fadeIn(800).delay(800).fadeOut(800);
 
         // Store text field values.
-        var that = this;
-        $("#lessons-table tr td").each(function() {
-            if ($($(this).children()[1]).is("input")) {
-                var lessonType = $($(this).children()[0]).text();
-                var lessonValue = $($(this).children()[1]).val();
-                var lessonQuantity = parseInt(lessonValue);
+        $("#dynamicLessons td").each((index, element) => {
+            var lessonInput = $(element).find("input");
+            var lessonType = $(element).find("span").text();
 
-                if (lessonValue === "") {
+            if (lessonInput.length > 0 && lessonType.length > 0) {
+                var lessonValue = lessonInput.val();
+                var reSingleDigit = new RegExp(/^[0-9]$/);
+                var lessonQuantity = parseInt(lessonValue, 10);
+
+                if (isNaN(lessonQuantity)) {
                     lessonQuantity = 0;
                 }
 
-                if (/^[0-9]$/.test(lessonQuantity)) {
-                    if ($(this).hasClass("error-table")) {
-                        $(this).hide().removeClass("error-table").fadeIn(800);
+                if (reSingleDigit.test(lessonQuantity)) {
+                    if ($(element).hasClass("error-cell")) {
+                        $(element).hide().removeClass("error-cell").fadeIn(800);
                     }
 
-                    that.lessonSet[lessonType] = lessonQuantity;
-                    that.numLessons += lessonQuantity;
+                    this.lessonSet[lessonType] = lessonQuantity;
                 } else {
-                    $(this).hide().addClass("error-table").fadeIn(800, () => {
-                        // Re-enable "Save Lessons" button.
-                        $("#save-lessons").click(that.storeLessonValues.bind(that));
-                    });
-                    that.lessonSet[lessonType] = 0;
+                    $(element).hide().addClass("error-cell").fadeIn(800);
+
+                    this.lessonSet[lessonType] = 0;
                 }
             }
         });
+
+        // Re-enable "Save Lessons" button.
+        $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
+
+        this.numLessons = this.getNumLessons();
 
         if (this.numLessons === 0) {
             this.lessonSet = {
@@ -119,20 +131,23 @@ class Lessons extends React.Component {
             delete this.lessonSet.empty;
         }
 
-        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
-
         this.props.callback(this.lessonSet, this.props.lipReader);
+        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
     }
 
+    /**
+     * Place the values in the Lessons object as values in the related inputs.
+     */
     setLessonValues() {
-        var that = this;
-        $("#lessons-table tr td").each(function() {
-            if ($($(this).children()[1]).is("input")) {
-                var lessonType = $($(this).children()[0]).text();
-                var lessonInput = $($(this).children()[1]);
+        $("#dynamicLessons td").each((index, element) => {
+            var lessonInput = $(element).find("input");
 
-                if (that.lessonSet[lessonType] !== 0) {
-                    lessonInput.val(that.lessonSet[lessonType]);
+            if (lessonInput.length > 0) {
+                var lessonType = $(element).find("span").text();
+                var lessonQuantity = this.lessonSet[lessonType];
+
+                if (lessonQuantity > 0) {
+                    lessonInput.val(lessonQuantity);
                 }
             }
         });
@@ -140,7 +155,7 @@ class Lessons extends React.Component {
 
     render() {
         return (
-                <div id="lessons-container">
+                <div>
                     <h2 className="content-head is-right">
                         Lessons
                     </h2>
@@ -151,14 +166,14 @@ class Lessons extends React.Component {
                             <li>Use any numeric quantity</li>
                             <li>Cache the quantities only when you want</li>
                         </ul>
-                        <a id="save-lessons" className="pure-button right-button">
+                        <a className="pure-button right-button">
                             Save Lessons
                         </a>
-                        <div id="save-notification">
+                        <div>
                             Saved!
                         </div>
                     </div>
-                    <table id="lessons-table" className="pure-table">
+                    <table className="pure-table">
                         <thead>
                             <tr>
                                 <th>
@@ -279,14 +294,14 @@ class Lessons extends React.Component {
                             </tr>
                         </tbody>
                     </table>
-                    <div id="lessons-footer" className="content-section-footer">
+                    <div className="content-section-footer">
                         <h2 className="content-head">
-                            <font color="#2d3e50">Step #2:</font>
+                            Step #2:
                         </h2>
-                        <font color="#333">
+                        <p>
                             Input the quantity of each lesson type, using numerical digits.
-                        </font>
-                        <a id="lessons-next" className="content-next-button pure-button">
+                        </p>
+                        <a className="content-next-button pure-button">
                             &rarr;
                         </a>
                     </div>

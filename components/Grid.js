@@ -81,7 +81,6 @@ class Grid extends React.Component {
         var duration;
         var durationIndex;
         var durationContainer = $("#dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable)");
-        console.log(durationContainer);
 
         // Find previously selected duration and remove "selected" class.
         $(target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
@@ -156,7 +155,7 @@ class Grid extends React.Component {
         ];
 
         for (var key in this.props.lipData.lessons) {
-            if (key === "half" || key === "threequater" || key === "empty") {
+            if (key === "half" || key === "threequarter" || key === "empty") {
                 continue;
             }
 
@@ -347,7 +346,7 @@ class Grid extends React.Component {
                 this.props.lipData.duration,
                 this.props.lipData.instructors.length,
                 this.props.lipData.lessons.half,
-                this.props.lipData.lessons.threequater
+                this.props.lipData.lessons.threequarter
             );
 
             return;

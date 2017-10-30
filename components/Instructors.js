@@ -56,12 +56,13 @@ class Instructors extends React.Component {
 
         // Link tutorital button to next section.
         $("#dynamicInstructors .pure-button-primary").click(() => {
-            $("body").on("mousewheel DOMMouseScroll", () => {
-                return false;
-            });
-            $("#lessons-footer").css({
+            // Disable scrolling.
+            $("body").on("mousewheel DOMMouseScroll", false);
+
+            $("#dynamicLessons .content-section-footer").css({
                 "display": "block"
             });
+
             $("html, body").animate({
                 scrollTop: $("#dynamicLessons").offset().top - 60
             }, 1600, () => {
@@ -80,10 +81,10 @@ class Instructors extends React.Component {
      *  their text values.
      */
     inputifyRows() {
-        $("#dynamicInstructors td").each((index, cell) => {
-            if ($(cell).children().length === 0) {
-                var placeholder = $(cell).text() || "...";
-                $(cell).html("<input type='text' placeholder='" + placeholder + "'>");
+        $("#dynamicInstructors td").each((index, element) => {
+            if ($(element).children().length === 0) {
+                var placeholder = $(element).text() || "...";
+                $(element).html("<input type='text' placeholder='" + placeholder + "'>");
             }
         });
     }
@@ -106,13 +107,11 @@ class Instructors extends React.Component {
      * Resets the table to appropriate colour scheme.
      */
      colourTable() {
-         // Recolour rows.
          $("#dynamicInstructors tbody tr").each((index, element) => {
              $(element).removeClass("table-odd table-even");
              $(element).addClass((index % 2 === 0) ? "table-odd" : "table-even");
          });
      }
-
 
     /**
      * Places the instructor table in a state where the contents of the table
@@ -125,8 +124,8 @@ class Instructors extends React.Component {
         var editInstructorsButton = $("#dynamicInstructors .ribbon-section-description a");
 
         // Re-name and re-bind 'Edit Instructors' button.
-        editInstructorsButton.html("Finish Editing");
         editInstructorsButton.unbind("click");
+        editInstructorsButton.html("Finish Editing");
         editInstructorsButton.click(this.finishEditingInstructors.bind(this));
 
         // Add 'Modify' column.
@@ -141,9 +140,8 @@ class Instructors extends React.Component {
         this.props.instructorPreferences.setPreferencesButtons(false);
     }
 
-    /*
+    /**
      * Removes the row of the table of a clicked 'remove' button.
-     * Moves the 'private' table down the page.
      */
     removeRow() {
         var removedRow = $(event.target).closest("tr");
@@ -167,7 +165,8 @@ class Instructors extends React.Component {
     /**
      * Verify the contents of each input field and commit it to the table.
      */
-    addTableContents(removeInputRow, tableRows) {
+    addTableContents(removeInputRow) {
+        var tableRows = $("#dynamicInstructors tr");
         var tableCells = $("#dynamicInstructors td");
 
         // Add row to table.
@@ -189,12 +188,9 @@ class Instructors extends React.Component {
 
     /**
      * Add a row to the table when the 'add' button is clicked.
-     * Moves the 'instructor' table up the page.
      */
     addRow() {
-        var tableRows = $("#dynamicInstructors tr");
-
-        var isValid = this.addTableContents(false, tableRows);
+        var isValid = this.addTableContents(false);
 
         if (!isValid) {
             return;
@@ -207,14 +203,16 @@ class Instructors extends React.Component {
         var instructorName;
         var addedData = $(event.target).closest("tr").find("input");
         addedData.each((index, element) => {
+            var inputPlaceholder = $(element).attr("placeholder");
+
             if (index === 0) {
-                if ($(element).attr("placeholder") !== "...") {
-                    instructorName = $(element).attr("placeholder");
+                if (inputPlaceholder !== "...") {
+                    instructorName = inputPlaceholder;
                     this.instructors[instructorName] = [];
                 }
             } else {
                 if (instructorName) {
-                    var data = $(element).attr("placeholder");
+                    var data = inputPlaceholder;
                     this.instructors[instructorName].push(data);
                 }
             }
@@ -283,12 +281,12 @@ class Instructors extends React.Component {
             }
 
             if (isValidData) {
-                $(cell).empty().append(newData);
-                $(cell).removeClass("error-table");
+                $(cell).html(newData);
+                $(cell).removeClass("error-cell");
 
                 this.checkWSIExpiration(cell, expiryTime);
             } else {
-                $(cell).hide().addClass("error-table").fadeIn(800);
+                $(cell).hide().addClass("error-cell").fadeIn(800);
                 cellElement.val("");
             }
 
@@ -303,18 +301,17 @@ class Instructors extends React.Component {
      * Empty inputs will leave the cell with its original data.
      */
     finishEditingInstructors() {
-        var tableRows = $("#dynamicInstructors tr");
+        var tableRows;
         var editInstructorsButton = $("#dynamicInstructors .ribbon-section-description a");
 
-        var isValid = this.addTableContents(true, tableRows);
-
-        tableRows = $("#dynamicInstructors tr");
+        var isValid = this.addTableContents(true);
 
         if (!isValid) {
             return;
         }
 
         // Remove 'Modify' column.
+        tableRows = $("#dynamicInstructors tr");
         tableRows.each((index, element) => {
             if (index === 0) {
                 $(element).children("th").last().remove();
@@ -333,9 +330,11 @@ class Instructors extends React.Component {
             }
 
             $(row).children("td").each((index, element) => {
-                if ($(element).text() !== "...") {
+                var cellText = $(element).text();
+
+                if (cellText !== "...") {
                     if (index === 0) {
-                        instructorName = $(element).text();
+                        instructorName = cellText;
                         instructor = this.instructors[instructorName];
 
                         if (instructor === undefined) {
@@ -347,7 +346,7 @@ class Instructors extends React.Component {
                     } else {
                         if (instructorName) {
                             // Offset the index from the name cell.
-                            instructor[index - 1] = $(element).text();
+                            instructor[index - 1] = cellText;
                         }
                     }
                 }
@@ -359,8 +358,6 @@ class Instructors extends React.Component {
                 delete this.instructors[instructor];
             }
         }
-
-        this.numInstructors = this.getNumInstructors();
 
         // Re-title and re-bind 'Edit Instructors' button.
         editInstructorsButton.html("Edit Instructors");
@@ -411,7 +408,7 @@ class Instructors extends React.Component {
             // Only check expiration of WSI certification column.
             if (expiryTime < Date.now()) {
                 // Date has expired.
-                $(cell).addClass("error-table");
+                $(cell).addClass("error-cell");
             } else if (expiryTime < Date.now() + ninetyDaysInMilliseconds) {
                 // Date is expiring in 30 days.
                 $(cell).addClass("warning-table");
