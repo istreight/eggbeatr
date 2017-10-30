@@ -46,7 +46,7 @@ class GridFactory extends React.Component {
          */
         return this.fillGridList({
             numHalfLessons: data["lessons"]["half"],
-            numThreeQuarterLessons: data["lessons"]["threequater"],
+            numThreeQuarterLessons: data["lessons"]["threequarter"],
             privates: data["private"],
             instructors: data["instructors"],
             duration: data["duration"],
@@ -85,10 +85,10 @@ class GridFactory extends React.Component {
                         var duration = props.privates[privateInstructor][privateTimeSlot][0];
 
                         // Find proper time slot.
-                        var slot = 1 + 4 * (parseInt(startHour) - this.startTime) + Math.floor(parseInt(startMinute) / 15);
+                        var slot = 1 + 4 * (parseInt(startHour, 10) - this.startTime) + Math.floor(parseInt(startMinute, 10) / 15);
 
                         // Number of slots private lesson will occupy.
-                        var numSlots = Math.floor(parseInt(duration) / 15);
+                        var numSlots = Math.floor(parseInt(duration, 10) / 15);
 
                         // Allocate slot for private.
                         if (slot + numSlots < grid[instructor].length + 1) {
@@ -106,12 +106,12 @@ class GridFactory extends React.Component {
         return this.gridList;
     }
 
-    generateGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuaterHourLessons, minHoursPerInstructor) {
+    generateGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuarterHourLessons, minHoursPerInstructor) {
         if (grid.length === 0 || grid[0].length === 0) {
             return;
         }
 
-        if (numHalfHourLessons < 1 && numThreeQuaterHourLessons < 1) {
+        if (numHalfHourLessons < 1 && numThreeQuarterHourLessons < 1) {
             if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addHosing(grid)) {
                 this.gridList.push(
                     this.condenseGrid(
@@ -126,24 +126,24 @@ class GridFactory extends React.Component {
         }
 
         for (var slot = nextSlotStart, increment = 0; slot < grid[0].length - 1; slot += 1 + increment) {
-            if (numThreeQuaterHourLessons === 0) {
-                numThreeQuaterHourLessons--;
+            if (numThreeQuarterHourLessons === 0) {
+                numThreeQuarterHourLessons--;
                 slot = 0;
             }
 
             for (var instructor = nextInstructorStart; instructor < grid.length; instructor++) {
-                if (numThreeQuaterHourLessons === -1 && this.hasBothTypes) {
-                    numThreeQuaterHourLessons--;
+                if (numThreeQuarterHourLessons === -1 && this.hasBothTypes) {
+                    numThreeQuarterHourLessons--;
                     instructor = 0;
                 }
 
                 if (grid[instructor][slot] === 0 && grid[instructor][slot + 1] === 0) {
-                    if (slot < grid[0].length - 2 && grid[instructor][slot + 2] === 0 && numThreeQuaterHourLessons > 0) {
+                    if (slot < grid[0].length - 2 && grid[instructor][slot + 2] === 0 && numThreeQuarterHourLessons > 0) {
                         grid[instructor][slot] = 2;
                         grid[instructor][slot + 1] = 2;
                         grid[instructor][slot + 2] = 2;
 
-                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 1 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons, numThreeQuaterHourLessons - 1, minHoursPerInstructor);
+                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 1 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons, numThreeQuarterHourLessons - 1, minHoursPerInstructor);
 
                         grid[instructor][slot] = 0;
                         grid[instructor][slot + 1] = 0;
@@ -154,7 +154,7 @@ class GridFactory extends React.Component {
                         grid[instructor][slot] = 1;
                         grid[instructor][slot + 1] = 1;
 
-                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 2 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons - 1, numThreeQuaterHourLessons, minHoursPerInstructor);
+                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 2 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons - 1, numThreeQuarterHourLessons, minHoursPerInstructor);
 
                         grid[instructor][slot] = 0;
                         grid[instructor][slot + 1] = 0;

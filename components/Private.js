@@ -18,8 +18,9 @@ class Private extends React.Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("private") && sessionStorage.getItem("private") !== "{}") {
-            this.privateLessons = JSON.parse(sessionStorage.getItem("private"));
+        var sesssionPrivate = sessionStorage.getItem("private");
+        if (sesssionPrivate && sesssionPrivate !== "{}") {
+            this.privateLessons = JSON.parse(sesssionPrivate);
         } else {
             // For default table display.
             this.privateLessons = {
@@ -35,328 +36,309 @@ class Private extends React.Component {
             };
         }
 
-        this.numPrivate = this.getNumPrivates();
-
         this.generatePrivate();
+        this.numPrivate = this.getNumPrivates();
 
         this.props.callback(this.privateLessons, this.props.lipReader);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
-        // Make component size of window.
-        $("#dynamicPrivate").css({
-            "height": ($(window).height() - 55) + "px"
-        });
-
-        $("#edit-private").click(this.editPrivate.bind(this));
-
         // Assign text in drop down to 'privateLessons'.
-        var that = this;
-        $("#private-table td li a").click(function() {
-            // Modify displayed text.
-            var newIncludeValue = $(this).text();
-            var includeAnchor = $(this).parents("li").eq(1).find("a")[0];
-            $(includeAnchor).text(newIncludeValue);
-
+        $("#dynamicPrivate table td li a").click(() => {
             // Update privateLessons.
-            var instructor;
             var timeSlot;
-            var row = $(this).closest("tr").children();
-            row.each(function(index, element) {
+            var instructor;
+            var row = $(event.target).closest("tr").children();
+            row.each((index, element) => {
+                var elementText = $(element).text();
+
                 if (index === 0) {
-                    instructor = that.privateLessons[$(element).text()];
+                    instructor = this.privateLessons[elementText];
+
                     return instructor !== undefined;
                 } else if (index === 1) {
-                    timeSlot = instructor[$(element).text()];
+                    timeSlot = instructor[elementText];
+
                     return timeSlot !== undefined;
                 } else {
                     if ($(element).children().length === 0) {
-                        timeSlot[0] = $(element).text();
+                        timeSlot[0] = elementText;
                     } else {
-                        timeSlot[1] = $(element).find("a").eq(0).text();
+                        timeSlot[1] = $(event.target).text();
                     }
                 }
             });
 
-            that.numPrivate = that.getNumPrivates();
+            this.numPrivate = this.getNumPrivates();
 
-            that.props.gridChecklist.setQuantity("privates", that.numPrivate);
+            this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
             if (timeSlot !== undefined) {
-                that.props.callback(that.privateLessons, that.props.lipReader);
+                this.props.callback(this.privateLessons, this.props.lipReader);
             }
+
+            // Modify displayed text.
+            this.updateIncludeText(event.target);
         });
 
+        $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
+
         // Link tutorital button to next section.
-        $("#private-next").click(function() {
-            $("body").on("mousewheel DOMMouseScroll", function() {
-                return false;
-            });
+        $("#dynamicPrivate .ribbon-section-footer a").click(() => {
+            // Disable scrolling.
+            $("body").on("mousewheel DOMMouseScroll", false);
+
             $("#dynamicGrid .content-section-footer").css({
                 "display": "block"
             });
 
-            // Fade out, since 'private-footer' is visible, hide after animation.
-            $("#private-footer").fadeOut(1000);
+            $("#dynamicPrivate .ribbon-section-footer").fadeOut(1000);
 
             $("html, body").animate({
-                scrollTop: $("#dynamicGrid").offset().top - 57
-            }, 1600, function() {
+                scrollTop: $("#dynamicGrid").offset().top - 60
+            }, 1600, () => {
                 $("body").off("mousewheel DOMMouseScroll");
-                $("#private-footer").css({
+
+                $("#dynamicPrivate .ribbon-section-footer").css({
                     "display": "none"
                 });
             });
         });
     }
 
-    getNumPrivates() {
-        var numPrivate = 0;
-
-        var instructors = [];
-        var instructorRows = $("#dynamicInstructors tr");
-        instructorRows.each((index, element) => {
-            var cell = $(element).find("td:first-child");
-
-            if (cell.length > 0) {
-                instructors.push(cell.text());
-            }
-        });
-
-        for (var instructor in this.privateLessons) {
-            for (var timeSlot in this.privateLessons[instructor]) {
-                if (this.privateLessons[instructor][timeSlot][1] === "Yes" && instructors.includes(instructor)) {
-                    numPrivate++;
-                }
-            }
-        }
-
-        return numPrivate;
-    }
-
-    /*
-     * Appends a row of input fields to the private table.
+    /**
+     * Replaces the text of the Instructor table cells
+     *  with input fields.
+     * The placeholder values of the existing fields are
+     *  their text values.
      */
     inputifyRows() {
-        var privateTable = $("#private-table");
+        $("#dynamicPrivate table td").each((index, element) => {
+            if ($(element).children().length === 0) {
+                var placeholder = $(element).text() || "...";
+                $(element).html("<input type='text' placeholder='" + placeholder + "'>");
+            }
+        });
+    }
+
+    /**
+     * Appends new input row to the Instructors table.
+     */
+    addInputRow() {
+        var privateTable = $("#dynamicPrivate table");
         var numRows = privateTable.find("tr").length - 1;
+        var className = (numRows % 2 === 0) ? "table-odd" : "table-even";
 
         // Append row of input fields and 'add' button.
-        privateTable.append("<tr " + ((numRows % 2 === 0) ? " class='table-odd'" : " class='table-even'") + "><td><td></td><td></td><td><div></div></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+        privateTable.append("<tr class='" + className + "'><td><td></td><td></td><td><div></div></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
 
         // Bind 'Add' buttons for new rows.
         privateTable.find(".add").click(this.addRow.bind(this));
-
-        // Replace text with input fields, customized placeholder based on text.
-        privateTable.find("td").each(function() {
-            var firstChild = $(this).children().eq(0);
-
-            if (firstChild.is("input")) {
-                var placeholder = firstChild.attr("placeholder");
-                $(this).empty().append("<input type='text' placeholder='" + placeholder + "'>");
-            } else if (!(firstChild.is("a") || firstChild.is("div"))) {
-                var placeholder = $(this).text() || "...";
-                $(this).empty().append("<input type='text' placeholder='" + placeholder + "'>");
-            }
-        });
     }
 
-    /*
+    /**
      * Resets the table to appropriate colour scheme.
      */
     colourTable() {
         // Recolour rows.
-        $("#private-table").find("tr").each(function(index, element) {
-            if (index === 0) {
-                // Skip header row.
-                return true;
-            }
-
-            $(element).addClass((index % 2 === 1) ? "table-odd" : "table-even");
-            $(element).removeClass((index % 2 === 0) ? "table-odd" : "table-even");
+        $("#dynamicPrivate table tbody tr").each((index, element) => {
+            $(element).removeClass("table-even table-odd");
+            $(element).addClass((index % 2 === 0) ? "table-odd" : "table-even");
         });
     }
 
-    /*
+    /**
      * Places the private table in a state where the contents of the table
-     * can be changed.
+     *  can be changed.
      * The data in the input field will replace any data that was previously in
-     * the table cell. Leaving any input field empty will not replace the
-     * original data.
+     *  the table cell. Leaving any input field empty will not replace the
+     *  original data.
      */
     editPrivate() {
-        $("#edit-private").empty().append("Finish Editing").unbind("click").click(this.finishEditingPrivate.bind(this));
+        var editPrivate = $("#dynamicPrivate .ribbon-section-description a");
 
-        $("#private-table thead tr").append("<th class='is-center'>Modify</th>");
-        $("#private-table tbody tr").append("<td class='is-center'><a class='pure-button remove'>Remove</a></td>");
+        // Re-name and re-bind 'Edit Privates' button.
+        editPrivate.unbind("click");
+        editPrivate.html("Finish Editing");
+        editPrivate.click(this.finishEditingPrivate.bind(this));
 
-        var that = this;
-        $("#private-table .remove").click(function() {
-            // Remove from 'privateLessons' object.
-            var instructorName = $(this.closest("tr")).find("input").eq(0).attr("placeholder");
-            delete that.privateLessons[instructorName];
+        // Add 'Modify' column.
+        $("#dynamicPrivate table thead tr").append("<th class='is-center'>Modify</th>");
+        $("#dynamicPrivate table tbody tr").append("<td class='is-center'><a class='pure-button remove'>Remove</a></td>");
 
-            that.removePrivateRow(this);
+        this.addInputRow();
+        this.inputifyRows();
+
+        $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
+    }
+
+    /**
+     * Removes the row of the table of a clicked 'remove' button.
+     */
+    removeRow() {
+        var removedRow = $(event.target).closest("tr");
+        var removedData = removedRow.find("input");
+        var reName = new RegExp(/^[A-Za-z\s]+$/);
+        var instructor = removedData.filter((index, element) => {
+            return reName.test($(element).attr("placeholder"));
         });
 
-        this.inputifyRows();
-    }
-
-    /*
-     * Removes the row of the table of a clicked 'remove' button.
-     * Moves the 'private' table down the page.
-     */
-    removePrivateRow(that) {
-        // Increase size of section.
-        if ($("#private-table tr").length > 5) {
-            $("#dynamicPrivate").css({
-                "height": ($("#dynamicPrivate").height() + 30) + "px"
-            });
+        var instructorName = instructor.attr("placeholder");
+        if (instructorName in this.privateLessons) {
+            delete this.privateLessons[instructorName];
         }
 
-        that.closest("tr").remove();
+        removedRow.remove();
+
         this.colourTable();
+        this.sizeTable();
     }
 
-    /*
+    /**
+     * Verify the contents of each input field and commit it to the table.
+     */
+    addTableContents(removeInputRow) {
+        var tableRows = $("#dynamicPrivate tr");
+        var tableCells = $("#dynamicPrivate td");
+
+        // Add row to table.
+        var addedCells = true;
+        var numColumns = tableCells.length / (tableRows.length - 1);
+        tableCells.each((index, element) => {
+            var isFirstChild = index % numColumns === 0;
+
+            addedCells = this.addCells(element, isFirstChild, removeInputRow) && addedCells;
+        });
+
+        if (!addedCells) {
+            this.inputifyRows();
+        }
+
+        return addedCells;
+    }
+
+    /**
      * Add a row to the table when the 'add' button is clicked.
-     * Moves the 'private' table up the page.
      */
     addRow() {
-        // Increase size of section.
-        if ($("#private-table tr").length > 5) {
-            $("#dynamicPrivate").css({
-                "height": ($("#dynamicPrivate").height() + 150) + "px"
-            });
+        var isValid = this.addTableContents(false);
+
+        if (!isValid) {
+            return;
         }
 
-        var newLessonInputs = $("#private-table tbody tr").last().find("input");
-        var newInstructor = newLessonInputs.eq(0).val();
-        var newTimeSlot = newLessonInputs.eq(1).val();
-        var newDuration = newLessonInputs.eq(2).val();
+        this.addInputRow();
+        this.inputifyRows();
 
-        // Add row to 'privateLessons' object.
-        var instructor = this.privateLessons[newInstructor];
-        if (instructor !== undefined) {
-            if (instructor[newTimeSlot] !== undefined) {
-                var newLessonRow = $(newLessonInputs).closest("tr");
-                newLessonRow.hide().addClass("error-table").fadeIn(800);
+        // Add row to privateLessons object.
+        var timeSlot;
+        var instructorName;
+        var addedData = $(event.target).closest("tr").find("input");
+        addedData.each((index, element) => {
+            var inputPlaceholder = $(element).attr("placeholder");
 
-                return;
-            } else {
-                // "Include" value defaults to 'No'.
-                instructor[newTimeSlot] = [newDuration, "No"];
+            if (inputPlaceholder !== "...") {
+                if (index === 0) {
+                    instructorName = inputPlaceholder;
+                    this.privateLessons[instructorName] = {};
+                } else if (index === 1) {
+                    timeSlot = inputPlaceholder;
+                    this.privateLessons[instructorName][timeSlot] = [];
+                } else if (instructorName) {
+                    this.privateLessons[instructorName][timeSlot].push(inputPlaceholder);
+                }
             }
-        } else {
-            this.privateLessons[newInstructor] = {
-                [newTimeSlot]: [newDuration, "No"]
-            };
-        }
+        });
+
 
         this.numPrivate = this.getNumPrivates();
 
-        $(newLessonInputs).closest("tr").removeClass("error-table");
+        // Put 'remove' in the last cell of the row.
+        $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
 
-        // Add row to table.
-        var that = this;
-        $("#private-table tbody tr td").each(function() {
-            that.addCells(this, false);
-        });
+        // Rebind each 'remove'.
+        $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
 
-        // Place the 'remove' button in the last cell of the row.
-        var buttonCell = $("#private-table tbody tr td").last();
-        $(buttonCell).empty().append("<a class='pure-button remove'>Remove</a>");
-        $(buttonCell).find("a").click(function() {
-            // Remove from 'privateLessons' object.
-            var lessonRow = $(this).closest("tr").find("input");
-            var instructor = lessonRow.eq(0).attr("placeholder");
-            var timeSlot = lessonRow.eq(1).attr("placeholder");
-            delete that.privateLessons[instructor][timeSlot];
-
-            that.removePrivateRow(this);
-        });
-
-        // Append new row to allow multiple additions.
-        this.inputifyRows();
-
-        this.colourTable();
+        this.sizeTable();
     }
 
-    /*
-     * Adds a set of cells in a row when the 'add' button,
-     * with data from the input fields.
-     * Moves the 'private' table up the page.
+    /**
+     * Adds the input values or valid placeholder values from
+     *  the input fields to the table.
      */
-    addCells(that, removeInputRow) {
-        var firstChild = $(that).children().eq(0);
+    addCells(cell, isFirstChild, removeInputRow) {
+        var isValidData = false;
+        var cellElement = $(cell).children().first();
 
-        if (firstChild.is("input")) {
-            // Remove unfilled input row.
-            if (firstChild.attr("placeholder") === "..." && removeInputRow) {
-                $(that).parent().remove();
+        if (cellElement.is("input")) {
+            if (cellElement.attr("placeholder") === "..." && removeInputRow) {
+                $(cell).closest("tr").remove();
+
                 return true;
             }
 
-            // Append input field data (or placeholder value) to table.
-            var newData = firstChild.val() || firstChild.attr("placeholder");
-            newData = newData.replace(/^\s+|\s+$/g, "");
+            // Input field data (or placeholder value for existing data).
+            var newData = cellElement.val() || cellElement.attr("placeholder");
+            newData = newData.replace(/^\s+|\s+$/, "");
 
-            var isValidData = false;
-            if ($(that).is(":first-child")) {
-                isValidData = /^[A-Za-z\s]+$/.test(newData);
+            if (isFirstChild) {
+                var reName = new RegExp(/^[A-Za-z\s]+$/);
+
+                isValidData = reName.test(newData);
             } else if (newData.split(":").length === 2){
                 var [hour, minutes] = newData.split(":");
+                var reHours = new RegExp(/^0?[0-9]|1[0-2]$/);
+                var reMinutes = new RegExp(/^0?[0-9]|[1-5][0-9]$/);
 
-                isValidData = /^(0?[0-9]|1[0-2])$/.test(hour) && /^(0?[0-9]|[1-5][0-9])$/.test(minutes);
+                isValidData = reHours.test(hour) && reMinutes.test(minutes);
             } else {
-                isValidData = /^([1-9][0-9]*)$/.test(newData);
+                var reDuration = new RegExp(/^[1-9][0-9]*$/);
+
+                isValidData = reDuration.test(newData);
             }
 
             if (isValidData) {
-                $(that).empty().append(newData);
-                $(that).removeClass("error-table");
+                $(cell).html(newData);
+                $(cell).removeClass("error-cell");
             } else {
-                $(that).hide().addClass("error-table").fadeIn(800);
-                firstChild.val("");
+                $(cell).hide().addClass("error-cell").fadeIn(800);
+                cellElement.val("");
             }
 
             return isValidData;
-        } else if (firstChild.is("div") && !$(that).children(":first").text()) {
-            // Place a dropdown menu in the 4th column with CSS styling.
-            $(that).empty().append(
+        } else if (cellElement.is("div") && cellElement.children().length === 0) {
+            // Place a 'include' dropdown menu.
+            $(cell).html(
                 "<div class='pure-menu pure-menu-horizontal'><ul class='pure-menu-list'><li class='pure-menu-item pure-menu-has-children pure-menu-allow-hover'><a class='pure-menu-link menu-odd'>No</a><ul class='pure-menu-children'><li class='pure-menu-item'><a class='pure-menu-link'>Yes</a></li><li class='pure-menu-item'><a class='pure-menu-link'>No</a></li></ul></li></ul></div>"
             );
 
             // Bind 'include' buttons to show selected option.
-            var _this = this;
-            var newIncludeAnchor = $(that).find("a");
-            newIncludeAnchor.click(function() {
+            var newIncludeAnchor = $(cell).find("a");
+            newIncludeAnchor.click(() => {
                 // Set visible string.
-                var newIncludeValue = $(this).text();
-                var includeAnchor = $(this).parents("li").eq(1).find("a")[0];
-                $(includeAnchor).text(newIncludeValue);
+                this.updateIncludeText(event.target);
 
                 // Update privateLessons.
-                var instructor;
                 var timeSlot;
-                var row = $(this).closest("tr").children();
-                row.each(function(index, element) {
+                var instructor;
+                var row = $(event.target).closest("tr").children();
+                row.each((index, element) => {
+                    var elementText = $(element).text();
+
                     if (index === 0) {
-                        instructor = _this.privateLessons[$(element).text()];
-                        return instructor !== undefined;
+                        instructor = this.privateLessons[elementText];
                     } else if (index === 1) {
-                        timeSlot = instructor[$(element).text()];
-                        return timeSlot !== undefined;
+                        timeSlot = instructor[elementText];
                     } else {
                         if ($(element).children().length === 0) {
-                            timeSlot[0] = $(element).text();
+                            timeSlot[0] = elementText;
                         } else {
-                            timeSlot[1] = $(element).find("a").eq(0).text();
+                            timeSlot[1] = $(element).find("a").first().text();
                         }
                     }
                 });
 
                 if (timeSlot !== undefined) {
-                    _this.props.callback(_this.privateLessons, _this.props.lipReader);
+                    this.props.callback(this.privateLessons, this.props.lipReader);
                 }
             });
         }
@@ -364,15 +346,23 @@ class Private extends React.Component {
         return true;
     }
 
-    /*
+    /**
      * Saves changes made in input fields to specific cell.
      * Empty inputs will leave the cell with its original data.
      */
     finishEditingPrivate() {
-        var privateTable = $("#private-table");
+        var tableRows;
+        var editPrivate = $("#dynamicPrivate .ribbon-section-description a");
+
+        var isValid = this.addTableContents(true);
+
+        if (!isValid) {
+            return;
+        }
 
         // Remove 'Modify' column.
-        privateTable.find("tr").each((index, element) => {
+        tableRows = $("#dynamicPrivate tr");
+        tableRows.each((index, element) => {
             if (index === 0) {
                 $(element).children("th").last().remove();
             } else {
@@ -380,27 +370,13 @@ class Private extends React.Component {
             }
         });
 
-        // Add row to table.
-        var that = this;
-        var addedCells = true;
-        privateTable.find("td").each(function() {
-            addedCells = that.addCells(this, true) && addedCells;
-        });
-
-        if (!addedCells) {
-            this.editPrivate();
-            return;
-        }
-
-        $("#edit-private").empty().append("Edit Private").unbind("click").click(this.editPrivate.bind(this));
-
         // Update privateLessons.
         var timeSlot;
         var instructor;
         var instructorName;
         var privateTimeSlots = {};
         var privateInstructors = {};
-        var row = $("#private-table").find("tbody").find("tr").children();
+        var row = $("#dynamicPrivate table").find("tbody").find("tr").children();
         row.each((index, element) => {
             if (index % 4 === 0) {
                 instructorName = $(element).text();
@@ -430,7 +406,7 @@ class Private extends React.Component {
                 if ($(element).children().length === 0) {
                     timeSlot[0] = $(element).text();
                 } else {
-                    timeSlot[1] = $(element).find("a").eq(0).text();
+                    timeSlot[1] = $(element).find("a").first().text();
                 }
             }
         });
@@ -448,51 +424,111 @@ class Private extends React.Component {
             }
         }
 
+        // Re-title and re-bind 'Edit Private' button.
+        editPrivate.unbind("click");
+        editPrivate.html("Edit Private");
+        editPrivate.click(this.editPrivate.bind(this));
+
         this.numPrivate = this.getNumPrivates();
 
         this.props.callback(this.privateLessons, this.props.lipReader);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
     }
 
-    /*
+    /**
      * Transforms an array to a PureCSS table.
-     * Note, the first row of the array is considered as the first row of the
-     * table. The Header is defined statically within render().
      */
     generatePrivate() {
-        var gridArray = [];
-        for (var instructor in this.privateLessons) {
-            var privateLessons = this.privateLessons[instructor];
-            var i = 0;
-            for (var timeSlot in privateLessons) {
-                var lessonDetails = privateLessons[timeSlot];
-
-                gridArray.push([
-                    instructor,
-                    timeSlot,
-                    lessonDetails[0],
-                    "<div class='pure-menu pure-menu-horizontal'><ul class='pure-menu-list'><li class='pure-menu-item pure-menu-has-children pure-menu-allow-hover'><a class='pure-menu-link menu-odd'>" + lessonDetails[1] + "</a><ul class='pure-menu-children'><li class='pure-menu-item'><a  class='pure-menu-link'>Yes</a></li><li class='pure-menu-item'><a  class='pure-menu-link'>No</a></li></ul></li></div>"
-                ]);
-            }
-            i++;
-        }
-
-        // Transform array to HTML table, with PureCSS styling.
+        var isOdd = true;
         var newTable = "";
-        for (var privateLesson = 0; privateLesson < gridArray.length; privateLesson++) {
-            newTable += "<tr"  + ((privateLesson % 2 === 0) ? " class='table-odd'" : " class='table-even'") + ">";
-            for (var slot = 0; slot < gridArray[0].length; slot++) {
-                newTable += "<td>" + gridArray[privateLesson][slot] + "</td>";
+
+        for (var instructorName in this.privateLessons) {
+            var rowClass = isOdd ? "table-odd" : "table-even";
+            var instructor = this.privateLessons[instructorName];
+
+            newTable += "<tr class='" + rowClass + "'>";
+            newTable += "<td>" + instructorName + "</td>";
+
+
+            for (var time in instructor) {
+                var timeSlot = instructor[time];
+
+                newTable += "<td>" + time + "</td>";
+
+                for (var info = 0; info < timeSlot.length - 1; info++) {
+                    newTable += "<td>" + timeSlot[info] + "</td>";
+                }
+
+                newTable += "<td><div class='pure-menu pure-menu-horizontal'><ul class='pure-menu-list'><li class='pure-menu-item pure-menu-has-children pure-menu-allow-hover'><a class='pure-menu-link menu-odd'>" + timeSlot[info] + "</a><ul class='pure-menu-children'><li class='pure-menu-item'><a  class='pure-menu-link'>Yes</a></li><li class='pure-menu-item'><a  class='pure-menu-link'>No</a></li></ul></li></div></td>";
             }
+
             newTable += "</tr>";
+
+            isOdd = !isOdd;
         }
 
-        $("#private-table tbody").append(newTable);
+        $("#dynamicPrivate table tbody").append(newTable);
+    }
+
+    /**
+     * Updates the text of parent drop-down.
+     */
+    updateIncludeText(menu) {
+        var newIncludeValue = $(menu).text();
+        var includeAnchor = $(menu).parents("li").eq(1).find("a").first();
+
+        includeAnchor.text(newIncludeValue);
+    }
+
+    /**
+     * Count the number of included private lessons.
+     */
+    getNumPrivates() {
+        var numPrivate = 0;
+
+        var instructors = [];
+        var instructorRows = $("#dynamicPrivate tr");
+        instructorRows.each((index, element) => {
+            var cell = $(element).find("td").first();
+            var elementText = cell.text();
+
+            if (cell.length > 0 && !instructors.includes(elementText)) {
+                instructors.push(elementText);
+            }
+        });
+
+        for (var instructor in this.privateLessons) {
+            for (var timeSlot in this.privateLessons[instructor]) {
+                if (this.privateLessons[instructor][timeSlot][1] === "Yes" && instructors.includes(instructor)) {
+                    numPrivate++;
+                }
+            }
+        }
+
+        return numPrivate;
+    }
+
+    /**
+     * Sizes table based on number of rows.
+     */
+    sizeTable() {
+        var newHeight;
+        var numRows = $("#dynamicPrivate tr").length;
+
+        if (numRows > 5) {
+            newHeight = 7.125 * (numRows - 5) + 92;
+        } else {
+            newHeight = 92;
+        }
+
+        $("#dynamicPrivate").css({
+            "height": newHeight + "vh"
+        });
     }
 
     render() {
         return (
-                <div id="private-container" className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
+                <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
                     <h2 className="content-head content-head-ribbon">
                         Private Lessons
                     </h2>
@@ -503,40 +539,37 @@ class Private extends React.Component {
                             <li>Specify the who, when, and how long</li>
                             <li>Modify their frequencies</li>
                         </ul>
-                        <a id="edit-private" className="pure-button left-button">
+                        <a className="pure-button left-button">
                             Edit Private
                         </a>
                     </div>
-                    <div id="private-table-container">
-                        <table id="private-table" className="pure-table">
-                            <thead>
-                                <tr>
-                                    <th className="is-center">
-                                        Instructor
-                                    </th>
-                                    <th className="is-center">
-                                        Time
-                                    </th>
-                                    <th className="is-center">
-                                        Duration
-                                    </th>
-                                    <th className="is-center">
-                                        Include
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="private-footer" className="ribbon-section-footer">
+                    <table className="pure-table">
+                        <thead>
+                            <tr>
+                                <th className="is-center">
+                                    Instructor
+                                </th>
+                                <th className="is-center">
+                                    Time
+                                </th>
+                                <th className="is-center">
+                                    Duration
+                                </th>
+                                <th className="is-center">
+                                    Include
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div className="ribbon-section-footer">
                         <h2 className="content-head content-head-ribbon">
                             Step #3:
                         </h2>
                         <p>
                             List any private lessons occuring during this set.
                         </p>
-                        <a id="private-next" className="pure-button pure-button-primary">
+                        <a className="pure-button pure-button-primary">
                             &rarr;
                         </a>
                     </div>

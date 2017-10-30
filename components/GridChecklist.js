@@ -71,17 +71,17 @@ class GridChecklist extends React.Component {
         valueCell.html(value);
 
         if (value !== 0) {
-            valueCell.removeClass("error-table warning-table");
+            valueCell.removeClass("error-cell warning-table");
         } else if (key !== "privates") {
-            valueCell.addClass("error-table");
+            valueCell.addClass("error-cell");
         }
 
         // Place warning if quantity of lessons is 0 and quantity of privates is not 0.
         if (key === "lessons" && value === 0) {
             if (this.checklistQuantities.privates !== 0) {
-                valueCell.removeClass("error-table").addClass("warning-table");
+                valueCell.removeClass("error-cell").addClass("warning-table");
             } else {
-                valueCell.removeClass("warning-table").addClass("error-table");
+                valueCell.removeClass("warning-table").addClass("error-cell");
             }
         }
 

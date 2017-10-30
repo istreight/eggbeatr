@@ -82,7 +82,7 @@ class InstructorPreferences extends React.Component {
         var newTable = "";
         for (var row = 0; row < 5; row++) {
             var rowClass = (row % 2 === 0) ? "table-odd" : "table-even";
-            
+
             newTable += "<tr class='" + rowClass + "'>";
 
             for (var col = 0; col < 5; col++) {

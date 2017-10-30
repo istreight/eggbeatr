@@ -9,7 +9,7 @@
  * A function, not React class, is exported.
  */
 
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Instructors from './Instructors';
@@ -21,7 +21,7 @@ class LIPReader extends React.Component {
     constructor(props) {
         super(props);
 
-        // Object to be passed to GridFactory.
+        // To be passed to GridFactory.
         this.lipData = {};
 
         // Clear storage from query string.
@@ -30,17 +30,17 @@ class LIPReader extends React.Component {
             sessionStorage.clear();
         }
 
-        this.instructors = JSON.parse(sessionStorage.instructors || "{}");
-        this.instructorPreferences = JSON.parse(sessionStorage.instructorPreferences || "{}");
-        this.lessons = JSON.parse(sessionStorage.lessons || "{}");
-        this.private = JSON.parse(sessionStorage.private || "{}");
+        this.instructors = JSON.parse(sessionStorage.getItem("instructors") || "{}");
+        this.instructorPreferences = JSON.parse(sessionStorage.getItem("instructorPreferences") || "{}");
+        this.lessons = JSON.parse(sessionStorage.getItem("lessons") || "{}");
+        this.private = JSON.parse(sessionStorage.getItem("private") || "{}");
     }
 
     /**
      * Renders the Instructors, Lessons, and Private components to
-     * static div tags.
+     *  static div tags.
      * Callback functions are passed to each of these components along with a
-     * reference to the LIPReader object.
+     *  reference to the LIPReader object.
      */
     renderComponents(gridChecklist) {
         console.log("rendering Lessons, Instructors, & Private...");
@@ -134,8 +134,21 @@ class LIPReader extends React.Component {
      * Sums the number of 1/2-hour lesson types and 3/4-hour lesson types.
      */
     quantifyLessonTypes() {
-        var numLessonTypes = [0, 0];
-        var lessonTypes = Object.keys(this.lessons);
+        var halfLessons = [
+            "Starfish",
+            "Duck",
+            "Sea Turtle",
+            "Sea Otter",
+            "Salamander",
+            "Sunfish",
+            "Crocodile",
+            "Whale",
+            "Level 1",
+            "Level 2",
+            "Level 3",
+            "Level 4",
+            "Level 5"
+        ];
         var threeQuarterLessons = [
             "Level 6",
             "Level 7",
@@ -147,45 +160,36 @@ class LIPReader extends React.Component {
             "Strokes"
         ];
 
-        for (var lesson = 0; lesson < lessonTypes.length; lesson++) {
-            if (threeQuarterLessons.includes(lessonTypes[lesson])) {
-                numLessonTypes[1] += this.lessons[lessonTypes[lesson]];
-            } else if (lesson !== "empty") {
-                numLessonTypes[0] += this.lessons[lessonTypes[lesson]];
+        this.lessons.half = 0;
+        this.lessons.threequarter = 0;
+
+        for (var lesson in this.lessons) {
+            if (halfLessons.includes(lesson)) {
+                this.lessons.half += this.lessons[lesson];
+            } else if (threeQuarterLessons.includes(lesson)) {
+                this.lessons.threequarter += this.lessons[lesson];
             }
         }
-
-        return numLessonTypes;
     }
 
     /**
      * Organizes data from the Lessons, Instructors, and Private components.
      * Duration of lessons set is contained in the Grid component.
-     *
-     * Basic data:
-     *                  array of instructors;
-     *                  quantities of each lesson;
-     *                  private lessons.
-     *
-     * Advanced data:
-     *                  preferences array.
      */
     manipulateData() {
         console.log("manipulating lipData...");
 
         this.minimizeData();
+        this.quantifyLessonTypes();
 
         // Add instructors to lipData.
         this.lipData.instructors = jQuery.extend(true, [], Object.keys(this.instructors));
 
-        // Add instructor preferences to lipData.
+        // Add instructor instructorPreferences to lipData.
         this.lipData.instructorPreferences = jQuery.extend(true, {}, this.instructorPreferences);
 
         // Add lesson quantites and number of 1/2 & 3/4 hour lessons to lipData.
-        var numLessonTypes = this.quantifyLessonTypes();
         this.lipData.lessons = jQuery.extend(true, {}, this.lessons);
-        this.lipData.lessons.half = numLessonTypes[0];
-        this.lipData.lessons.threequater = numLessonTypes[1];
 
         // Add private lessons to lipData.
         this.lipData.private = jQuery.extend(true, {}, this.private);
@@ -197,29 +201,32 @@ class LIPReader extends React.Component {
      * Reduces the size of the objects to be passed to GridFactory.
      *
      * Reductions:
-     *              instructors             - no reductions
-     *              instructorPreferences   - remove keys for empty pairings
-     *                                      - remove if all/no preferences exist
-     *              lessons                 - remove keys for empty pairings
-     *              private                 - remove private without "Yes"
+     *      instructors             - no reductions
+     *      instructorPreferences   - remove keys for empty pairings
+     *                              - remove if all/no preferences exist
+     *      lessons                 - remove keys for empty pairings
+     *      private                 - remove private without "Yes"
      */
     minimizeData() {
         console.log("minimizing lipData...");
 
         /**
-         * Eliminate empty strings and arrays in preferences.
-         * Eliminate preferences if all keys are full or all keys are empty.
+         * Eliminate empty strings and arrays in instructorPreferences.
+         * Eliminate instructorPreferences if all keys are full.
          */
-        for (var keyIndex = 0, isConsistent = 0; keyIndex < Object.keys(this.instructorPreferences).length; keyIndex++, isConsistent = 0) {
-            for (var lessonGroup = 0; lessonGroup < this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]].length; lessonGroup++) {
-                for (var lesson = 0; lesson < this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup].length; lesson++) {
-                    isConsistent += (this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex]][lessonGroup][lesson].charAt(0) === "r") ? -1 : 1;
+        var isConsistent = true;
+        for (var instructor in this.instructorPreferences) {
+            var instructorPreferences = this.instructorPreferences[instructor];
+
+            for (var lessonGroup = 0; lessonGroup < instructorPreferences.length; lessonGroup++) {
+                for (var lesson = 0; lesson < instructorPreferences[lessonGroup].length; lesson++) {
+                    isConsistent = isConsistent && (instructorPreferences[lessonGroup][lesson].charAt(0) !== "r");
                 }
             }
 
             // Delete key-value pairing if all values are filled or empty.
-            if (Math.abs(isConsistent) === 21) {
-                delete this.instructorPreferences[Object.keys(this.instructorPreferences)[keyIndex--]];
+            if (isConsistent) {
+                delete this.instructorPreferences[instructor];
             }
         }
 
@@ -240,6 +247,9 @@ class LIPReader extends React.Component {
         this.updateSessionStorage();
     }
 
+    /**
+     * Set the gathered data in sessionStorage.
+     */
     updateSessionStorage() {
         sessionStorage.setItem("instructors", JSON.stringify(this.instructors));
         sessionStorage.setItem("instructorPreferences", JSON.stringify(this.instructorPreferences));
