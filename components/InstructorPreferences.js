@@ -29,7 +29,7 @@ class InstructorPreferences extends React.Component {
             this.preferences = JSON.parse(sessionPreference);
         }
 
-        $(".modal-footer a").click(this.editPreferences.bind(this));
+        $("#dynamicInstructorPreferences .modal-footer a").click(this.editPreferences.bind(this));
 
         // Hide modal on click outside of modal.
         $(window).click(() => {

@@ -4,7 +4,7 @@ eggbeatr is a web application to schedule instructors with  lessons. It does the
 
 
 ### Goal
-The goal of this project is to improve the schedule generating process, taking on the simple, repeatitive aspects.
+The goal of this project is to improve the schedule generating process, taking on the simple, repetitive aspects.
 
 The goal of this document is to provide non-technical details on the project and its current deployment.
 
@@ -25,7 +25,7 @@ The four principle components are described in detail below. In short, the value
 
 eggbeatr is composed of 4 major components: Instructors, Lessons, Private Lessons, Grid. Each component combines their data in order to produce a schedule.
 
-The information input to each component is stored locally in the web browser using Session Storage. This allows the information to be presistent through browser refresh, but not transfer from browser tab/page to another. In the future, this information will be stored in a database, so it may e presistent between sessions. To clear the stored information, pass the query parameter "clearStorage=session", like this:
+The information input to each component is stored locally in the web browser using Session Storage. This allows the information to be persistent through browser refresh, but not transfer from browser tab/page to another. In the future, this information will be stored in a database, so it may e persistent between sessions. To clear the stored information, pass the query parameter "clearStorage=session", like this:
 http://web.uvic.ca/~ibs/?clearStorage=session
 
 ### Instructors
@@ -38,14 +38,14 @@ The WSI certification field reacts to the currency the instructor's certificatio
 * Yellow: The certification will expire in 90 days or less.
 * Red: The certification has expired.
 
-To facilitate the colour coding, the dates must be input with forward shashes as seperators (e.g., 31/12/00) and ordered either as dd/mm/yy or mm/dd/yy. If only one value for the field is input, the preceding value will be interpreted as zero.
+To facilitate the colour coding, the dates must be input with forward slashes as separators (e.g., 31/12/00) and ordered either as dd/mm/yy or mm/dd/yy. If only one value for the field is input, the preceding value will be interpreted as zero.
 
-Instructors may be given preferences on the lessons they teach. It is important to note that they give priority to the selected lesson types and does not prevent them from teaching non-preferred lesson types. An intructor's preferences default to any of the available lesson types.
+Instructors may be given preferences on the lessons they teach. It is important to note that they give priority to the selected lesson types and does not prevent them from teaching non-preferred lesson types. An instructor's preferences default to any of the available lesson types.
 
 The values input to the Instructors section must match specific patterns, listed below:
 
 * Instructor: At least one of uppercase or lowercase letters, followed by uppercase or lowercase letters or spaces.
-* Date of Hire: Three numbers, 1 to 31, 1 to 12, and 0 to 99, seperated by forward slashes.
+* Date of Hire: Three numbers, 1 to 31, 1 to 12, and 0 to 99, separated by forward slashes.
 * WSI Expiration Date: Same as Date of Hire.
 
 
@@ -65,7 +65,7 @@ The private lessons are mapped to instructors by the "Instructor" fields of both
 For the application to evaluate the input values properly, the values are expected to follow these conventions:
 
 * Instructor: At least one of uppercase or lowercase letters, followed by uppercase or lowercase letters or spaces.
-* Time: Two numbers, 1 to 12 and 0 to 59, seperated by a colon.
+* Time: Two numbers, 1 to 12 and 0 to 59, separated by a colon.
 * Duration: Any integer value greater than 10.
 
 Any value not following these conventions will have an error notification displayed.
@@ -81,6 +81,6 @@ The Grid component is responsible for creating and displaying the schedules. In 
 
 The checklist updates automatically when the Instructors, Lessons, or Private Lessons components are updated.
 
-In addition to minimum values, there is also a threshold on maximum values. In short, there must be enough slots to place lessons. As an example, six instructors ay teach six lessons, however, one instructor may not teach six lessons.
+In addition to minimum values, there is also a threshold on maximum values. In short, there must be enough slots to place lessons. As an example, six instructors can teach six lessons, however, one instructor may not teach six lessons.
 
-The product of this section is a list of schedules that meet the input requirements. Since there is usually more than one possibility, these many possibilites are displayed. There are cases where only one possibility exists (i.e., private lessons only) and only one schedule will be created.
+The product of this section is a list of schedules that meet the input requirements. Since there is usually more than one possibility, these many possibilities are displayed. An individual schedule may be exported as a PDF document for further use, such as distribution. There are cases where only one possibility exists (i.e., private lessons only) and only one schedule will be created.

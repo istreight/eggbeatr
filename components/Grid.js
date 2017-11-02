@@ -17,7 +17,6 @@ class Grid extends React.Component {
     constructor(props) {
         super(props);
 
-        this.numLessons = 0;
         this.lessonQueue = [[], [], ["Hosing", "Assess"]];
         this.lessonCodes = {
             "02": "<div class='vertical-line vertical-line-center'></div>",
@@ -41,53 +40,30 @@ class Grid extends React.Component {
         $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
 
         // Disable grid duration buttons.
-        $(".duration-button").eq(0).addClass("pure-menu-selected");
+        $("#dynamicGrid .duration-button").eq(0).addClass("pure-menu-selected");
 
-        $(".duration-button").click(() => {
-            this.updateDuration(event.target);
-        });
+        $("#dynamicGrid .duration-button").click(this.updateDuration.bind(this));
 
-        // Hide modal on click outside of modal.
-        $(window).click(() => {
-            // Target is HTML object.
-            if (event.target === $("#dynamicGrid .modal")[0]) {
-                $("#dynamicGrid .modal-body").empty();
+        $("#dynamicGrid .modal-footer a").click(this.exportToPDF.bind(this));
 
-                $("#dynamicGrid .modal").css({
-                    "display": "none"
-                });
-
-                $(".vertical-line").css({
-                    "height": "43px"
-                });
-                $(".vertical-line-center").css({
-                    "margin": "-21.5px 0 0 50px"
-                });
-                $(".vertical-line-left").css({
-                    "margin": "-8px 0 0 50px"
-                });
-                $(".vertical-line-right").css({
-                    "margin": "-35px 0 0 50px"
-                });
-            }
-        });
+        $(window).click(this.hideModal);
     }
 
     /**
      * Update the object duration value and display the
      * correct button as selected.
      */
-    updateDuration(target) {
+    updateDuration() {
         var duration;
         var durationIndex;
         var durationContainer = $("#dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable)");
 
         // Find previously selected duration and remove "selected" class.
-        $(target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
+        $(event.target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
 
-        $(target).addClass("pure-menu-selected");
+        $(event.target).addClass("pure-menu-selected");
 
-        durationIndex = durationContainer.find("li a").index(target);
+        durationIndex = durationContainer.find("li a").index(event.target);
         duration = (durationIndex / 2.0) + 1;
 
         this.props.lipData.duration = duration;
@@ -142,7 +118,6 @@ class Grid extends React.Component {
     generateLessonQueue() {
         var lessonQueue = [[], [], ["Hosing", "Assess"]];
 
-        // Lessons of 3/4 hour length.
         var threeQuarterLessons = [
             "Level 6",
             "Level 7",
@@ -176,7 +151,7 @@ class Grid extends React.Component {
      * Sums the number of preferred lessons.
      */
     getPreferenceLength(newInstructor) {
-        return this.props.lipData.instructorPreferences[newInstructor].reduce(function(sum, next) {
+        return this.props.lipData.instructorPreferences[newInstructor].reduce((sum, next) => {
             return sum + next.length;
         }, 0);
     }
@@ -419,17 +394,16 @@ class Grid extends React.Component {
 
             $("#dynamicGrid .pure-menu-scrollable ul").append(newTable + "</tbody></table></a></li>");
 
-            // hover
-            $(".table-odd").hover(function() {
+            $("#dynamicGrid .table-odd").hover(() => {
                 $(".vertical-line").addClass("vertical-line-hover");
-            }, function() {
+            }, () => {
                 $(".vertical-line").removeClass("vertical-line-hover");
             });
         }
 
-        // Fit window to the Grids' size.
+        // Fit viewing window to the Grids' size.
         $("#dynamicGrid .pure-menu-scrollable").css({
-            "width": (125 * (2 * this.props.lipData.duration + 1.5)) + "px"
+            "width": (122.5 * (2 * this.props.lipData.duration + 1.5)) + "px"
         });
 
         // Eliminate space conflict with the GridChecklist.
@@ -439,27 +413,255 @@ class Grid extends React.Component {
              });
         }
 
-        // Click to make modal of list element
-        $("#dynamicGrid .pure-menu-scrollable a").click(() => {
+        // Click to make modal of list element.
+        $("#dynamicGrid .pure-menu-scrollable a").click(this.showModal);
+    }
+
+    /**
+     * Add and show the modal contents.
+     */
+    showModal() {
+        $("#dynamicGrid .modal").css({
+            "display": "block"
+        });
+
+        $(".vertical-line").css({
+            "height": "64px"
+        });
+        $(".vertical-line-center").css({
+            "margin": "-31.5px 0 0 50px"
+        });
+        $(".vertical-line-left").css({
+            "margin": "-18px 0 0 40px"
+        });
+        $(".vertical-line-right").css({
+            "margin": "-45px 0 0 55px"
+        });
+
+        $("#dynamicGrid .modal-body").html($(event.target).closest("a").clone());
+    }
+
+    /**
+     * Remove and hide the modal contents.
+     */
+    hideModal() {
+        if (event.target === $("#dynamicGrid .modal")[0]) {
             $("#dynamicGrid .modal").css({
-                "display": "block"
+                "display": "none"
             });
 
             $(".vertical-line").css({
-                "height": "64px"
+                "height": "43px"
             });
             $(".vertical-line-center").css({
-                "margin": "-31.5px 0 0 50px"
+                "margin": "-21.5px 0 0 50px"
             });
             $(".vertical-line-left").css({
-                "margin": "-18px 0 0 40px"
+                "margin": "-8px 0 0 50px"
             });
             $(".vertical-line-right").css({
-                "margin": "-45px 0 0 55px"
+                "margin": "-35px 0 0 50px"
             });
 
-            $("#dynamicGrid .modal-body").append($(event.target).closest("a").clone());
+            $("#dynamicGrid .modal-body").empty();
+        }
+    }
+
+    /**
+     * Export a Grid to a PDF document.
+     */
+    exportToPDF() {
+        var tableX1;
+        var tableX2;
+        var tableY1;
+        var tableY2;
+        var columns;
+        var prevCell;
+        var numColumns;
+        var dateCreated;
+
+        var rows = [];
+        var isRowOdd = false;
+        var instructors = [];
+        var tableBorders = [];
+        var lineCoordinates = [];
+        var newDate = new Date();
+        var splitCellIndices = [];
+        var doc = new jsPDF("l", "pt");
+        var tableCells = $("#dynamicGrid .modal td");
+        var tableRows = $("#dynamicGrid .modal tbody tr");
+        var quarterActivities = [
+            "",
+            "Hosing",
+            "Assess"
+        ];
+        var threeQuarterLessons = [
+            "Level 6",
+            "Level 7",
+            "Level 8",
+            "Level 9",
+            "Level 10",
+            "Basics I",
+            "Basics II",
+            "Strokes"
+        ];
+
+        dateCreated = [
+            newDate.getFullYear(),
+            newDate.getMonth() + 1,
+            newDate.getDate()
+        ].join("-");
+
+        columns = [
+            { dataKey: "id", title: "Instructor" },
+            { dataKey: "start", title: "9:00" },
+            { dataKey: "startPlusHalf", title: "9:30" },
+            { dataKey: "startPlusOne", title: "10:00"  },
+            { dataKey: "startPlusOneAndHalf", title: "10:30" },
+            { dataKey: "startPlusTwo", title: "11:00" }
+        ];
+
+        numColumns = tableCells.length / tableRows.length;
+        columns = columns.slice(0, numColumns);
+
+        tableRows.each((rowIndex, element) => {
+            var rowsKey;
+            var newCell = {};
+
+            $(element).find("td").each((cellIndex, element) => {
+                var cellText = $(element).text();
+                var reName = new RegExp(/[A-Za-z\s]+/);
+
+                if (cellIndex === 0 && reName.test(cellText)) {
+                    instructors.push(cellText);
+                }
+
+                rowsKey = columns[cellIndex].dataKey;
+
+                if (threeQuarterLessons.includes(cellText)) {
+                    var index = (rowIndex * numColumns) + cellIndex;
+
+                    if ($(element).prev().children().length > 0) {
+                        splitCellIndices.push(index - 1);
+                    }
+
+                    splitCellIndices.push(index);
+
+                    if ($(element).next().children().length > 0) {
+                        splitCellIndices.push(index + 1);
+                    }
+                }
+
+                newCell[rowsKey] = cellText;
+            });
+
+            rows.push(newCell);
         });
+
+        // jsPDF Auto-Table: github.com/simonbengtsson/jsPDF-AutoTable
+        doc.autoTable(columns, rows, {
+            bodyStyles: {
+                fillColor: [45, 62, 80],
+                textColor: [255, 255, 255]
+            },
+            columnStyles: {
+                /*
+                "id": { columnWidth: 80 },
+                "start": { columnWidth: 80 },
+                "startPlusHalf": { columnWidth: 80 },
+                "startPlusOne": { columnWidth: 80 },
+                "startPlusOneAndHalf": { columnWidth: 80 },
+                "startPlusTwo": { columnWidth: 80 }
+                */
+            },
+            headerStyles: {
+                fillColor: 224,
+                textColor: 0
+            },
+            styles: {
+                fontSize: 24,
+                lineColor: 200,
+                lineWidth: 0.5
+            },
+            startY: 60,
+            addPageContent: (data) => {
+                console.log(data.table);
+                tableX1 = data.table.pageStartX;
+                tableX2 = data.table.width + tableX1;
+                tableY1 = data.table.pageStartY;
+                tableY2 = data.table.height + tableY1;
+
+                doc.text("Grid - " + dateCreated, 40, 30);
+            },
+            createdCell: (cell, data) => {
+                var cellIndex = (data.row.index * numColumns) + data.column.index;
+                var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
+
+                if (splitArrayIndex > -1) {
+                    cell.styles.lineColor = cell.styles.fillColor;
+                    cell.styles.lineWidth = 0.001;
+                }
+
+                if (instructors.includes(cell.text[0])) {
+                    isRowOdd = !isRowOdd;
+                }
+
+                if (isRowOdd) {
+                    cell.styles.fillColor = [255, 255, 255];
+                    cell.styles.textColor = [45, 62, 80];
+                }
+
+                if (cell.text[0] === "Private") {
+                    cell.styles.fillColor = [118, 118, 118];
+                    cell.styles.textColor = [255, 255, 255];
+                }
+            },
+            drawCell: (cell, data) => {
+                var cellIndex = (data.row.index * numColumns) + data.column.index;
+                var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
+
+                if (splitArrayIndex > -1 && prevCell) {
+                    if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
+                        // Place quarter-activity on the right side of cell divider.
+                        cell.textPos.x += cell.width / 2;
+
+                        lineCoordinates.push([
+                            cell.x + (cell.width / 2),
+                            cell.y,
+                            cell.x + (cell.width / 2),
+                            cell.y + cell.height
+                        ]);
+                    } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
+                        lineCoordinates.push([
+                            prevCell.x + (prevCell.width / 2),
+                            prevCell.y,
+                            prevCell.x + (prevCell.width / 2),
+                            prevCell.y + prevCell.height
+                        ]);
+                    }
+                }
+
+                prevCell = cell;
+            }
+        });
+
+        doc.setDrawColor(200);
+        doc.setLineWidth(0.5);
+
+        // Draw split cell lines.
+        for (var line = 0; line < lineCoordinates.length; line++) {
+            var [x1, y1, x2, y2] = lineCoordinates[line];
+
+            doc.line(x1, y1, x2, y2);
+        }
+
+        // Draw table border lines (to compenate removing cell borders on edge of table).
+        doc.line(tableX1, tableY1, tableX1, tableY2);
+        doc.line(tableX2, tableY1, tableX2, tableY2);
+        doc.line(tableX1, tableY1, tableX2, tableY1);
+        doc.line(tableX1, tableY2, tableX2, tableY2);
+
+        doc.save("grid-" + dateCreated + ".egbtr.pdf");
     }
 
     render() {
@@ -507,18 +709,22 @@ class Grid extends React.Component {
                 </div>
                 <div className="modal">
                     <div className="modal-content">
-                        <div className="modal-header">The Grid</div>
+                        <div className="modal-header">
+                            The Grid
+                        </div>
                         <div className="modal-body"></div>
-                        <div className="modal-footer"></div>
+                        <div className="modal-footer">
+                            <a className="pure-button">Export to PDF</a>
+                        </div>
                     </div>
                 </div>
                 <div className="content-section-footer">
                     <h2 className="content-head">
-                        <font color="#2d3e50">Step #4:</font>
+                        Step #4:
                     </h2>
-                    <font color="#333">
+                    <p>
                         Create a grid, and I&#039;ll  get cooking.
-                    </font>
+                    </p>
                 </div>
             </div>
         );

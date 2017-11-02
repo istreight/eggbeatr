@@ -112,7 +112,6 @@
      float: right;
  }
 
- /* Colour table rows, cells, and text, independent of background colour */
  .table-odd {
      background-color: white;
      color: #2d3e50;
@@ -593,21 +592,6 @@
     color: #1f8dd6;
 }
 
-#dynamicGrid .modal-body {
-    padding: 16px;
-
-    font-size: 18px;
-}
-
-#dynamicGrid .modal-body table {
-    table-layout: fixed;
-}
-
-#dynamicGrid .modal-body th, #dynamicGrid .modal-body td {
-    width: 128px;
-    height: 64px;
-}
-
 #dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable) {
     margin: -5% 0 0 32.25%;
 }
@@ -639,10 +623,32 @@
     display: none;
 }
 
+#dynamicGrid .modal-body {
+    padding: 16px;
+
+    font-size: 18px;
+}
+
+#dynamicGrid .modal-body table {
+    table-layout: fixed;
+}
+
+#dynamicGrid .modal-body th, #dynamicGrid .modal-body td {
+    width: 128px;
+    height: 64px;
+}
+
+#dynamicGrid .content-section-footer h2 {
+    color: #2d3e50;
+}
+
+#dynamicGrid .content-section-footer p {
+    color: #333333;
+}
+
 
 
 /* GRID CHECKLIST */
-
 
 #dynamicGridChecklist div {
     position: absolute;

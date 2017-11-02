@@ -72,7 +72,7 @@ class GridFactory extends React.Component {
                     if (props.privates[privateInstructor][privateTimeSlot][1] === "Yes") {
                         // Find instructor row.
                         var instructor;
-                        grid.some(function(row, index) {
+                        grid.some((row, index) => {
                             if (row[0] === privateInstructor) {
                                 instructor = index;
                                 return true;
