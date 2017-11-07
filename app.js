@@ -10,9 +10,9 @@
 // Libs
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PureCSS from 'pure-css';
 
 // CSS
-import { buttons } from 'pure-css';
 import './css/pure.css';
 import './css/style.css';
 
@@ -37,6 +37,8 @@ ReactDOM.render(<Footer />, document.getElementById('dynamicFooter'));
 
 
 ReactDOM.render(<Grid
+    callback={lipReader.gridCallback}
+    lipReader={lipReader}
     lipData={lipReader.manipulateData()}
 />, document.getElementById('dynamicGrid'));
 

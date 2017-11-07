@@ -44,7 +44,7 @@ class InstructorPreferences extends React.Component {
     }
 
     setPreferencesButtons(enable) {
-        var preferenceButtons = $(".preferences");
+        var preferenceButtons = $("#dynamicInstructors .preferences");
 
         if (enable) {
             preferenceButtons.click(this.displayPreferenceModal.bind(this));
@@ -64,8 +64,8 @@ class InstructorPreferences extends React.Component {
         });
 
         var instructor = $(event.target).closest("tr").find("td").eq(0).html();
-        $(".modal-header").html(instructor);
-        $(".modal-body p").html("The following table outlines " + instructor + "'s level preferences.");
+        $("#dynamicInstructorPreferences .modal-header").html(instructor);
+        $("#dynamicInstructorPreferences .modal-body p").html("The following table outlines " + instructor + "'s level preferences.");
 
         this.levelPreferences(instructor);
     }
@@ -100,14 +100,14 @@ class InstructorPreferences extends React.Component {
             newTable += "</tr>";
         }
 
-        $(".modal table tbody").html(newTable);
+        $("#dynamicInstructorPreferences .modal table tbody").html(newTable);
     }
 
     /**
      * Sets the state of the Preferences table to allow removal of cells.
      */
     editPreferences() {
-        var lessonCells = $(".modal td").filter((cell) => {
+        var lessonCells = $("#dynamicInstructorPreferences .modal td").filter((cell) => {
             return cell < 15 || (cell % 5 !== 0 && cell % 5 !== 4);
         });
 
@@ -122,16 +122,17 @@ class InstructorPreferences extends React.Component {
         });
 
         // Bind removal and re-adding buttons.
-        $(".modal table .remove-preference").click(() => {
+        $("#dynamicInstructorPreferences .modal table .remove-preference").click(() => {
             this.togglePreferenceCell(true);
         });
-        $(".modal table .add-preference").unbind("click").click(() => {
+        $("#dynamicInstructorPreferences .modal table .add-preference").unbind("click").click(() => {
             this.togglePreferenceCell(false);
         });
 
-        $(".modal-footer a").unbind("click");
-        $(".modal-footer a").html("Finish Editing");
-        $(".modal-footer a").click(this.finishEditingPreferences.bind(this));
+        var editButton = $("#dynamicInstructorPreferences .modal-footer a");
+        editButton.unbind("click");
+        editButton.html("Finish Editing");
+        editButton.click(this.finishEditingPreferences.bind(this));
     }
 
     /**
@@ -140,11 +141,11 @@ class InstructorPreferences extends React.Component {
      */
     togglePreferenceCell(remove) {
         var className;
-        var name = $(".modal-header").html();
+        var name = $("#dynamicInstructorPreferences .modal-header").html();
         var row = $(event.target).closest("tr");
         var cell = $(event.target).closest("td");
         var cellIndex = row.children().index(cell);
-        var rowIndex = $(".modal-body tr").index(row) - 1;
+        var rowIndex = $("#dynamicInstructorPreferences .modal-body tr").index(row) - 1;
 
         if (row.hasClass("table-odd")) {
             className = "remove-preference-odd";
@@ -161,7 +162,7 @@ class InstructorPreferences extends React.Component {
             cell.append("<span class='add-preference'>&#10003;</span>");
 
             // Rebind each 'add-preference' to their new cell.
-            $(".modal .add-preference").unbind("click").click(() => {
+            $("#dynamicInstructorPreferences .modal .add-preference").unbind("click").click(() => {
                 this.togglePreferenceCell(false);
             });
         } else {
@@ -171,7 +172,7 @@ class InstructorPreferences extends React.Component {
             cell.append("<span class='remove-preference'>×</span>");
 
             // Rebind each 'remove-preference' to react to their new cell.
-            $(".modal .remove-preference").unbind("click").click(() => {
+            $("#dynamicInstructorPreferences .modal .remove-preference").unbind("click").click(() => {
                 this.togglePreferenceCell(true);
             });
         }
@@ -183,14 +184,15 @@ class InstructorPreferences extends React.Component {
      */
     finishEditingPreferences() {
         // Key in preferences to add updated value.
-        var name = $(".modal-header").html();
+        var name = $("#dynamicInstructorPreferences .modal-header").html();
 
         // Remove 'add-preference' or 'remove-preference' buttons.
-        $(".modal span").remove();
+        $("#dynamicInstructorPreferences .modal span").remove();
 
-        $(".modal-footer a").unbind("click");
-        $(".modal-footer a").html("Edit");
-        $(".modal-footer a").click(this.editPreferences.bind(this));
+        var editButton = $("#dynamicInstructorPreferences .modal-footer a");
+        editButton.html("Edit");
+        editButton.unbind("click");
+        editButton.click(this.editPreferences.bind(this));
 
         this.props.callback(this.preferences, this.props.lipReader);
     }

@@ -36,7 +36,7 @@ class Lessons extends React.Component {
 
         // Save on button click or on input deselect ('blur').
         $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
-        $("input").blur(this.storeLessonValues.bind(this));
+        $("#dynamicLessons input").blur(this.storeLessonValues.bind(this));
 
         // Link tutorital button to next section.
         $("#dynamicLessons .content-section-footer a").click(() => {
@@ -71,7 +71,7 @@ class Lessons extends React.Component {
             }
 
             var lessonQuantity = this.lessonSet[lesson];
-            
+
             if (lessonQuantity > 0) {
                 numLessons += lessonQuantity;
             }
@@ -159,7 +159,7 @@ class Lessons extends React.Component {
                     <h2 className="content-head is-right">
                         Lessons
                     </h2>
-                    <div className="content-section-description is-right right-text">
+                    <div className="content-section-description is-right float-right">
                         Describe the lessons of the set.
                         <ul className="content-section-explanation">
                             <li>Quantify each lesson type of the set</li>

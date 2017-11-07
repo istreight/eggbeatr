@@ -4,9 +4,7 @@
  * START DATE:  November 8th, 2016
  *
  * This file contains the LIPReader class that renders the Lessons, Instrutors,
- * and Private sections of the lesson calendar web application.
- * This class requires input props.
- * A function, not React class, is exported.
+ *  and Private sections of the lesson calendar web application.
  */
 
 import React from 'react';
@@ -30,6 +28,7 @@ class LIPReader extends React.Component {
             sessionStorage.clear();
         }
 
+        this.grid = JSON.parse(sessionStorage.getItem("grid") || "{}");
         this.instructors = JSON.parse(sessionStorage.getItem("instructors") || "{}");
         this.instructorPreferences = JSON.parse(sessionStorage.getItem("instructorPreferences") || "{}");
         this.lessons = JSON.parse(sessionStorage.getItem("lessons") || "{}");
@@ -69,6 +68,21 @@ class LIPReader extends React.Component {
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicPrivate'));
     }
+
+    /**
+     * Callback to store data from Grid.j
+     */
+     gridCallback(_grid, lipReader) {
+         console.log("retrieving data from Grid.js...");
+
+         console.log("grid: ", lipReader.grid);
+         lipReader.grid = jQuery.extend(true, {}, _grid);
+         console.log("grid: ", lipReader.grid);
+
+         console.log("adding data from Grid.js to lipData...");
+
+         lipReader.manipulateData();
+     }
 
     /**
      * Callback to store data from Instructors.js
@@ -251,14 +265,11 @@ class LIPReader extends React.Component {
      * Set the gathered data in sessionStorage.
      */
     updateSessionStorage() {
+        sessionStorage.setItem("grid", JSON.stringify(this.grid));
         sessionStorage.setItem("instructors", JSON.stringify(this.instructors));
         sessionStorage.setItem("instructorPreferences", JSON.stringify(this.instructorPreferences));
         sessionStorage.setItem("lessons", JSON.stringify(this.lessons));
         sessionStorage.setItem("private", JSON.stringify(this.private));
-    }
-
-    render() {
-        return null;
     }
 }
 

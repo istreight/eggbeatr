@@ -180,6 +180,10 @@ class Instructors extends React.Component {
         });
 
         if (!addedCells) {
+            if (removeInputRow) {
+                this.addInputRow();
+            }
+            
             this.inputifyRows();
         }
 

@@ -210,6 +210,10 @@ class Private extends React.Component {
         });
 
         if (!addedCells) {
+            if (removeInputRow) {
+                this.addInputRow();
+            }
+
             this.inputifyRows();
         }
 
@@ -285,15 +289,16 @@ class Private extends React.Component {
 
                 isValidData = reName.test(newData);
             } else if (newData.split(":").length === 2){
-                var [hour, minutes] = newData.split(":");
-                var reHours = new RegExp(/^0?[0-9]|1[0-2]$/);
-                var reMinutes = new RegExp(/^0?[0-9]|[1-5][0-9]$/);
+                var [hour, minute] = newData.split(":");
+                var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
+                var reMinute = new RegExp(/^(00|15|30|45)$/);
 
-                isValidData = reHours.test(hour) && reMinutes.test(minutes);
+                isValidData = reHour.test(hour) && reMinute.test(minute);
             } else {
-                var reDuration = new RegExp(/^[1-9][0-9]*$/);
+                var reDuration = new RegExp(/^(0|15|30|45)$/);
+                var duration = parseInt(newData, 10) % 60;
 
-                isValidData = reDuration.test(newData);
+                isValidData = reDuration.test(duration);
             }
 
             if (isValidData) {

@@ -8,15 +8,14 @@
  * The result array from the generateGrid() function is exported.
  */
 
-import React, {Component, PropTypes} from 'react';
+import React from 'react';
 
 class GridFactory extends React.Component {
     constructor(props) {
         super(props);
 
-        this.endTime;
+        this.lessonTimes;
         this.hasBothTypes;
-        this.startTime = 9;
         this.gridList = [];
     }
 
@@ -28,9 +27,10 @@ class GridFactory extends React.Component {
      *  1/4 hour activity:  3   (SINGLE)
      *  Private lesson:     4
      */
-
-    generateGrid(data) {
+    generateGrid(data, lessonTimes) {
         console.log(data);
+
+        this.lessonTimes = lessonTimes;
 
         /**
          * Generate dynamic array.
@@ -54,6 +54,10 @@ class GridFactory extends React.Component {
         });
     }
 
+    /**
+     * Creates an array of Grids, with elements representing 15-minute slots
+     *  via single digit codes.
+     */
     fillGridList(props) {
         console.log(props);
 
@@ -70,6 +74,21 @@ class GridFactory extends React.Component {
             if (props.instructors.includes(privateInstructor)) {
                 for (var privateTimeSlot in props.privates[privateInstructor]) {
                     if (props.privates[privateInstructor][privateTimeSlot][1] === "Yes") {
+                        var [startHour, startMinute] = this.lessonTimes[0].split(":");
+                        var [privateHour, privateMinute] = privateTimeSlot.split(":");
+                        var duration = props.privates[privateInstructor][privateTimeSlot][0];
+
+                        privateHour = parseInt(privateHour, 10);
+                        privateMinute = parseInt(privateMinute, 10);
+                        startHour = parseInt(startHour, 10);
+                        startMinute = parseInt(startMinute, 10);
+
+                        if (privateHour < startHour) {
+                            continue;
+                        } else if (privateHour === startHour && privateMinute < startMinute) {
+                            continue;
+                        }
+
                         // Find instructor row.
                         var instructor;
                         grid.some((row, index) => {
@@ -81,14 +100,11 @@ class GridFactory extends React.Component {
                             return false;
                         });
 
-                        var [startHour, startMinute] = privateTimeSlot.split(":");
-                        var duration = props.privates[privateInstructor][privateTimeSlot][0];
-
                         // Find proper time slot.
-                        var slot = 1 + 4 * (parseInt(startHour, 10) - this.startTime) + Math.floor(parseInt(startMinute, 10) / 15);
+                        var slot = 1 + 4 * (privateHour - startHour) + Math.floor((privateMinute - startMinute) / 15);
 
                         // Number of slots private lesson will occupy.
-                        var numSlots = Math.floor(parseInt(duration, 10) / 15);
+                        var numSlots = Math.floor(duration / 15);
 
                         // Allocate slot for private.
                         if (slot + numSlots < grid[instructor].length + 1) {
@@ -112,15 +128,15 @@ class GridFactory extends React.Component {
         }
 
         if (numHalfHourLessons < 1 && numThreeQuarterHourLessons < 1) {
-            if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addHosing(grid)) {
+            if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addHose(grid)) {
                 this.gridList.push(
                     this.condenseGrid(
-                        [["Instructor", "9:00", "9:30", "10:00", "10:30", "11:00"]].concat(jQuery.extend(true, [], grid))
+                        [["Instructor"].concat(this.lessonTimes)].concat(jQuery.extend(true, [], grid))
                     )
                 );
             }
 
-            this.removeHosing(grid);
+            this.removeHose(grid);
 
             return;
         }
@@ -188,21 +204,21 @@ class GridFactory extends React.Component {
         return true;
     }
 
-    addHosing(grid) {
+    addHose(grid) {
         var numHoses = 0;
 
         for (var instructor = 0; instructor < grid.length; instructor++) {
-            // If the first slot is a valid hosing spot, reject grid.
-            if (grid[instructor][1] === 0 && grid[instructor][2] !== 0) {
+            // If the first slot is a valid hose spot, reject grid.
+            if (grid[instructor][1] === 0 && (grid[instructor][2] !== 0 && grid[instructor][2] !== 4)) {
                 return false;
             }
 
             for (var slot = 1; slot < grid[instructor].length; slot++) {
                 if (grid[instructor][slot] === 0) {
                     if (
-                        (slot === grid[instructor].length - 1 && grid[instructor][slot - 1] !== 0)
+                        (slot === grid[instructor].length - 1 && (grid[instructor][slot - 1] !== 0 && grid[instructor][slot - 1] !== 4))
                         ||
-                        (grid[instructor][slot - 1] !== 0 && grid[instructor][slot + 1] !== 0)
+                        ((grid[instructor][slot - 1] !== 0 && grid[instructor][slot - 1] !== 4) && (grid[instructor][slot + 1] !== 0 && grid[instructor][slot + 1] !== 4))
                     ) {
                         grid[instructor][slot] = 3;
                         numHoses++;
@@ -214,7 +230,7 @@ class GridFactory extends React.Component {
         return numHoses < 3;
     }
 
-    removeHosing(grid) {
+    removeHose(grid) {
         for (var instructor = 0; instructor < grid.length; instructor++) {
             for (var slot = 1; slot < grid[0].length; slot++) {
                 if (grid[instructor][slot] === 3) {
@@ -240,8 +256,8 @@ class GridFactory extends React.Component {
     }
 }
 
-function init(data) {
-    return (new GridFactory).generateGrid(data);
+function init(data, lessonTimes) {
+    return (new GridFactory).generateGrid(data, lessonTimes);
 }
 
 export default init;

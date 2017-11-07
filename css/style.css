@@ -7,148 +7,156 @@
  */
 
 
- /* Show scrollbars */
- ::-webkit-scrollbar {
-     -webkit-appearance: none;
-     width: 7px;
- }
+/* Show scrollbars */
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
 
- ::-webkit-scrollbar-thumb {
-     border-radius: 4px;
-     background-color: rgba(0,0,0,.5);
-     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
- }
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
 
- input[type="text"] {
-     color: black;
-     width: 100%;
+input[type="text"] {
+    color: black;
+    width: 100%;
 
-     padding: 8px;
-     border: solid 1px #dcdcdc;
- }
+    padding: 8px;
+    border: solid 1px #dcdcdc;
+}
 
- input[type="text"]:focus,
- input[type="text"].focus {
-     border: solid 1px #707070;
-     box-shadow: 0 0 5px 1px #969696;
- }
+input[type="text"]:focus,
+input[type="text"].focus {
+    border: solid 1px #707070;
+    box-shadow: 0 0 5px 1px #969696;
+}
 
- html, body, .content, .ribbon, .modal {
-     max-width: 100%;
-     overflow-x: hidden;
- }
+html, body, .content, .ribbon, .modal {
+    max-width: 100%;
+    overflow-x: hidden;
+}
 
- /* Colour and size text in the main sections of the application */
- .ribbon-section-description {
-     color: #ccc;
+/* Colour and size text in the main sections of the application */
+.ribbon-section-description {
+    color: #ccc;
 
-     width: 27.5%;
- }
+    width: 27.5%;
+}
 
- .ribbon-section-explanation {
-     color: #aaa;
-     font-size: 14px;
+.ribbon-section-explanation {
+    color: #aaa;
+    font-size: 14px;
 
-     line-height: 20px;
+    line-height: 20px;
 
-     list-style-type: none;
- }
+    list-style-type: none;
+}
 
- .ribbon-section-footer {
-     width: 100%;
-     height: 50px;
+.ribbon-section-footer {
+    width: 100%;
+    height: 50px;
 
-     margin: 0 0 0 1.25%;
+    margin: 0 0 0 1.25%;
 
-     line-height: 12px;
- }
+    line-height: 12px;
+}
 
- .ribbon-section-footer h2 {
-     color: white;
- }
+.ribbon-section-footer h2 {
+    color: white;
+}
 
- .ribbon-section-footer p {
-     color: #ddd;
- }
+.ribbon-section-footer p {
+    color: #ddd;
+}
 
- .content-section-description {
-     color: #444;
+.content-section-description {
+    color: #444;
 
-     width: 27.5%;
- }
+    width: 27.5%;
+}
 
- .content-section-explanation {
-     color: #666;
-     font-size: 14px;
+.content-section-explanation {
+    color: #666;
+    font-size: 14px;
 
-     line-height: 20px;
+    line-height: 20px;
 
-     list-style-type: none;
-     direction: rtl;
- }
+    list-style-type: none;
+    direction: rtl;
+}
 
- .content-section-footer {
-     width: 100%;
-     height: 50px;
+.content-section-footer {
+    width: 100%;
+    height: 50px;
 
-     line-height: 12px;
- }
+    line-height: 12px;
+}
 
- .content-next-button {
-     margin: -2.5% 0 0 100%;
+.content-next-button {
+    margin: -2.5% 0 0 100%;
 
-     font-size: 120%
- }
+    font-size: 120%
+}
 
- .is-left {
-     text-align: left;
- }
+.is-left {
+    text-align: left;
+}
 
- .is-right {
-     text-align: right;
- }
+.is-right {
+    text-align: right;
+}
 
- .right-text {
-     float: right;
- }
+.float-left {
+    float: left;
+}
 
- .table-odd {
-     background-color: white;
-     color: #2d3e50;
- }
+.float-right {
+    float: right
+}
 
- .table-odd:hover {
-     background-color: lightgrey;
- }
+.table-odd {
+    background-color: white;
+    color: #2d3e50;
+}
 
- .table-even {
-     background-color: #2d3e50;
-     color: white;
- }
+.table-odd:hover {
+    background-color: lightgrey;
+}
 
- .table-even:hover {
-     background-color: #747484;
- }
+.table-even {
+    background-color: #2d3e50;
+    color: white;
+}
 
- table {
-     white-space: nowrap;
- }
+.table-even:hover {
+    background-color: #747484;
+}
 
- th, td {
-     text-align: right;
- }
+table {
+    white-space: nowrap;
+}
 
- table tbody tr td:first-child {
-     text-align: left;
-     font-weight: bold;
- }
+tr:hover .line {
+    border-color: #cbcbcb !important;
+}
 
- /* Centre table horizontally */
- .pure-table {
-     margin-left: auto;
-     margin-right: auto;
-     width: 100px;
- }
+th, td {
+    text-align: right;
+}
+
+tbody td:first-child {
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Centre table horizontally */
+.pure-table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+}
 
 /* The Modal (background) */
 .modal {
@@ -375,7 +383,7 @@
 }
 
 #dynamicInstructorPreferences th {
-    text-align: left;
+    text-align: center;
 
     width: 150px;
 }
@@ -501,7 +509,7 @@
     table-layout: fixed;
 }
 
-#dynamicPrivate table th {
+#dynamicPrivate th {
     width: 125px;
 }
 
@@ -525,71 +533,125 @@
 
 /* GRID */
 
-.pure-menu-selected {
-    color: #1f8dd6;
-}
-
-.vertical-line {
+.line {
     position: absolute;
 
+    margin-top: -1.35em;
+
     height: 43px;
-
-    border: 0.75px solid lightgrey;
+    width: 64px;
 }
 
-.vertical-line-center {
-    margin: -21.5px 0 0 47px;
+.line p {
+    margin: 8px 12px;
+
+    color: inherit !important;
 }
 
-.vertical-line-left {
-    margin: -8px 0 0 47px;
+.line-left {
+    margin-left: -1em;
+
+    border-right: 1px solid lightgrey;
 }
 
-.vertical-line-right {
-    margin: -35px 0 0 47px;
+.line-right {
+    margin-left: 2.95em;
+
+    border-left: 1px solid lightgrey;
 }
 
-.vertical-line-hover {
-    border: 0.75px solid #cbcbcb;
+.modal .line {
+    height: 64px;
+    margin-top: -1.775em;
 }
 
-.quarter-activity-left {
-    margin: 0 0 0 -7.5px;
+.modal .line p {
+    margin: 18px 6px;
 
-    text-align: left;
+    color: inherit !important;
 }
 
-.quarter-activity-right {
-    margin: 0 -11px 0 0;
+.modal .line-left {
+    margin-left: -1em;
 
-    text-align: right;
+    border-right: 1px solid lightgrey;
 }
 
-.private-lesson-cell {
-    color: white;
-    background: #767676 !important;
-}
+.modal .line-right {
+    margin-left: 2.5em;
 
-.half-private-lesson-cell-left {
-    background: linear-gradient(to right, #767676 50%, transparent 50%);
-}
-
-.half-private-lesson-cell-right {
-    background: linear-gradient(to left, #767676 50%, transparent 50%);
+    border-left: 1px solid lightgrey;
 }
 
 .no-border {
     border: none !important;
 }
 
-#dynamicGrid {
-    padding: 45px;
+.private-lesson-cell {
+    color: white;
+    background: #767676 !important;
 
+    text-align: center;
+}
+
+.private-left {
+    margin: -12px -16px;
+
+    height: 0;
+
+    color: white;
+    background: linear-gradient(to right, #767676 50%, transparent 50%);
+
+    text-align: left;
+}
+
+.private-right {
+    margin: -12px -16px;
+
+    height: 0;
+
+    color: white;
+    background: linear-gradient(to left, #767676 50%, transparent 50%);
+
+    text-align: right;
+}
+
+.pure-menu-selected {
+    color: #1f8dd6;
+}
+
+
+#dynamicGrid {
     position: relative;
+
+    padding: 45px;
+}
+
+#dynamicGrid input[type="text"] {
+    margin: 0 20px;
+
+    width: 60px;
+    height: 32px;
+
+    text-align: right;
 }
 
 #dynamicGrid p {
     color: #1f8dd6;
+}
+
+#dynamicGrid th {
+    text-align: left;
+}
+
+#dynamicGrid div.pure-menu-heading {
+    position: absolute;
+
+    margin-left: 40px;
+}
+
+#dynamicGrid .pure-menu-heading {
+    margin: -64px 0;
 }
 
 #dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable) {
@@ -621,6 +683,17 @@
     bottom: 2%;
 
     display: none;
+}
+
+#dynamicGrid .modal-header a {
+    font-size: 12px;
+    font-weight: normal;
+
+    float: right;
+}
+
+#dynamicGrid .modal-footer a {
+    width: 95px;
 }
 
 #dynamicGrid .modal-body {

@@ -17,34 +17,41 @@ class Grid extends React.Component {
     constructor(props) {
         super(props);
 
-        this.lessonQueue = [[], [], ["Hosing", "Assess"]];
+        this.grid = {};
+        this.lessonQueue = [[], [], ["Hose", "Swim"]];
         this.lessonCodes = {
-            "02": "<div class='vertical-line vertical-line-center'></div>",
-            "04": "<div class='vertical-line vertical-line-center'></div><div class='private-lesson-cell-right'></div>",
-            "20": "<div class='vertical-line vertical-line-center'></div>",
-            "22": "<div class='vertical-line vertical-line-center'></div>",
-            "23": "<div class='vertical-line vertical-line-left'></div><div class='quarter-activity-right'>" + this.lessonQueue[2][0] + "</div>",
-            "24": "<div class='vertical-line vertical-line-center'></div><div class='private-lesson-cell-right'></div>",
-            "32": "<div class='quarter-activity-left'>" + this.lessonQueue[2][0] + "</div><div class='vertical-line vertical-line-right'></div>",
-            "34": "<div class='quarter-activity-left'>" + this.lessonQueue[2][0] + "</div><div class='vertical-line vertical-line-right'></div><div class='private-lesson-cell-right'></div>",
-            "40": "<div class='private-lesson-cell-left'></div><div class='vertical-line vertical-line-center'></div>",
-            "42": "<div class='private-lesson-cell-left'></div><div class='vertical-line vertical-line-center'></div>",
-            "43": "<div class='private-lesson-cell-left'></div><div class='vertical-line vertical-line-left'></div><div class='quarter-activity-right'>" + this.lessonQueue[2][0] + "</div>"
+            "02": "<div class='line line-left'></div>",
+            "04": "<div class='line line-left'></div><div class='private-right'></div>",
+            "20": "<div class='line line-right'></div>",
+            "22": "<div class='line line-right'></div>",
+            "23": "<div class='line line-right'><p>" + this.lessonQueue[2][0] + "</p></div>",
+            "24": "<div class='line line-left'></div><div class='private-right'></div>",
+            "32": "<div class='line line-left'><p>" + this.lessonQueue[2][0] + "</p></div>",
+            "40": "<div class='line line-right'></div><div class='private-left'></div>",
+            "42": "<div class='line line-right'></div><div class='private-left'></div>"
         };
     }
 
     componentDidMount() {
-        // Default duration is 1.5 hours.
-        this.props.lipData.duration = 1.5;
+        var sessionGrid = sessionStorage.getItem("grid");
+        if (sessionGrid && sessionGrid !== "{}") {
+            this.grid = JSON.parse(sessionGrid);
+        } else {
+            this.grid = {
+                "lessonTimes": ["9:00", "9:30", "10:00", "10:30", "11:00"],
+                "duration": 1.5
+            };
+        }
+
+        this.props.callback(this.grid, this.props.lipReader);
 
         $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
 
-        // Disable grid duration buttons.
+        $("#dynamicGrid input").attr("placeholder", this.grid.lessonTimes[0]);
+        $("#dynamicGrid input").blur(this.setLessonTimes.bind(this));
+
         $("#dynamicGrid .duration-button").eq(0).addClass("pure-menu-selected");
-
         $("#dynamicGrid .duration-button").click(this.updateDuration.bind(this));
-
-        $("#dynamicGrid .modal-footer a").click(this.exportToPDF.bind(this));
 
         $(window).click(this.hideModal);
     }
@@ -66,19 +73,80 @@ class Grid extends React.Component {
         durationIndex = durationContainer.find("li a").index(event.target);
         duration = (durationIndex / 2.0) + 1;
 
-        this.props.lipData.duration = duration;
+        this.grid.duration = duration;
 
         // If a grid exists, generate a new one with the new duration.
         if ($("#dynamicGrid .pure-menu-scrollable ul li").length > 0) {
             this.generateGrid();
         }
-     }
+    }
 
     /**
-     * Display a notification if no Grids are created.
-     * Display the number of instructors to be added to
-     * create a Grid, given duration and lesson quantities
-     * are constant.
+     * Validate the 'Start Time' input.
+     */
+    validateStartTime(startTime, target) {
+        var reHour = new RegExp(/^([1-9]|1[0-2])$/);
+        var reMinute = new RegExp(/^(00|15|30|45)$/);
+
+        var [hour, minute] = startTime.split(":");
+
+        var isValid = reHour.test(hour) && reMinute.test(minute);
+
+        if (isValid) {
+            $(target).attr("placeholder", startTime);
+            $(target).parent().removeClass("error-cell");
+        } else {
+            $(target).parent().addClass("error-cell");
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Sets all 5 possible lesson start times.
+     */
+    setLessonTimes(startTime) {
+        var isValid;
+        var startTime = $(event.target).val();
+
+        isValid = this.validateStartTime(startTime, event.target);
+
+        if (!isValid) {
+            return;
+        }
+
+        this.grid.lessonTimes = [startTime];
+
+        var [hour, minute] = startTime.split(":");
+
+        hour = parseInt(hour, 10);
+        minute = parseInt(minute, 10);
+
+        for (var slot = 0; slot < 4; slot++) {
+            var newTime;
+
+            minute = (minute + 30) % 60;
+
+            if (minute < 29) {
+                hour = hour % 12 + 1;
+            }
+
+            if (minute < 10) {
+                minute = "0".concat(minute);
+            }
+
+            newTime = [hour, minute].join(":");
+
+            this.grid.lessonTimes.push(newTime);
+        }
+
+        this.props.callback(this.grid, this.props.lipReader);
+    }
+
+    /**
+     * Display a notification if no Grids are created with
+     *  the number of instructors to be added to create a
+     *  Grid, given duration and lesson quantities are constant.
      */
     noGridsNotification(duration, numInstructors, numHalfLessons, numThreeQuarterLessons) {
         var noGridsString = "No Grids were created<br />Add 0 Instructor";
@@ -104,7 +172,7 @@ class Grid extends React.Component {
      * code for split cell.
      */
     getSplitCell(code) {
-        if (this.lessonQueue[2].length === 2 && this.lessonCodes[code].includes("quarter-activity")) {
+        if (this.lessonQueue[2].length === 2) {
             this.lessonQueue[2].splice(0, 1);
         }
 
@@ -113,10 +181,10 @@ class Grid extends React.Component {
 
     /**
      * Creates an array of lessons, divided to two arrays:
-     * 1/2 hour & 3/4 hour.
+     *  1/2 hour & 3/4 hour.
      */
     generateLessonQueue() {
-        var lessonQueue = [[], [], ["Hosing", "Assess"]];
+        var lessonQueue = [[], [], ["Hose", "Swim"]];
 
         var threeQuarterLessons = [
             "Level 6",
@@ -144,7 +212,7 @@ class Grid extends React.Component {
             }
         }
 
-        return lessonQueue;
+        this.lessonQueue = lessonQueue;
     }
 
     /**
@@ -272,7 +340,9 @@ class Grid extends React.Component {
      * Modifies the array to map to Red Cross levels.
      */
     generateGridArrays() {
-        var newGrids = GridFactory(this.props.lipData);
+        this.props.lipData.duration = this.grid.duration;
+
+        var newGrids = GridFactory(this.props.lipData, this.grid.lessonTimes);
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
         // Set allocated lessons slots to Red Cross & private lessons.
@@ -293,7 +363,7 @@ class Grid extends React.Component {
             }
 
             if (this.lessonQueue[2].length < 2) {
-                this.lessonQueue[2].unshift("Hosing");
+                this.lessonQueue[2].unshift("Hose");
             }
         }
 
@@ -311,14 +381,14 @@ class Grid extends React.Component {
         });
 
         // Create the queue of lessons.
-        this.lessonQueue = this.generateLessonQueue();
+        this.generateLessonQueue();
 
         // Get base array to represent grid.
         var gridArrays = this.generateGridArrays();
 
         if (gridArrays.length === 0) {
             this.noGridsNotification(
-                this.props.lipData.duration,
+                this.grid.duration,
                 this.props.lipData.instructors.length,
                 this.props.lipData.lessons.half,
                 this.props.lipData.lessons.threequarter
@@ -343,7 +413,7 @@ class Grid extends React.Component {
                     newTable += "<tr" + ((instructor % 2 === 0) ? " class='table-even'" : " class='table-odd'") + ">";
                 }
 
-                for (var slot = 0; slot < 2 * this.props.lipData.duration + 1; slot++) {
+                for (var slot = 0; slot < 2 * this.grid.duration + 1; slot++) {
                     /**
                      * Minimize the if-else flow when moved to React objects.
                      */
@@ -364,21 +434,39 @@ class Grid extends React.Component {
                              * 3/4 hour lesson; or,
                              * if it's a 3/4 hour lesson and the previous is a divisor cell.
                             */
-                            if (gridArrays[gridIndex][instructor][slot].includes("private-lesson-cell-right")) {
+                            if (gridArrays[gridIndex][instructor][slot].includes("private-right")) {
                                 // If the it is a right-private divisor cell next to a threequarter lesson cell.
-                                newTable += "<td class='no-border half-private-lesson-cell-right'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
+                                var cellContents = gridArrays[gridIndex][instructor][slot];
+
+                                if (gridArrays[gridIndex][instructor][slot + 1].includes("private-left")) {
+                                    cellContents = cellContents.replace("right'></", "right'>Pri</");
+                                }
+
+                                newTable += "<td class='no-border private-right'>" + cellContents + "</td>";
                             } else {
                                 newTable += "<td class='no-border is-left'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
                             }
-                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-lesson-cell-left")) {
+                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-left")) {
                             // It is to the right of a private lesson.
-                            newTable += "<td class='no-border half-private-lesson-cell-left'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
-                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-lesson-cell-right")) {
+                            var cellContents = gridArrays[gridIndex][instructor][slot];
+
+                            if (gridArrays[gridIndex][instructor][slot - 1].includes("private-right")) {
+                                cellContents = cellContents.replace("left'></", "left'>vate</");
+                            }
+
+                            newTable += "<td class='no-border private-left'>" + cellContents + "</td>";
+                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-right")) {
                             // It is to the left of a private lesson.
-                            newTable += "<td class='half-private-lesson-cell-right'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
+                            var cellContents = gridArrays[gridIndex][instructor][slot];
+
+                            if (gridArrays[gridIndex][instructor][slot + 1].includes("private-left")) {
+                                cellContents = cellContents.replace("right'></", "right'>Pri</");
+                            }
+
+                            newTable += "<td class='private-right'>" + cellContents + "</td>";
                         } else if (gridArrays[gridIndex][instructor][slot] === "Private") {
                             // It is a private lesson.
-                            newTable += "<td class='private-lesson-cell" + ((gridArrays[gridIndex][instructor][slot - 1].includes("private-lesson-cell-right")) ? " no-border is-left" : "") + "'>Private</td>";
+                            newTable += "<td class='private-lesson-cell" + ((gridArrays[gridIndex][instructor][slot - 1].includes("private-right")) ? " no-border is-left" : "") + "'>Private</td>";
                         } else {
                             newTable += "<td" + ((slot === 0) ? " class='first-column'" : "") + ">" + gridArrays[gridIndex][instructor][slot] + "</td>";
                         }
@@ -393,17 +481,11 @@ class Grid extends React.Component {
             }
 
             $("#dynamicGrid .pure-menu-scrollable ul").append(newTable + "</tbody></table></a></li>");
-
-            $("#dynamicGrid .table-odd").hover(() => {
-                $(".vertical-line").addClass("vertical-line-hover");
-            }, () => {
-                $(".vertical-line").removeClass("vertical-line-hover");
-            });
         }
 
         // Fit viewing window to the Grids' size.
         $("#dynamicGrid .pure-menu-scrollable").css({
-            "width": (122.5 * (2 * this.props.lipData.duration + 1.5)) + "px"
+            "width": (122.5 * (2 * this.grid.duration + 1.5)) + "px"
         });
 
         // Eliminate space conflict with the GridChecklist.
@@ -414,31 +496,72 @@ class Grid extends React.Component {
         }
 
         // Click to make modal of list element.
-        $("#dynamicGrid .pure-menu-scrollable a").click(this.showModal);
+        $("#dynamicGrid .pure-menu-scrollable a").click(this.showModal.bind(this));
+    }
+
+    /**
+     * Update the content in the Grid modal.
+     */
+    addModalContent(tableListElement) {
+        var prev;
+        var next;
+        var index;
+        var header;
+        var modalTable;
+        var reHashNumber;
+
+        var modalHeader = $("#dynamicGrid .modal-header");
+        var prevButton = $("#dynamicGrid .modal-footer a.float-left");
+        var nextButton = $("#dynamicGrid .modal-footer a.float-right");
+
+        // Update modal header with Grid number.
+        header = modalHeader.html();
+        index = tableListElement.index() + 1;
+        reHashNumber = new RegExp(/#[0-9]+/);
+        header = header.replace(reHashNumber, "#".concat(index));
+        modalHeader.html(header);
+
+        // Rebind 'previous' button.
+        prev = tableListElement.prev();
+        if (prev.length > 0) {
+            prevButton.removeClass("pure-button-disabled");
+            prevButton.click(() => {
+                this.addModalContent(prev);
+            });
+        } else {
+            prevButton.addClass("pure-button-disabled");
+            prevButton.unbind("click");
+        }
+
+        // Rebind 'next' button.
+        next = tableListElement.next();
+        if (next.length > 0) {
+            nextButton.removeClass("pure-button-disabled");
+            nextButton.click(() => {
+                this.addModalContent(next);
+            });
+        } else {
+            nextButton.addClass("pure-button-disabled");
+            nextButton.unbind("click");
+        }
+
+        $("#dynamicGrid .modal-header a").click(this.exportToPDF.bind(this));
+
+        modalTable = $(tableListElement).children("a").clone();
+        $("#dynamicGrid .modal-body").html(modalTable);
     }
 
     /**
      * Add and show the modal contents.
      */
     showModal() {
+        var tableListElement = $(event.target).closest("li");
+
+        this.addModalContent(tableListElement);
+
         $("#dynamicGrid .modal").css({
             "display": "block"
         });
-
-        $(".vertical-line").css({
-            "height": "64px"
-        });
-        $(".vertical-line-center").css({
-            "margin": "-31.5px 0 0 50px"
-        });
-        $(".vertical-line-left").css({
-            "margin": "-18px 0 0 40px"
-        });
-        $(".vertical-line-right").css({
-            "margin": "-45px 0 0 55px"
-        });
-
-        $("#dynamicGrid .modal-body").html($(event.target).closest("a").clone());
     }
 
     /**
@@ -450,19 +573,6 @@ class Grid extends React.Component {
                 "display": "none"
             });
 
-            $(".vertical-line").css({
-                "height": "43px"
-            });
-            $(".vertical-line-center").css({
-                "margin": "-21.5px 0 0 50px"
-            });
-            $(".vertical-line-left").css({
-                "margin": "-8px 0 0 50px"
-            });
-            $(".vertical-line-right").css({
-                "margin": "-35px 0 0 50px"
-            });
-
             $("#dynamicGrid .modal-body").empty();
         }
     }
@@ -471,14 +581,11 @@ class Grid extends React.Component {
      * Export a Grid to a PDF document.
      */
     exportToPDF() {
-        var tableX1;
-        var tableX2;
-        var tableY1;
-        var tableY2;
         var columns;
         var prevCell;
         var numColumns;
         var dateCreated;
+        var tableCoordinates;
 
         var rows = [];
         var isRowOdd = false;
@@ -492,8 +599,8 @@ class Grid extends React.Component {
         var tableRows = $("#dynamicGrid .modal tbody tr");
         var quarterActivities = [
             "",
-            "Hosing",
-            "Assess"
+            "Hose",
+            "Swim"
         ];
         var threeQuarterLessons = [
             "Level 6",
@@ -514,11 +621,11 @@ class Grid extends React.Component {
 
         columns = [
             { dataKey: "id", title: "Instructor" },
-            { dataKey: "start", title: "9:00" },
-            { dataKey: "startPlusHalf", title: "9:30" },
-            { dataKey: "startPlusOne", title: "10:00"  },
-            { dataKey: "startPlusOneAndHalf", title: "10:30" },
-            { dataKey: "startPlusTwo", title: "11:00" }
+            { dataKey: "start", title: this.grid.lessonTimes[0] },
+            { dataKey: "startPlusHalf", title: this.grid.lessonTimes[1] },
+            { dataKey: "startPlusOne", title: this.grid.lessonTimes[2]  },
+            { dataKey: "startPlusOneAndHalf", title: this.grid.lessonTimes[3] },
+            { dataKey: "startPlusTwo", title: this.grid.lessonTimes[4] }
         ];
 
         numColumns = tableCells.length / tableRows.length;
@@ -564,16 +671,6 @@ class Grid extends React.Component {
                 fillColor: [45, 62, 80],
                 textColor: [255, 255, 255]
             },
-            columnStyles: {
-                /*
-                "id": { columnWidth: 80 },
-                "start": { columnWidth: 80 },
-                "startPlusHalf": { columnWidth: 80 },
-                "startPlusOne": { columnWidth: 80 },
-                "startPlusOneAndHalf": { columnWidth: 80 },
-                "startPlusTwo": { columnWidth: 80 }
-                */
-            },
             headerStyles: {
                 fillColor: 224,
                 textColor: 0
@@ -585,61 +682,31 @@ class Grid extends React.Component {
             },
             startY: 60,
             addPageContent: (data) => {
-                console.log(data.table);
-                tableX1 = data.table.pageStartX;
-                tableX2 = data.table.width + tableX1;
-                tableY1 = data.table.pageStartY;
-                tableY2 = data.table.height + tableY1;
-
-                doc.text("Grid - " + dateCreated, 40, 30);
+                tableCoordinates = this.addPageContent(doc, data, dateCreated);
             },
             createdCell: (cell, data) => {
-                var cellIndex = (data.row.index * numColumns) + data.column.index;
-                var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
-
-                if (splitArrayIndex > -1) {
-                    cell.styles.lineColor = cell.styles.fillColor;
-                    cell.styles.lineWidth = 0.001;
-                }
-
                 if (instructors.includes(cell.text[0])) {
                     isRowOdd = !isRowOdd;
                 }
 
-                if (isRowOdd) {
-                    cell.styles.fillColor = [255, 255, 255];
-                    cell.styles.textColor = [45, 62, 80];
-                }
-
-                if (cell.text[0] === "Private") {
-                    cell.styles.fillColor = [118, 118, 118];
-                    cell.styles.textColor = [255, 255, 255];
-                }
+                cell = this.createdCell(cell,
+                    data,
+                    isRowOdd,
+                    numColumns,
+                    splitCellIndices
+                );
             },
             drawCell: (cell, data) => {
-                var cellIndex = (data.row.index * numColumns) + data.column.index;
-                var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
-
-                if (splitArrayIndex > -1 && prevCell) {
-                    if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
-                        // Place quarter-activity on the right side of cell divider.
-                        cell.textPos.x += cell.width / 2;
-
-                        lineCoordinates.push([
-                            cell.x + (cell.width / 2),
-                            cell.y,
-                            cell.x + (cell.width / 2),
-                            cell.y + cell.height
-                        ]);
-                    } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
-                        lineCoordinates.push([
-                            prevCell.x + (prevCell.width / 2),
-                            prevCell.y,
-                            prevCell.x + (prevCell.width / 2),
-                            prevCell.y + prevCell.height
-                        ]);
-                    }
-                }
+                lineCoordinates = this.drawCell(
+                    cell,
+                    data,
+                    prevCell,
+                    numColumns,
+                    lineCoordinates,
+                    splitCellIndices,
+                    quarterActivities,
+                    threeQuarterLessons
+                );
 
                 prevCell = cell;
             }
@@ -648,29 +715,107 @@ class Grid extends React.Component {
         doc.setDrawColor(200);
         doc.setLineWidth(0.5);
 
+        this.drawLines(doc, lineCoordinates, tableCoordinates);
+
+        doc.save("grid-" + dateCreated + ".egbtr.pdf");
+    }
+
+    /**
+     * Opertions performed as page is created.
+     */
+     addPageContent(doc, data, dateCreated) {
+         doc.text("Grid - " + dateCreated, 40, 30);
+
+         return [data.table.pageStartX,
+             data.table.pageStartY,
+             data.table.width + data.table.pageStartX,
+             data.table.height + data.table.pageStartY
+         ];
+     }
+
+    /**
+     * Operations performed on the cell as it is created.
+     */
+     createdCell(cell, data, isRowOdd, numColumns, splitCellIndices) {
+         var cellIndex = (data.row.index * numColumns) + data.column.index;
+         var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
+
+         if (splitArrayIndex > -1) {
+             cell.styles.lineColor = cell.styles.fillColor;
+             cell.styles.lineWidth = 0.001;
+         }
+
+         if (isRowOdd) {
+             cell.styles.fillColor = [255, 255, 255];
+             cell.styles.textColor = [45, 62, 80];
+         }
+
+         if (cell.text[0] === "Private") {
+             cell.styles.fillColor = [118, 118, 118];
+             cell.styles.textColor = [255, 255, 255];
+         }
+
+         return cell;
+     }
+
+    /**
+     * Draws the individual table cells in the PDF document.
+     */
+     drawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
+         var cellIndex = (data.row.index * numColumns) + data.column.index;
+         var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
+
+         if (splitArrayIndex > -1 && prevCell) {
+             if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
+                 // Place Hose/Swim on the right side of cell divider.
+                 cell.textPos.x += cell.width / 2;
+
+                 lineCoordinates.push([
+                     cell.x + (cell.width / 2),
+                     cell.y,
+                     cell.x + (cell.width / 2),
+                     cell.y + cell.height
+                 ]);
+             } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
+                 lineCoordinates.push([
+                     prevCell.x + (prevCell.width / 2),
+                     prevCell.y,
+                     prevCell.x + (prevCell.width / 2),
+                     prevCell.y + prevCell.height
+                 ]);
+             }
+         }
+
+         return lineCoordinates;
+     }
+
+    /**
+     * Draws cell splitting lines and table borders in PDF document.
+     */
+    drawLines(doc, lineCoordinates, tableCoordinates) {
+        var [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
+
+        // Draw table border lines (to compensate for removing cell borders on edge of table).
+        doc.line(tableX1, tableY1, tableX1, tableY2);
+        doc.line(tableX2, tableY1, tableX2, tableY2);
+        doc.line(tableX1, tableY1, tableX2, tableY1);
+        doc.line(tableX1, tableY2, tableX2, tableY2);
+
         // Draw split cell lines.
         for (var line = 0; line < lineCoordinates.length; line++) {
             var [x1, y1, x2, y2] = lineCoordinates[line];
 
             doc.line(x1, y1, x2, y2);
         }
-
-        // Draw table border lines (to compenate removing cell borders on edge of table).
-        doc.line(tableX1, tableY1, tableX1, tableY2);
-        doc.line(tableX2, tableY1, tableX2, tableY2);
-        doc.line(tableX1, tableY1, tableX2, tableY1);
-        doc.line(tableX1, tableY2, tableX2, tableY2);
-
-        doc.save("grid-" + dateCreated + ".egbtr.pdf");
     }
 
     render() {
         return (
             <div>
                 <h2 className="content-head is-right">
-                    The grid
+                    The Grid
                 </h2>
-                <div className="content-section-description is-right right-text">
+                <div className="content-section-description is-right float-right">
                     Generate a lesson calendar.
                     <ul className="content-section-explanation">
                         <li>Select the duration</li>
@@ -682,10 +827,16 @@ class Grid extends React.Component {
                     </a>
                     <p className="right-button"></p>
                 </div>
+                <div className="pure-menu-heading">
+                    Start Time:
+                    <input type="text"></input>
+                </div>
                 <div className="pure-menu pure-menu-horizontal">
                     <ul className="pure-menu-list">
                         <li className="pure-menu-item">
-                            <a className="pure-menu-heading">Duration</a>
+                            <a className="pure-menu-heading">
+                                Duration
+                            </a>
                         </li>
                         <li className="pure-menu-item">
                             <a className="duration-button pure-menu-link">
@@ -710,11 +861,13 @@ class Grid extends React.Component {
                 <div className="modal">
                     <div className="modal-content">
                         <div className="modal-header">
-                            The Grid
+                            The Grid #0
+                            <a className="pure-button">Export to PDF</a>
                         </div>
                         <div className="modal-body"></div>
                         <div className="modal-footer">
-                            <a className="pure-button">Export to PDF</a>
+                            <a className="pure-button float-left">Previous</a>
+                            <a className="pure-button float-right">Next</a>
                         </div>
                     </div>
                 </div>
@@ -732,6 +885,8 @@ class Grid extends React.Component {
 }
 
 Grid.propTypes =  {
+    callback: React.PropTypes.func.isRequired,
+    lipReader: React.PropTypes.object.isRequired,
     lipData: React.PropTypes.object.isRequired
 }
 
