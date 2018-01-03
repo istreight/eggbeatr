@@ -31,7 +31,7 @@ class Lessons extends React.Component {
         this.setLessonValues();
         this.numLessons = this.getNumLessons();
 
-        this.props.callback(this.lessonSet, this.props.lipReader);
+        this.props.callback(this.lessonSet, this.props.controller);
         this.props.gridChecklist.setQuantity("lessons", this.numLessons);
 
         // Save on button click or on input deselect ('blur').
@@ -131,7 +131,7 @@ class Lessons extends React.Component {
             delete this.lessonSet.empty;
         }
 
-        this.props.callback(this.lessonSet, this.props.lipReader);
+        this.props.callback(this.lessonSet, this.props.controller);
         this.props.gridChecklist.setQuantity("lessons", this.numLessons);
     }
 
@@ -312,7 +312,7 @@ class Lessons extends React.Component {
 
 Lessons.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    lipReader: React.PropTypes.object.isRequired,
+    controller: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
 }
 

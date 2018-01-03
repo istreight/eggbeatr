@@ -17,16 +17,16 @@ import './css/pure.css';
 import './css/style.css';
 
 // Components
-import Header from './components/Header';
-import Landing from './components/Landing';
-import About from './components/About';
-import LIPReader from './components/LIPReader';
 import Grid from './components/Grid';
-import GridChecklist from './components/GridChecklist';
+import About from './components/About';
+import Header from './components/Header';
 import Footer from './components/Footer';
+import Landing from './components/Landing';
+import Controller from './components/Controller';
+import GridChecklist from './components/GridChecklist';
 
 
-var lipReader = new LIPReader();
+var controller = new Controller();
 var gridChecklist = new GridChecklist();
 
 // Render components to static div tags.
@@ -37,10 +37,10 @@ ReactDOM.render(<Footer />, document.getElementById('dynamicFooter'));
 
 
 ReactDOM.render(<Grid
-    callback={lipReader.gridCallback}
-    lipReader={lipReader}
-    lipData={lipReader.manipulateData()}
+    callback={controller.gridCallback}
+    controller={controller}
+    controllerData={controller.manipulateData()}
 />, document.getElementById('dynamicGrid'));
 
 // renderComponents renders Lessons, Instructors, and Private to static div tags.
-lipReader.renderComponents(gridChecklist.renderComponent());
+controller.renderComponents();

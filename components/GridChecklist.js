@@ -125,12 +125,4 @@ class GridChecklist extends React.Component {
     }
 }
 
-function exportComponent() {
-    return {
-        renderComponent: () => {
-            return ReactDOM.render(<GridChecklist/>, document.getElementById('dynamicGridChecklist'));
-        }
-    };
-}
-
-export default exportComponent;
+export default GridChecklist;

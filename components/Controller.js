@@ -1,26 +1,32 @@
 /**
- * FILENAME:    LIPReader.js
+ * FILENAME:    Controller.js
  * AUTHOR:      Isaac Streight
- * START DATE:  November 8th, 2016
+ * START DATE:  October 30th, 2017
  *
- * This file contains the LIPReader class that renders the Lessons, Instrutors,
- *  and Private sections of the lesson calendar web application.
+ * This file contains the Controller class that renders the major components
+ *  of the lesson calendar web application.
  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Instructors from './Instructors';
-import InstructorPreferences from './InstructorPreferences';
+import Grid from './Grid';
+import Header from './Header';
 import Lessons from './Lessons';
 import Private from './Private';
+import Instructors from './Instructors';
+import GridChecklist from './GridChecklist';
+import InstructorPreferences from './InstructorPreferences';
 
-class LIPReader extends React.Component {
+
+class Controller extends React.Component {
     constructor(props) {
         super(props);
 
+        this.componentsWithData = [];
+
         // To be passed to GridFactory.
-        this.lipData = {};
+        this.controllerData = {};
 
         // Clear storage from query string.
         var searchParams = new URLSearchParams(window.location.search);
@@ -36,112 +42,168 @@ class LIPReader extends React.Component {
     }
 
     /**
-     * Renders the Instructors, Lessons, and Private components to
-     *  static div tags.
+     * Renders the major components to static div tags.
      * Callback functions are passed to each of these components along with a
-     *  reference to the LIPReader object.
+     *  reference to the Controller object.
      */
-    renderComponents(gridChecklist) {
-        console.log("rendering Lessons, Instructors, & Private...");
+    renderComponents() {
+        var grid;
+        var header;
+        var lessons;
+        var privates;
+        var instructors;
+        var gridChecklist;
+        var instructorPreferences;
 
-        var instructorPreferences = ReactDOM.render(<InstructorPreferences
+        console.log("rendering components...");
+
+        grid = ReactDOM.render(<Grid
+            callback={this.gridCallback}
+            controller={this}
+            controllerData={this.manipulateData()}
+        />, document.getElementById('dynamicGrid'));
+        this.componentsWithData.push(grid);
+
+        gridChecklist = ReactDOM.render(<GridChecklist />, document.getElementById('dynamicGridChecklist'));
+        this.componentsWithData.push(gridChecklist);
+
+        instructorPreferences = ReactDOM.render(<InstructorPreferences
             callback={this.instructorPreferencesCallback}
-            lipReader={this}
+            controller={this}
         />, document.getElementById('dynamicInstructorPreferences'));
+        this.componentsWithData.push(instructorPreferences);
 
-        ReactDOM.render(<Instructors
+        instructors = ReactDOM.render(<Instructors
             callback={this.instructorsCallback}
-            lipReader={this}
+            controller={this}
             instructorPreferences={instructorPreferences}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicInstructors'));
+        this.componentsWithData.push(instructors);
 
-        ReactDOM.render(<Lessons
+        lessons = ReactDOM.render(<Lessons
             callback={this.lessonsCallback}
-            lipReader={this}
+            controller={this}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicLessons'));
+        this.componentsWithData.push(lessons);
 
-        ReactDOM.render(<Private
+        privates = ReactDOM.render(<Private
             callback={this.privateCallback}
-            lipReader={this}
+            controller={this}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicPrivate'));
+        this.componentsWithData.push(privates);
+
+        header = ReactDOM.render(<Header
+            callback={this.headerCallback}
+            controller={this}
+        />, document.getElementById('dynamicHeader'));
+        this.componentsWithData.push(header);
+
+        var searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get("clearSet")) {
+            var clearSet = searchParams.get("clearSet");
+
+            this.removeSetFromComponents(clearSet);
+        }
     }
 
     /**
-     * Callback to store data from Grid.j
+     * Callback to store data from Grid.js
      */
-     gridCallback(_grid, lipReader) {
+     gridCallback(_grid, controller) {
+         console.log(controller);
          console.log("retrieving data from Grid.js...");
 
-         console.log("grid: ", lipReader.grid);
-         lipReader.grid = jQuery.extend(true, {}, _grid);
-         console.log("grid: ", lipReader.grid);
+         console.log("grid: ", controller.grid);
+         controller.grid = jQuery.extend(true, {}, _grid);
+         console.log("grid: ", controller.grid);
 
-         console.log("adding data from Grid.js to lipData...");
+         console.log("adding data from Grid.js to controllerData...");
 
-         lipReader.manipulateData();
+         controller.manipulateData();
      }
 
     /**
      * Callback to store data from Instructors.js
      */
-    instructorsCallback(_instructor, lipReader) {
+    instructorsCallback(_instructor, controller) {
         console.log("retrieving data from Instructors.js...");
 
-        console.log("instructors: ", lipReader.instructors);
-        lipReader.instructors = jQuery.extend(true, {}, _instructor);
-        console.log("instructors: ", lipReader.instructors);
+        console.log("instructors: ", controller.instructors);
+        controller.instructors = jQuery.extend(true, {}, _instructor);
+        console.log("instructors: ", controller.instructors);
 
-        console.log("adding data from Instructors.js to lipData...");
+        console.log("adding data from Instructors.js to controllerData...");
 
-        lipReader.manipulateData();
+        controller.manipulateData();
     }
 
     /**
      * Callback to store data from InstructorsPreferences.js
      */
-    instructorPreferencesCallback(_instructorPreference, lipReader) {
+    instructorPreferencesCallback(_instructorPreference, controller) {
         console.log("retrieving data from InstructorsPreferences.js...");
 
-        console.log("instructorPreferences: ", lipReader.instructorPreferences);
-        lipReader.instructorPreferences = jQuery.extend(true, {}, _instructorPreference);
-        console.log("instructorPreferences: ", lipReader.instructorPreferences);
+        console.log("instructorPreferences: ", controller.instructorPreferences);
+        controller.instructorPreferences = jQuery.extend(true, {}, _instructorPreference);
+        console.log("instructorPreferences: ", controller.instructorPreferences);
 
-        console.log("adding data from InstructorsPreferences.js to lipData...");
+        console.log("adding data from InstructorsPreferences.js to controllerData...");
 
-        lipReader.manipulateData();
+        controller.manipulateData();
     }
 
     /**
      * Callback to store data from Lessons.js
      */
-    lessonsCallback(_lesson, lipReader) {
+    lessonsCallback(_lesson, controller) {
         console.log("retrieving data from Lessons.js...");
 
-        console.log("lessons: ", lipReader.lessons);
-        lipReader.lessons = jQuery.extend(true, {}, _lesson);
-        console.log("lessons: ", lipReader.lessons);
+        console.log("lessons: ", controller.lessons);
+        controller.lessons = jQuery.extend(true, {}, _lesson);
+        console.log("lessons: ", controller.lessons);
 
-        console.log("adding data from Lessons.js to lipData...");
+        console.log("adding data from Lessons.js to controllerData...");
 
-        lipReader.manipulateData();
+        controller.manipulateData();
     }
 
     /**
-     * Callback to store data from Private
+     * Callback to store data from Private.js
      */
-    privateCallback(_private, lipReader) {
+    privateCallback(_private, controller) {
         console.log("retrieving data from Private.js...");
 
-        console.log("private: ", lipReader.private);
-        lipReader.private = jQuery.extend(true, {}, _private);
-        console.log("private: ", lipReader.private);
+        console.log("private: ", controller.private);
+        controller.private = jQuery.extend(true, {}, _private);
+        console.log("private: ", controller.private);
 
-        console.log("adding data from Private.js to lipData...");
+        console.log("adding data from Private.js to controllerData...");
 
-        lipReader.manipulateData();
+        controller.manipulateData();
+    }
+
+    /**
+     * Callback to store data from Header.js
+     */
+    headerCallback(controller, newSetName) {
+        return;
+    }
+
+    /**
+     * Remove a new set from each component with data.
+     */
+    removeSetFromComponents(set) {
+        // Go to each component and remove the key-value pair.
+        for (var compontentIndex = 0; compontentIndex < this.componentsWithData.length; compontentIndex++) {
+            var component = this.componentsWithData[compontentIndex];
+
+            if (component.constructor.name === "Header") {
+                component.removeSet(set);
+            }
+        }
     }
 
     /**
@@ -191,24 +253,24 @@ class LIPReader extends React.Component {
      * Duration of lessons set is contained in the Grid component.
      */
     manipulateData() {
-        console.log("manipulating lipData...");
+        console.log("manipulating controllerData...");
 
         this.minimizeData();
         this.quantifyLessonTypes();
 
-        // Add instructors to lipData.
-        this.lipData.instructors = jQuery.extend(true, [], Object.keys(this.instructors));
+        // Add instructors to controllerData.
+        this.controllerData.instructors = jQuery.extend(true, [], Object.keys(this.instructors));
 
-        // Add instructor instructorPreferences to lipData.
-        this.lipData.instructorPreferences = jQuery.extend(true, {}, this.instructorPreferences);
+        // Add instructor instructorPreferences to controllerData.
+        this.controllerData.instructorPreferences = jQuery.extend(true, {}, this.instructorPreferences);
 
-        // Add lesson quantites and number of 1/2 & 3/4 hour lessons to lipData.
-        this.lipData.lessons = jQuery.extend(true, {}, this.lessons);
+        // Add lesson quantites and number of 1/2 & 3/4 hour lessons to controllerData.
+        this.controllerData.lessons = jQuery.extend(true, {}, this.lessons);
 
-        // Add private lessons to lipData.
-        this.lipData.private = jQuery.extend(true, {}, this.private);
+        // Add private lessons to controllerData.
+        this.controllerData.private = jQuery.extend(true, {}, this.private);
 
-        return this.lipData;
+        return this.controllerData;
     }
 
     /**
@@ -222,7 +284,7 @@ class LIPReader extends React.Component {
      *      private                 - remove private without "Yes"
      */
     minimizeData() {
-        console.log("minimizing lipData...");
+        console.log("minimizing controllerData...");
 
         /**
          * Eliminate empty strings and arrays in instructorPreferences.
@@ -273,4 +335,4 @@ class LIPReader extends React.Component {
     }
 }
 
-export default LIPReader;
+export default Controller;

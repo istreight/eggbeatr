@@ -43,7 +43,7 @@ class Grid extends React.Component {
             };
         }
 
-        this.props.callback(this.grid, this.props.lipReader);
+        this.props.callback(this.grid, this.props.controller);
 
         $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
 
@@ -140,7 +140,7 @@ class Grid extends React.Component {
             this.grid.lessonTimes.push(newTime);
         }
 
-        this.props.callback(this.grid, this.props.lipReader);
+        this.props.callback(this.grid, this.props.controller);
     }
 
     /**
@@ -197,12 +197,12 @@ class Grid extends React.Component {
             "Strokes"
         ];
 
-        for (var key in this.props.lipData.lessons) {
+        for (var key in this.props.controllerdata.lessons) {
             if (key === "half" || key === "threequarter" || key === "empty") {
                 continue;
             }
 
-            var value = this.props.lipData.lessons[key];
+            var value = this.props.controllerdata.lessons[key];
             var keyArray = Array(value).fill(key);
 
             if (threeQuarterLessons.includes(key)) {
@@ -219,7 +219,7 @@ class Grid extends React.Component {
      * Sums the number of preferred lessons.
      */
     getPreferenceLength(newInstructor) {
-        return this.props.lipData.instructorPreferences[newInstructor].reduce((sum, next) => {
+        return this.props.controllerdata.instructorPreferences[newInstructor].reduce((sum, next) => {
             return sum + next.length;
         }, 0);
     }
@@ -255,7 +255,7 @@ class Grid extends React.Component {
         var newInstructorOrder = [];
         var instructorPreferenceLengths = [];
 
-        for (var instructor in this.props.lipData.instructorPreferences) {
+        for (var instructor in this.props.controllerdata.instructorPreferences) {
             var preferenceSize = this.getPreferenceLength(instructor);
 
             instructorPreferenceLengths.push([instructor, preferenceSize]);
@@ -269,7 +269,7 @@ class Grid extends React.Component {
             newInstructorOrder.push(instructorPreferenceLengths[i][0]);
         }
 
-        var noPreferenceInstructors = this.props.lipData.instructors.filter((instructor) => {
+        var noPreferenceInstructors = this.props.controllerdata.instructors.filter((instructor) => {
             return !newInstructorOrder.includes(instructor);
         });
 
@@ -284,7 +284,7 @@ class Grid extends React.Component {
      */
     assignLessons(instructor, index, q) {
         var lessonCode = instructor[index];
-        var prefs = this.props.lipData.instructorPreferences;
+        var prefs = this.props.controllerdata.instructorPreferences;
 
         // If the slot locarion is a code (string), it isn't a lesson.
         if (typeof lessonCode === "string") {
@@ -340,9 +340,9 @@ class Grid extends React.Component {
      * Modifies the array to map to Red Cross levels.
      */
     generateGridArrays() {
-        this.props.lipData.duration = this.grid.duration;
+        this.props.controllerdata.duration = this.grid.duration;
 
-        var newGrids = GridFactory(this.props.lipData, this.grid.lessonTimes);
+        var newGrids = GridFactory(this.props.controllerdata, this.grid.lessonTimes);
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
         // Set allocated lessons slots to Red Cross & private lessons.
@@ -389,9 +389,9 @@ class Grid extends React.Component {
         if (gridArrays.length === 0) {
             this.noGridsNotification(
                 this.grid.duration,
-                this.props.lipData.instructors.length,
-                this.props.lipData.lessons.half,
-                this.props.lipData.lessons.threequarter
+                this.props.controllerdata.instructors.length,
+                this.props.controllerdata.lessons.half,
+                this.props.controllerdata.lessons.threequarter
             );
 
             return;
@@ -489,9 +489,9 @@ class Grid extends React.Component {
         });
 
         // Eliminate space conflict with the GridChecklist.
-        if (this.props.lipData.instructors.length > 3) {
+        if (this.props.controllerdata.instructors.length > 3) {
              $("#dynamicGrid").css({
-                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.props.lipData.instructors.length - 3))) + "px"
+                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.props.controllerdata.instructors.length - 3))) + "px"
              });
         }
 
@@ -886,8 +886,8 @@ class Grid extends React.Component {
 
 Grid.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    lipReader: React.PropTypes.object.isRequired,
-    lipData: React.PropTypes.object.isRequired
+    controller: React.PropTypes.object.isRequired,
+    controllerData: React.PropTypes.object.isRequired
 }
 
 export default Grid;

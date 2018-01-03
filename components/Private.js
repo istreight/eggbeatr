@@ -39,7 +39,7 @@ class Private extends React.Component {
         this.generatePrivate();
         this.numPrivate = this.getNumPrivates();
 
-        this.props.callback(this.privateLessons, this.props.lipReader);
+        this.props.callback(this.privateLessons, this.props.controller);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
         // Assign text in drop down to 'privateLessons'.
@@ -73,7 +73,7 @@ class Private extends React.Component {
             this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
             if (timeSlot !== undefined) {
-                this.props.callback(this.privateLessons, this.props.lipReader);
+                this.props.callback(this.privateLessons, this.props.controller);
             }
 
             // Modify displayed text.
@@ -343,7 +343,7 @@ class Private extends React.Component {
                 });
 
                 if (timeSlot !== undefined) {
-                    this.props.callback(this.privateLessons, this.props.lipReader);
+                    this.props.callback(this.privateLessons, this.props.controller);
                 }
             });
         }
@@ -436,7 +436,7 @@ class Private extends React.Component {
 
         this.numPrivate = this.getNumPrivates();
 
-        this.props.callback(this.privateLessons, this.props.lipReader);
+        this.props.callback(this.privateLessons, this.props.controller);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
     }
 
@@ -585,7 +585,7 @@ class Private extends React.Component {
 
 Private.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    lipReader: React.PropTypes.object.isRequired,
+    controller: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
 }
 

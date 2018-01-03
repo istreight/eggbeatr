@@ -194,7 +194,7 @@ class InstructorPreferences extends React.Component {
         editButton.unbind("click");
         editButton.click(this.editPreferences.bind(this));
 
-        this.props.callback(this.preferences, this.props.lipReader);
+        this.props.callback(this.preferences, this.props.controller);
     }
 
     render() {
@@ -239,7 +239,7 @@ class InstructorPreferences extends React.Component {
 
 InstructorPreferences.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    lipReader: React.PropTypes.object.isRequired
+    controller: React.PropTypes.object.isRequired
 }
 
 export default InstructorPreferences;

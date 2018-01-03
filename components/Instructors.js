@@ -32,7 +32,7 @@ class Instructors extends React.Component {
         this.generateInstructorTable();
         this.numInstructors = this.getNumInstructors();
 
-        this.props.callback(this.instructors, this.props.lipReader);
+        this.props.callback(this.instructors, this.props.controller);
         this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
 
@@ -183,7 +183,7 @@ class Instructors extends React.Component {
             if (removeInputRow) {
                 this.addInputRow();
             }
-            
+
             this.inputifyRows();
         }
 
@@ -370,7 +370,7 @@ class Instructors extends React.Component {
 
         this.numInstructors = this.getNumInstructors();
 
-        this.props.callback(this.instructors, this.props.lipReader);
+        this.props.callback(this.instructors, this.props.controller);
         this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
     }
@@ -494,7 +494,7 @@ class Instructors extends React.Component {
 
 Instructors.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    lipReader: React.PropTypes.object.isRequired,
+    controller: React.PropTypes.object.isRequired,
     instructorPreferences: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
 }
