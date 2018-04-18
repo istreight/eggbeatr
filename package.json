@@ -1,0 +1,22 @@
+{
+    "name": "eggbeatr",
+    "version": "1.0.0",
+    "description": "eggbeatr is a web application to schedule instructors with  lessons. It does the tedious work, leaving you with creative control.",
+    "main": "index.js",
+    "scripts": {
+        "install": "cd src/client; npm install",
+        "start": "osascript -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/client; npm run start\"'",
+        "build": "cd src/client; npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/istreight/eggbeatr.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/istreight/eggbeatr/issues"
+    },
+    "homepage": "https://github.com/istreight/eggbeatr#readme"
+}

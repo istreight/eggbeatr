@@ -11,6 +11,9 @@
  */
 
 import React from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 import GridFactory from './GridFactory';
 
 class Grid extends React.Component {
@@ -197,12 +200,12 @@ class Grid extends React.Component {
             "Strokes"
         ];
 
-        for (var key in this.props.controllerdata.lessons) {
+        for (var key in this.props.controllerData.lessons) {
             if (key === "half" || key === "threequarter" || key === "empty") {
                 continue;
             }
 
-            var value = this.props.controllerdata.lessons[key];
+            var value = this.props.controllerData.lessons[key];
             var keyArray = Array(value).fill(key);
 
             if (threeQuarterLessons.includes(key)) {
@@ -219,7 +222,7 @@ class Grid extends React.Component {
      * Sums the number of preferred lessons.
      */
     getPreferenceLength(newInstructor) {
-        return this.props.controllerdata.instructorPreferences[newInstructor].reduce((sum, next) => {
+        return this.props.controllerData.instructorPreferences[newInstructor].reduce((sum, next) => {
             return sum + next.length;
         }, 0);
     }
@@ -255,7 +258,7 @@ class Grid extends React.Component {
         var newInstructorOrder = [];
         var instructorPreferenceLengths = [];
 
-        for (var instructor in this.props.controllerdata.instructorPreferences) {
+        for (var instructor in this.props.controllerData.instructorPreferences) {
             var preferenceSize = this.getPreferenceLength(instructor);
 
             instructorPreferenceLengths.push([instructor, preferenceSize]);
@@ -269,7 +272,7 @@ class Grid extends React.Component {
             newInstructorOrder.push(instructorPreferenceLengths[i][0]);
         }
 
-        var noPreferenceInstructors = this.props.controllerdata.instructors.filter((instructor) => {
+        var noPreferenceInstructors = this.props.controllerData.instructors.filter((instructor) => {
             return !newInstructorOrder.includes(instructor);
         });
 
@@ -284,7 +287,7 @@ class Grid extends React.Component {
      */
     assignLessons(instructor, index, q) {
         var lessonCode = instructor[index];
-        var prefs = this.props.controllerdata.instructorPreferences;
+        var prefs = this.props.controllerData.instructorPreferences;
 
         // If the slot locarion is a code (string), it isn't a lesson.
         if (typeof lessonCode === "string") {
@@ -340,9 +343,9 @@ class Grid extends React.Component {
      * Modifies the array to map to Red Cross levels.
      */
     generateGridArrays() {
-        this.props.controllerdata.duration = this.grid.duration;
+        this.props.controllerData.duration = this.grid.duration;
 
-        var newGrids = GridFactory(this.props.controllerdata, this.grid.lessonTimes);
+        var newGrids = GridFactory(this.props.controllerData, this.grid.lessonTimes);
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
         // Set allocated lessons slots to Red Cross & private lessons.
@@ -389,9 +392,9 @@ class Grid extends React.Component {
         if (gridArrays.length === 0) {
             this.noGridsNotification(
                 this.grid.duration,
-                this.props.controllerdata.instructors.length,
-                this.props.controllerdata.lessons.half,
-                this.props.controllerdata.lessons.threequarter
+                this.props.controllerData.instructors.length,
+                this.props.controllerData.lessons.half,
+                this.props.controllerData.lessons.threequarter
             );
 
             return;
@@ -489,9 +492,9 @@ class Grid extends React.Component {
         });
 
         // Eliminate space conflict with the GridChecklist.
-        if (this.props.controllerdata.instructors.length > 3) {
+        if (this.props.controllerData.instructors.length > 3) {
              $("#dynamicGrid").css({
-                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.props.controllerdata.instructors.length - 3))) + "px"
+                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.props.controllerData.instructors.length - 3))) + "px"
              });
         }
 

@@ -24,25 +24,25 @@ class About extends React.Component {
                 </div>
                 <ul>
                     <li>
-                        <img src="./img/settings-icon.png" />
+                        <img src="./assets/img/settings-icon.png" />
                         <p className="feature-description">
                             Our algorithm pairs your instructors with your lessons just like you would.
                         </p>
                     </li>
                     <li>
-                        <img src="./img/person-icon.png" />
+                        <img src="./assets/img/person-icon.png" />
                         <p className="feature-description">
                             Schedule private lessons at a specific time and we&#039;ll make sure nothing conflicts.
                         </p>
                     </li>
                     <li>
-                        <img src="./img/timer-icon.png" />
+                        <img src="./assets/img/timer-icon.png" />
                         <p className="feature-description">
                             eggbeatr makes the most of your instructors by using their time between lessons.
                         </p>
                     </li>
                     <li>
-                        <img src="./img/stats-icon.png" />
+                        <img src="./assets/img/stats-icon.png" />
                         <p className="feature-description">
                             We&#039;ll do the monotonous work so you can spend more time on what you enjoy.
                         </p>

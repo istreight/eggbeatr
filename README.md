@@ -4,16 +4,50 @@ eggbeatr is a web application to schedule instructors with  lessons. It does the
 
 
 ### Goal
-The goal of this project is to improve the schedule generating process, taking on the simple, repetitive aspects.
 
-The goal of this document is to provide non-technical details on the project and its current deployment.
+The goal of this project is to improve the schedule generating process, taking on the simple, repetitive aspects.
 
 
 ### Hosting
+
 Currently, eggbeatr can be found on the University of Victoria's web hosting service [here](http://web.uvic.ca/~ibs/).
 
 
+## Getting Started
+
+> For how to use the application, see "How To Use" below.
+>
+> To avoid building the application, it may be accessed using the link in the **Hosting** section above.
+
+First off, clone the project:
+`git clone https://github.com/istreight/eggbeatr.git`
+
+### Installation
+
+The project requires [Node.js](https://nodejs.org/en/), which can be installed with the instructions on the linked page.
+
+Installation of other dependencies is handled by the Node Packet Manager. These dependencies can be installed by running `npm run install` from the project root (**note**: running a script called "install").
+
+### Run
+
+To run the project, navigate to the `client` directory and start the webpack development server:
+```
+cd src/client
+npm run start
+```
+The project may also be run with `npm run start` in the root directory, however, this requires AppleScript.
+
+### Built With
+
+* [ReactJS](https://reactjs.org) - JavaScript UI Library
+* [Express](http://expressjs.com) - Web Framework for Node.js
+* [Webpack](https://webpack.js.org) & [Babel](https://babeljs.io) - Script Bundler & JavaScript Compiler
+
+
 ## How To Use
+
+> For how to clone & build the application, see "Getting Started" above.
+
 The application offers a "Getting Started" walk through of the application, starting at the landing page and guiding a user through the major components of the application.
 
 On starting the application, each section is populated with default values, providing a template on how further information should be input. These values can be modified immediately or used to explore the complete functionality of the application.
@@ -30,7 +64,7 @@ http://web.uvic.ca/~ibs/?clearStorage=session
 
 ### Instructors
 
-Instructors are a required component to creating a schedule. This component stores information on the instructors: name, date of hire,  WSI certification, and lesson preferences.
+Instructors are a required component to creating a schedule. This component stores information on the instructors: name, date of hire, WSI certification, and lesson preferences.
 
 The WSI certification field reacts to the currency the instructor's certification. The three status codes are as follows:
 

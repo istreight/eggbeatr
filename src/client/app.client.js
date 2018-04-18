@@ -13,8 +13,8 @@ import ReactDOM from 'react-dom';
 import PureCSS from 'pure-css';
 
 // CSS
-import './css/pure.css';
-import './css/style.css';
+import './assets/css/pure.css';
+import './assets/css/style.css';
 
 // Components
 import Grid from './components/Grid';
