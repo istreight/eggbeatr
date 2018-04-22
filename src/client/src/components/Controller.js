@@ -11,7 +11,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Grid from './Grid';
+import About from './About';
 import Header from './Header';
+import Footer from './Footer';
+import Landing from './Landing';
 import Lessons from './Lessons';
 import Private from './Private';
 import Instructors from './Instructors';
@@ -39,6 +42,8 @@ class Controller extends React.Component {
         this.instructorPreferences = JSON.parse(sessionStorage.getItem("instructorPreferences") || "{}");
         this.lessons = JSON.parse(sessionStorage.getItem("lessons") || "{}");
         this.private = JSON.parse(sessionStorage.getItem("private") || "{}");
+
+        this.renderComponents();
     }
 
     /**
@@ -56,6 +61,12 @@ class Controller extends React.Component {
         var instructorPreferences;
 
         console.log("rendering components...");
+
+        // Render components to static div tags.
+        ReactDOM.render(<Header />, document.getElementById('dynamicHeader'));
+        ReactDOM.render(<Landing />, document.getElementById('dynamicLanding'));
+        ReactDOM.render(<About />, document.getElementById('dynamicAbout'));
+        ReactDOM.render(<Footer />, document.getElementById('dynamicFooter'));
 
         grid = ReactDOM.render(<Grid
             callback={this.gridCallback}

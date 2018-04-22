@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+
+# NOTE: This does not include values to be seeded. Overwriting seeders may impact the API and application.
+
+cd $(pwd)/../etc
+
+# Create seed for the default instructors.
+../node_modules/.bin/sequelize seed:generate --name default-instructors
+
+# Create seed for the default lesson types & quantities.
+../node_modules/.bin/sequelize seed:generate --name default-lessons
+
+# Create seed for the default privates.
+../node_modules/.bin/sequelize seed:generate --name default-privates
+
+# Create seed for the default grid.
+../node_modules/.bin/sequelize seed:generate --name default-grid

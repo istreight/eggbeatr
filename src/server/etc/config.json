@@ -1,0 +1,13 @@
+{
+    "development": {
+        "username": "eggbeatr",
+        "password": null,
+        "database": "eggbeatr",
+        "host": "127.0.0.1",
+        "dialect": "postgres",
+        "migrationStoragePath": "sequelizeMeta.json",
+        "migrationStorageTableName": "sequelize_meta",
+        "seederStoragePath": "sequelizeData.json",
+        "seederStorageTableName": "sequelize_data"
+    }
+}
