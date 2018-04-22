@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+
+# NOTE: This does not include associations or default values. Overwriting models and migrations may impact the API and application.
+
+cd $(pwd)/../etc
+
+../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,date_of_hire:dateonly,wsi_expiration_date:dateonly
+
+../node_modules/.bin/sequelize model:generate --name InstructorPreference --attributes lessons:array:string
+
+../node_modules/.bin/sequelize model:generate --name Lesson --attributes title:string,quantity:integer
+
+../node_modules/.bin/sequelize model:generate --name Private --attributes instructor:string,time:time,duration:integer,include:boolean
+
+../node_modules/.bin/sequelize model:generate --name Grid --attributes start_time:time

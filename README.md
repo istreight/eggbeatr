@@ -22,9 +22,17 @@ Currently, eggbeatr can be found on the University of Victoria's web hosting ser
 First off, clone the project:
 `git clone https://github.com/istreight/eggbeatr.git`
 
+### Dependencies
+
+Using [Node.js](https://nodejs.org/en/), eggbeatr runs on a [ReactJS](https://reactjs.org) front-end and [Express](http://expressjs.com) back-end, with a connection to a [PostgreSQL](https://www.postgresql.org) database.
+
+The front-end development server is managed by [Webpack](https://webpack.js.org) & [Babel](https://babeljs.io). The back-end is managed by [Nodemon](https://nodemon.io).
+
+eggbeatr also has dependencies within [Node.js](https://nodejs.org/en/), however these are handled by [npm](https://www.npmjs.com). The dependencies include [jsPDF](https://parall.ax/products/jspdf) and [jsPDFAutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable).
+
 ### Installation
 
-The project requires [Node.js](https://nodejs.org/en/), which can be installed with the instructions on the linked page.
+The project requires [Node.js](https://nodejs.org/en/) and [PostgeSQL](https://www.postgresql.org/download/), which can be installed with the instructions on the linked pages.
 
 Installation of other dependencies is handled by the Node Packet Manager. These dependencies can be installed by running `npm run install` from the project root (**note**: running a script called "install").
 
@@ -37,11 +45,16 @@ npm run start
 ```
 The project may also be run with `npm run start` in the root directory, however, this requires AppleScript.
 
+By default, the eggbeatr UI is hosted at localhost:8080 and the eggbeatr API is hosted at localhost:8081.
+
+
 ### Built With
 
 * [ReactJS](https://reactjs.org) - JavaScript UI Library
-* [Express](http://expressjs.com) - Web Framework for Node.js
+* [Express](http://expressjs.com) - Middleware Web Framework for Node.js
+* [PostgreSQL](https://www.postgresql.org) - Open Source Relational Database
 * [Webpack](https://webpack.js.org) & [Babel](https://babeljs.io) - Script Bundler & JavaScript Compiler
+* [Nodemon](https://nodemon.io) - Hot Reloading for Development Server
 
 
 ## How To Use

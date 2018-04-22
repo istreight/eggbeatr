@@ -164,7 +164,7 @@ class Lessons extends React.Component {
                         <ul className="content-section-explanation">
                             <li>Quantify each lesson type of the set</li>
                             <li>Use any numeric quantity</li>
-                            <li>Cache the quantities only when you want</li>
+                            <li>Automatically store lesson quantities</li>
                         </ul>
                         <a className="pure-button right-button">
                             Save Lessons
