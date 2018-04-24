@@ -1,5 +1,6 @@
-const Controller = require('../Controllers');
+const Controller = require('../controllers');
 
+const GridController = Controller.Grid;
 const LessonsController = Controller.Lessons;
 const PrivatesController = Controller.Privates;
 const InstructorsController = Controller.Instructors;
@@ -9,19 +10,36 @@ module.exports = (app) => {
     app.get('/api', (req, res) => res.status(200).send({
         routes: {
             list: [
+                "/api/grid",
                 "/api/instructors",
-                "/api/instructors/:instructorId/preferences",
                 "/api/lessons",
+                "/api/preferences",
                 "/api/privates"
             ],
             description: {
+                "/api/grid": "The list of generated grids and grid data.",
                 "/api/instructors": "The list of instructors and related information, including preferences and privates.",
-                "/api/instructors/:instructorId/preferences": "The list of preferred lessons from a specified instructor.",
                 "/api/lessons": "The current quantities of lessons",
+                "/api/preferences": "The list of preferred lessons from a specified instructor.",
                 "/api/privates": "The current list of private lessons and related information."
             }
         }
     }));
+    app.all('/api', (req, res) => {
+        res.status(405).send({
+            message: 'Method Not Allowed',
+        });
+    });
+
+    // Grid
+    app.get('/api/grid', GridController.retrieve);
+    app.put('/api/grid', GridController.update);
+    app.delete('/api/grid', GridController.destroy);
+    app.all('/api/grid', (req, res) => {
+        res.status(405).send({
+            message: 'Method Not Allowed',
+        });
+    });
 
     // Instructors (all)
     app.get('/api/instructors', InstructorsController.list);
@@ -42,12 +60,32 @@ module.exports = (app) => {
         });
     });
 
+    // Instructors.Privates (single)
+    app.get('/api/instructors/:instructorId/privates', InstructorsController.retrievePrivates);
+    app.all('/api/instructors/:instructorId/privates', (req, res) => {
+        res.status(405).send({
+            message: 'Method Not Allowed',
+        });
+    });
+
+    // Instructors.InstructorPreferences (single)
+    app.get('/api/instructors/:instructorId/preferences', InstructorsController.retrievePreferences);
+    app.all('/api/instructors/:instructorId/preferences', (req, res) => {
+        res.status(405).send({
+            message: 'Method Not Allowed',
+        });
+    });
+
     // Preferences
-    app.get('/api/instructor/:instructorId/preferences/', InstructorPreferencesController.retrieve);
-    app.post('/api/instructor/:instructorId/preferences', InstructorPreferencesController.create);
-    app.put('/api/instructor/:instructorId/preferences/', InstructorPreferencesController.update);
-    app.delete('/api/instructor/:instructorId/preferences/', InstructorPreferencesController.destroy);
-    app.all('/api/instructor/:instructorId/preferences/', (req, res) => {
+    app.all('/api/preferences', (req, res) => {
+        res.status(405).send({
+            message: 'Route Not Allowed. Include an ID (e.g. \'/api/preferences/1\')',
+        });
+    });
+    app.get('/api/preferences/:preferenceId', InstructorPreferencesController.retrieve);
+    app.put('/api/preferences/:preferenceId', InstructorPreferencesController.update);
+    app.delete('/api/preferences/:preferenceId', InstructorPreferencesController.destroy);
+    app.all('/api/preferences/:preferenceId', (req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });

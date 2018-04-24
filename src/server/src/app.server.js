@@ -1,5 +1,3 @@
-// Seed lessons with Red Cross values with quantity of 0
-
 const http = require('http');
 const logger = require('morgan');
 const express = require('express');
