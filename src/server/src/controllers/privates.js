@@ -12,6 +12,7 @@ module.exports = {
     },
     create(req, res) {
         return Private.create({
+            instructorId: req.body.instructorId,
             instructor: req.body.instructor,
             time: req.body.time,
             duration: req.body.duration,
@@ -44,6 +45,7 @@ module.exports = {
             }
 
             return _private.update({
+                instructorId: req.body.instructorId || _private.instructorId,
                 instructor: req.body.instructor || _private.instructor,
                 time: req.body.time || _private.time,
                 duration: req.body.duration || _private.duration,
@@ -67,7 +69,7 @@ module.exports = {
 
             return _private.destroy().then(() => {
                 res.status(200).send({
-                    message: 'Private deleted successfully.'
+                    message: 'Private Deleted Successfully.'
                 });
             }).catch((error) => {
                 res.status(400).send(error);

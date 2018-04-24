@@ -5,9 +5,7 @@ const InstructorPreference = Models.InstructorPreference;
 
 module.exports = {
     retrieve(req, res) {
-        return InstructorPreference.findById(
-            req.params.instructorPreferenceId
-        ).then((instructorPreference) => {
+        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found'
@@ -19,22 +17,8 @@ module.exports = {
             res.status(400).send(error);
         });
     },
-    create(req, res) {
-        return InstructorPreference.create({
-            lessons: req.body.lessons
-        }).then((instructorPreference) => {
-            res.status(201).send(instructorPreference);
-        }).catch((error) => {
-            res.status(400).send(error);
-        });
-    },
     update(req, res) {
-        return InstructorPreference.find({
-            where: {
-                instructorPreferenceId: req.params.instructorPreferenceId,
-                instructorId: req.params.instructorId
-            }
-        }).then((instructorPreference) => {
+        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found',
@@ -42,8 +26,10 @@ module.exports = {
             }
 
             return instructorPreference.update({
-                content: req.body.lessons || instructorPreference.lessons,
-            }).then((instructorPreference) => {
+                instructorId: req.body.instructorId,
+                instructor: req.body.instructor,
+                lessons: JSON.parse(req.body.lessons)
+            }).then((instructor) => {
                 res.status(200).send(instructorPreference);
             }).catch((error) => {
                 res.status(400).send(error);
@@ -53,12 +39,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return InstructorPreference.find({
-            where: {
-                instructorPreferenceId: req.params.instructorPreferenceId,
-                instructorId: req.params.instructorId
-            }
-        }).then((instructorPreference) => {
+        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found',
@@ -67,7 +48,7 @@ module.exports = {
 
             return instructorPreference.destroy().then(() => {
                 res.status(200).send({
-                    message: 'InstructorPreference deleted successfully.'
+                    message: 'InstructorPreference Deleted Successfully.'
                 });
             }).catch((error) => {
                 res.status(400).send(error);

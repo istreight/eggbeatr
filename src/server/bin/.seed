@@ -8,6 +8,9 @@ cd $(pwd)/../etc
 # Create seed for the default instructors.
 ../node_modules/.bin/sequelize seed:generate --name default-instructors
 
+# Create seed for the default instructor preferences
+../node_modules/.bin/sequelize seed:generate --name default-instructorPreferences
+
 # Create seed for the default lesson types & quantities.
 ../node_modules/.bin/sequelize seed:generate --name default-lessons
 

@@ -5,7 +5,7 @@
 
 cd $(pwd)/../etc
 
-../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,date_of_hire:dateonly,wsi_expiration_date:dateonly
+../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,dateOfHire:dateonly,wsiExpirationDate:dateonly
 
 ../node_modules/.bin/sequelize model:generate --name InstructorPreference --attributes lessons:array:string
 
@@ -13,4 +13,4 @@ cd $(pwd)/../etc
 
 ../node_modules/.bin/sequelize model:generate --name Private --attributes instructor:string,time:time,duration:integer,include:boolean
 
-../node_modules/.bin/sequelize model:generate --name Grid --attributes start_time:time
+../node_modules/.bin/sequelize model:generate --name Grid --attributes startTime:time

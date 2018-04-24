@@ -9,9 +9,18 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            instructor: {
+            instructorId: {
                 allowNull: false,
                 primaryKey: true,
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'Instructors',
+                    key: 'id',
+                    as: 'instructorId',
+                }
+            },
+            instructor: {
+                allowNull: false,
                 type: Sequelize.STRING
             },
             time: {

@@ -9,7 +9,8 @@ module.exports = {
                 duration: 30,
                 include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date()
+        		updatedAt: new Date(),
+                instructorId: 1
             },
             {
                 instructor: 'Beta',
@@ -17,7 +18,8 @@ module.exports = {
                 duration: 30,
                 include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date()
+        		updatedAt: new Date(),
+                instructorId: 2
             },
             {
                 instructor: 'Charlie',
@@ -25,7 +27,8 @@ module.exports = {
                 duration: 30,
                 include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date()
+        		updatedAt: new Date(),
+                instructorId: 3
             }
         ], {});
     },

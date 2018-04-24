@@ -91,11 +91,47 @@ module.exports = {
 
             return instructor.destroy().then(() => {
                 res.status(200).send({
-                    message: 'Instructor deleted successfully.'
+                    message: 'Instructor Deleted Successfully.'
                 });
             }).catch((error) => {
                 res.status(400).send(error);
             });
+        }).catch((error) => {
+            res.status(400).send(error);
+        });
+    },
+    retrievePreferences(req, res) {
+        return Instructor.findById(req.params.instructorId, {
+            include: [{
+                    model: InstructorPreference,
+                    as: 'instructorPreferences'
+                }]
+        }).then((instructor) => {
+            if (!instructor) {
+                return res.status(404).send({
+                    message: 'Instructor Not Found'
+                });
+            }
+
+            return res.status(200).send(instructor.instructorPreferences);
+        }).catch((error) => {
+            res.status(400).send(error);
+        });
+    },
+    retrievePrivates(req, res) {
+        return Instructor.findById(req.params.instructorId, {
+            include: [{
+                    model: Private,
+                    as: 'privates'
+            }]
+        }).then((instructor) => {
+            if (!instructor) {
+                return res.status(404).send({
+                    message: 'Instructor Not Found'
+                });
+            }
+
+            return res.status(200).send(instructor.privates);
         }).catch((error) => {
             res.status(400).send(error);
         });

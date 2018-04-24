@@ -13,11 +13,11 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
-            date_of_hire: {
+            dateOfHire: {
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },
-            wsi_expiration_date: {
+            wsiExpirationDate: {
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },

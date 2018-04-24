@@ -31,10 +31,9 @@ module.exports = {
                 });
             }
 
-            return instructor.update({
-                title: req.body.title || instructor.title,
-                quantity: req.body.quantity || instructor.quantity
-            }).then(() => {
+            return lesson.update({
+                quantity: req.body.quantity || lesson.quantity
+            }).then((lesson) => {
                 res.status(200).send(lesson);
             }).catch((error) => {
                 res.status(400).send(error);
