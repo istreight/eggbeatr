@@ -2,6 +2,7 @@ const Grid = require('./grid');
 const Lessons = require('./lessons');
 const Privates = require('./privates');
 const Instructors = require('./instructors');
+const GridFactory = require('./gridFactory');
 const InstructorPreferences = require('./instructorPreferences');
 
 module.exports = {
@@ -9,5 +10,6 @@ module.exports = {
     Lessons,
     Privates,
     Instructors,
+    GridFactory,
     InstructorPreferences
 };

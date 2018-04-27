@@ -17,11 +17,7 @@ import './assets/css/pure.css';
 import './assets/css/style.css';
 
 // Components
-import Connector from './components/Connector';
 import Controller from './components/Controller';
 
 
 new Controller();
-new Connector({
-    'serverURI': 'http://localhost:8081'
-});

@@ -22,9 +22,6 @@ class GridChecklist extends React.Component {
     }
 
     componentDidMount() {
-        // Store the "Create Grid" function locally to re-apply when components are complete.
-        this.createGridHandler = jQuery._data($("#dynamicGrid .content-section-description a")[0], "events").click[0].handler;
-
         // Unbind "Create Grid" button.
         $("#dynamicGrid .content-section-description a").unbind("click");
     }
@@ -88,7 +85,7 @@ class GridChecklist extends React.Component {
         // Verify condition to enable/disable "Create Grid" button.
         if (isValid) {
             createGridButton.removeClass("pure-button-disabled");
-            createGridButton.click(this.createGridHandler);
+            createGridButton.click(this.props.createGridHandler);
         } else {
             createGridButton.addClass("pure-button-disabled");
         }
@@ -123,6 +120,10 @@ class GridChecklist extends React.Component {
             </div>
         );
     }
+}
+
+GridChecklist.propTypes =  {
+    createGridHandler: React.PropTypes.func.isRequired
 }
 
 export default GridChecklist;

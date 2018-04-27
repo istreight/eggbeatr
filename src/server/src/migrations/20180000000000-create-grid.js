@@ -8,10 +8,10 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            startTime: {
+            lessonTimes: {
                 allowNull: false,
                 primaryKey: true,
-                type: Sequelize.TIME
+                type: Sequelize.ARRAY(Sequelize.STRING)
             },
             createdAt: {
                 allowNull: false,

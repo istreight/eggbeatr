@@ -3,7 +3,7 @@
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Grids', [{
-            startTime: new Date(Date.UTC(0, 0, 0, 9, 0, 0)),
+            lessonTimes: ["9:00", "9:30", "10:00"],
             createdAt: new Date(),
             updatedAt: new Date()
         }], {});

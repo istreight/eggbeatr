@@ -18,30 +18,47 @@ class Private extends React.Component {
     }
 
     componentDidMount() {
-        var sesssionPrivate = sessionStorage.getItem("private");
-        if (sesssionPrivate && sesssionPrivate !== "{}") {
-            this.privateLessons = JSON.parse(sesssionPrivate);
-        } else {
-            // For default table display.
-            this.privateLessons = {
-                "Alfa": {
-                    "9:00": ["30", "Yes"]
-                },
-                "Bravo": {
-                    "9:30": ["30", "No"]
-                },
-                "Charlie": {
-                    "10:00": ["30", "No"]
-                }
-            };
-        }
+        this.props.connector.getPrivatesData().then((res) => this.init(res));
+
+        $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
+
+        // Link tutorital button to next section.
+        $("#dynamicPrivate .ribbon-section-footer a").click(() => {
+            // Disable scrolling.
+            $("body").on("mousewheel DOMMouseScroll", false);
+
+            $("#dynamicGrid .content-section-footer").css({
+                "display": "block"
+            });
+
+            $("#dynamicPrivate .ribbon-section-footer").fadeOut(1000);
+
+            $("html, body").animate({
+                scrollTop: $("#dynamicGrid").offset().top - 60
+            }, 1600, () => {
+                $("body").off("mousewheel DOMMouseScroll");
+
+                $("#dynamicPrivate .ribbon-section-footer").css({
+                    "display": "none"
+                });
+            });
+        });
+    }
+
+    /**
+     * Store the private lessons data locally, as returned
+     *  from the asynchronous call.
+     */
+    init(privateLessonsData) {
+        this.privateLessons = privateLessonsData;
 
         this.generatePrivate();
         this.numPrivate = this.getNumPrivates();
 
-        this.props.callback(this.privateLessons, this.props.controller);
+        this.props.callback(this.privateLessons, this.props.controller, false);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
+        // Include onclick event.
         // Assign text in drop down to 'privateLessons'.
         $("#dynamicPrivate table td li a").click(() => {
             // Update privateLessons.
@@ -73,35 +90,11 @@ class Private extends React.Component {
             this.props.gridChecklist.setQuantity("privates", this.numPrivate);
 
             if (timeSlot !== undefined) {
-                this.props.callback(this.privateLessons, this.props.controller);
+                this.props.callback(this.privateLessons, this.props.controller, true);
             }
 
             // Modify displayed text.
             this.updateIncludeText(event.target);
-        });
-
-        $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
-
-        // Link tutorital button to next section.
-        $("#dynamicPrivate .ribbon-section-footer a").click(() => {
-            // Disable scrolling.
-            $("body").on("mousewheel DOMMouseScroll", false);
-
-            $("#dynamicGrid .content-section-footer").css({
-                "display": "block"
-            });
-
-            $("#dynamicPrivate .ribbon-section-footer").fadeOut(1000);
-
-            $("html, body").animate({
-                scrollTop: $("#dynamicGrid").offset().top - 60
-            }, 1600, () => {
-                $("body").off("mousewheel DOMMouseScroll");
-
-                $("#dynamicPrivate .ribbon-section-footer").css({
-                    "display": "none"
-                });
-            });
         });
     }
 
@@ -343,7 +336,7 @@ class Private extends React.Component {
                 });
 
                 if (timeSlot !== undefined) {
-                    this.props.callback(this.privateLessons, this.props.controller);
+                    this.props.callback(this.privateLessons, this.props.controller, true);
                 }
             });
         }
@@ -436,7 +429,7 @@ class Private extends React.Component {
 
         this.numPrivate = this.getNumPrivates();
 
-        this.props.callback(this.privateLessons, this.props.controller);
+        this.props.callback(this.privateLessons, this.props.controller, true);
         this.props.gridChecklist.setQuantity("privates", this.numPrivate);
     }
 
@@ -585,6 +578,7 @@ class Private extends React.Component {
 
 Private.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
 }

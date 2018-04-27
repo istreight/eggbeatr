@@ -4,31 +4,25 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Privates', [
             {
-                instructor: 'Alfa',
+                instructorId: 1,
                 time: new Date(Date.UTC(0, 0, 0, 9, 0, 0)),
                 duration: 30,
-                include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date(),
-                instructorId: 1
+        		updatedAt: new Date()
             },
             {
-                instructor: 'Beta',
+                instructorId: 2,
                 time: new Date(Date.UTC(0, 0, 0, 9, 30, 0)),
                 duration: 30,
-                include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date(),
-                instructorId: 2
+        		updatedAt: new Date()
             },
             {
-                instructor: 'Charlie',
+                instructorId: 3,
                 time: new Date(Date.UTC(0, 0, 0, 10, 0, 0)),
                 duration: 30,
-                include: false,
                 createdAt: new Date(),
-        		updatedAt: new Date(),
-                instructorId: 3
+        		updatedAt: new Date()
             }
         ], {});
     },

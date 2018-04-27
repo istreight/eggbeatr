@@ -2,15 +2,14 @@
 
 module.exports = (sequelize, DataTypes) => {
     var Private = sequelize.define('Private', {
-        instructor: DataTypes.STRING,
         time: DataTypes.TIME,
-        duration: DataTypes.INTEGER,
-        include: DataTypes.BOOLEAN
+        duration: DataTypes.INTEGER
     }, {});
 
     Private.associate = (models) => {
         Private.belongsTo(models.Instructor, {
-            foreignKey: 'instructorId'
+            foreignKey: 'instructorId',
+            onDelete: 'CASCADE'
         });
     };
 

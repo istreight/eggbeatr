@@ -13,15 +13,12 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
                 references: {
                     model: 'Instructors',
                     key: 'id',
                     as: 'instructorId',
                 }
-            },
-            instructor: {
-                allowNull: false,
-                type: Sequelize.STRING
             },
             lessons: {
                 type: Sequelize.ARRAY(Sequelize.STRING)

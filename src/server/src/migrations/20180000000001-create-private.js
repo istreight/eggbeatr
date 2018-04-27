@@ -13,15 +13,12 @@ module.exports = {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
                 references: {
                     model: 'Instructors',
                     key: 'id',
                     as: 'instructorId',
                 }
-            },
-            instructor: {
-                allowNull: false,
-                type: Sequelize.STRING
             },
             time: {
                 allowNull: false,
@@ -31,10 +28,6 @@ module.exports = {
             duration: {
                 defaultValue: 30,
                 type: Sequelize.INTEGER
-            },
-            include: {
-                defaultValue: false,
-                type: Sequelize.BOOLEAN
             },
             createdAt: {
                 allowNull: false,

@@ -2,23 +2,22 @@
  * FILENAME:    GridFactory.js
  * AUTHOR:      Isaac Streight
  * START DATE:  October 26th, 2016
+ * MIRGRATION DATE:  April 25th, 2018 (from /src/client/src/components)
  *
  * This file contains the GridFactory class that generates an array of the grid
  * for the lesson calendar web application. This class requires input props.
  * The result array from the generateGrid() function is exported.
  */
 
-import React from 'react';
 
-class GridFactory extends React.Component {
-    constructor(props) {
-        super(props);
+var lessonTimes;
+var hasBothTypes;
+var gridList = [];
 
-        this.lessonTimes;
-        this.hasBothTypes;
-        this.gridList = [];
-    }
-
+const gridFactory =  {
+    lessonTimes: null,
+    hasBothTypes: null,
+    gridList: [],
     /**
      * LESSON CODES
      *  Empty:              0
@@ -31,6 +30,8 @@ class GridFactory extends React.Component {
         console.log(data);
 
         this.lessonTimes = lessonTimes;
+
+        var duration = lessonTimes.length / 2.0;
 
         /**
          * Generate dynamic array.
@@ -45,15 +46,14 @@ class GridFactory extends React.Component {
          * ]
          */
         return this.fillGridList({
-            numHalfLessons: data["lessons"]["half"],
-            numThreeQuarterLessons: data["lessons"]["threequarter"],
-            privates: data["private"],
-            instructors: data["instructors"],
-            duration: data["duration"],
+            numHalfLessons: data.lessons.half,
+            numThreeQuarterLessons: data.lessons.threequarter,
+            privates: data.private,
+            instructors: data.instructors,
+            duration: duration,
             minHoursPerInstructor: 0
         });
-    }
-
+    },
     /**
      * Creates an array of Grids, with elements representing 15-minute slots
      *  via single digit codes.
@@ -120,8 +120,7 @@ class GridFactory extends React.Component {
         console.log("Number of Grids:", this.gridList.length);
 
         return this.gridList;
-    }
-
+    },
     generateGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuarterHourLessons, minHoursPerInstructor) {
         if (grid.length === 0 || grid[0].length === 0) {
             return;
@@ -131,7 +130,7 @@ class GridFactory extends React.Component {
             if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addHose(grid)) {
                 this.gridList.push(
                     this.condenseGrid(
-                        [["Instructor"].concat(this.lessonTimes)].concat(jQuery.extend(true, [], grid))
+                        [["Instructor"].concat(this.lessonTimes)].concat(JSON.parse(JSON.stringify(grid)))
                     )
                 );
             }
@@ -182,8 +181,7 @@ class GridFactory extends React.Component {
                 nextInstructorStart = 0;
             }
         }
-    }
-
+    },
     verifyMinHoursPerInstructor(grid, minHoursPerInstructor) {
         var success = true;
 
@@ -202,8 +200,7 @@ class GridFactory extends React.Component {
         }
 
         return true;
-    }
-
+    },
     addHose(grid) {
         var numHoses = 0;
 
@@ -228,8 +225,7 @@ class GridFactory extends React.Component {
         }
 
         return numHoses < 3;
-    }
-
+    },
     removeHose(grid) {
         for (var instructor = 0; instructor < grid.length; instructor++) {
             for (var slot = 1; slot < grid[0].length; slot++) {
@@ -238,8 +234,7 @@ class GridFactory extends React.Component {
                 }
             }
         }
-    }
-
+    },
     condenseGrid(grid) {
         // First row is the HTML table header.
         for (var instructor = 1; instructor < grid.length; instructor++) {
@@ -254,10 +249,12 @@ class GridFactory extends React.Component {
 
         return grid;
     }
-}
+};
 
-function init(data, lessonTimes) {
-    return (new GridFactory).generateGrid(data, lessonTimes);
-}
+module.exports = {
+    create(req, res) {
+        var result = gridFactory.generateGrid(req.body.data, req.body.lessonTimes);
 
-export default init;
+        res.status(200).send(result);
+    }
+};

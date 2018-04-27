@@ -4,21 +4,22 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('InstructorPreferences', [
             {
+                instructorId: 1,
                 lessons: [
                     'Starfish',
                     'Duck',
                     'Sea Turtle',
+                    'Sea Otter',
                     'Salamander',
                     'Sunfish',
                     'Crocodile',
                     'Whale'
                 ],
                 createdAt: new Date(),
-                updatedAt: new Date(),
-                instructor: 'Alfa',
-                instructorId: 1
+                updatedAt: new Date()
             },
             {
+                instructorId: 2,
                 lessons: [
                     'Level 1',
                     'Level 2',
@@ -32,20 +33,17 @@ module.exports = {
                     'Level 10'
                 ],
                 createdAt: new Date(),
-                updatedAt: new Date(),
-                instructor: 'Beta',
-                instructorId: 2
+                updatedAt: new Date()
             },
             {
+                instructorId: 3,
                 lessons: [
-                    'Basics 1',
-                    'Basics 2',
+                    'Basics I',
+                    'Basics II',
                     'Strokes'
                 ],
                 createdAt: new Date(),
-                updatedAt: new Date(),
-                instructor: 'Charlie',
-                instructorId: 3
+                updatedAt: new Date()
             }
         ], {});
     },

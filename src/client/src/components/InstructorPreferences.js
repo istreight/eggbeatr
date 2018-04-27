@@ -15,19 +15,16 @@ class InstructorPreferences extends React.Component {
 
         this.preferences = {};
         this.defaultPreferences = [
-            ["Starfish", "Duck", "Sea Turtle"],
-            ["Sea Otter", "Salamander", "Sunfish", "Crocodile", "Whale"],
-            ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"],
-            ["Level 6", "Level 7", "Level 8", "Level 9", "Level 10"],
-            ["Basics I", "Basics II", "Strokes"]
+            "Starfish", "Duck", "Sea Turtle",
+            "Sea Otter", "Salamander", "Sunfish", "Crocodile", "Whale",
+            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5",
+            "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
+            "Basics I", "Basics II", "Strokes"
         ];
     }
 
     componentDidMount() {
-        var sessionPreference = sessionStorage.getItem("instructorPreferences");
-        if (sessionPreference && sessionPreference !== "{}") {
-            this.preferences = JSON.parse(sessionPreference);
-        }
+        this.props.connector.getPreferenceData().then(res => this.init(res));
 
         $("#dynamicInstructorPreferences .modal-footer a").click(this.editPreferences.bind(this));
 
@@ -41,6 +38,10 @@ class InstructorPreferences extends React.Component {
                 this.finishEditingPreferences();
             }
         });
+    }
+
+    init(preferenceData) {
+        this.preferences = preferenceData;
     }
 
     setPreferencesButtons(enable) {
@@ -75,7 +76,7 @@ class InstructorPreferences extends React.Component {
      */
     levelPreferences(instructor) {
         if (!(instructor in this.preferences)) {
-            this.preferences[instructor] = jQuery.extend(true, [], this.defaultPreferences);
+            this.preferences[instructor] = JSON.parse(JSON.stringify(this.defaultPreferences));
         }
 
         // Create HTML table from the Preferences object.
@@ -87,10 +88,13 @@ class InstructorPreferences extends React.Component {
 
             for (var col = 0; col < 5; col++) {
                 var className = "is-left ";
-                var lessonType = this.preferences[instructor][col][row] || "";
+                var lessonIndex =
+                      3 * Math.min(1, col)
+                    + 5 * Math.max(0, (col - 1))
+                    + ((col === 0 && row > 2 ? -1 : row));
+                var lessonType = this.defaultPreferences[lessonIndex] || "";
 
-                if (lessonType.charAt(0) === "r") {
-                    lessonType = lessonType.slice(1);
+                if (!this.preferences[instructor].includes(lessonType)) {
                     className += (row % 2 === 0) ? "remove-preference-odd" : "remove-preference-even";
                 }
 
@@ -113,7 +117,7 @@ class InstructorPreferences extends React.Component {
 
         // Place 'add-preference' or 'remove-preference' buttons in each table cell, depending on text.
         lessonCells.each((index, element) => {
-            if ($(element).is(".remove-preference-odd", ".remove-preference-even")) {
+            if ($(element).is(".remove-preference-odd") || $(element).is(".remove-preference-even")) {
                 $(element).append("<span class='add-preference'>&#10003;</span>");
             } else {
                 $(element).append("<span class='remove-preference'>×</span>");
@@ -156,7 +160,10 @@ class InstructorPreferences extends React.Component {
         $(event.target).remove();
 
         if (remove) {
-            this.preferences[name][cellIndex][rowIndex] = "r" + cell.html();
+            var lessonIndex =
+                  3 * Math.min(1, cellIndex)
+                + 5 * Math.max(0, (cellIndex - 1))
+                + ((cellIndex === 0 && rowIndex > 2 ? -1 : rowIndex));
 
             cell.addClass(className);
             cell.append("<span class='add-preference'>&#10003;</span>");
@@ -166,7 +173,12 @@ class InstructorPreferences extends React.Component {
                 this.togglePreferenceCell(false);
             });
         } else {
-            this.preferences[name][cellIndex][rowIndex] = cell.html();
+            var lessonIndex =
+                  3 * Math.min(1, cellIndex)
+                + 5 * Math.max(0, (cellIndex - 1))
+                + ((cellIndex === 0 && rowIndex > 2 ? -1 : rowIndex));
+
+            this.preferences[name][lessonIndex] = cell.html();
 
             cell.removeClass(className);
             cell.append("<span class='remove-preference'>×</span>");
@@ -239,6 +251,7 @@ class InstructorPreferences extends React.Component {
 
 InstructorPreferences.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired
 }
 
