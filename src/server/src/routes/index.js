@@ -4,6 +4,7 @@ const GridController = Controller.Grid;
 const LessonsController = Controller.Lessons;
 const PrivatesController = Controller.Privates;
 const InstructorsController = Controller.Instructors;
+const GridFactoryController = Controller.GridFactory;
 const InstructorPreferencesController = Controller.InstructorPreferences;
 
 module.exports = (app) => {
@@ -11,17 +12,18 @@ module.exports = (app) => {
         routes: {
             list: [
                 "/api/grid",
-                "/api/instructors",
+                "/api/factory",
                 "/api/lessons",
-                "/api/preferences",
-                "/api/privates"
+                "/api/privates",
+                "/api/instructors",
+                "/api/preferences"
             ],
             description: {
                 "/api/grid": "The list of generated grids and grid data.",
-                "/api/instructors": "The list of instructors and related information, including preferences and privates.",
                 "/api/lessons": "The current quantities of lessons",
-                "/api/preferences": "The list of preferred lessons from a specified instructor.",
-                "/api/privates": "The current list of private lessons and related information."
+                "/api/privates": "The current list of private lessons and related information.",
+                "/api/instructors": "The list of instructors and related information, including preferences and privates.",
+                "/api/preferences": "The list of preferred lessons from a specified instructor."
             }
         }
     }));
@@ -35,6 +37,14 @@ module.exports = (app) => {
     app.get('/api/grid', GridController.retrieve);
     app.put('/api/grid', GridController.update);
     app.delete('/api/grid', GridController.destroy);
+    app.all('/api/grid', (req, res) => {
+        res.status(405).send({
+            message: 'Method Not Allowed',
+        });
+    });
+
+    // GridFactory
+    app.post('/api/factory', GridFactoryController.create);
     app.all('/api/grid', (req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
@@ -76,12 +86,16 @@ module.exports = (app) => {
         });
     });
 
-    // Preferences
+    // Preferences (all)
+    app.get('/api/preferences', InstructorPreferencesController.list);
+    app.post('/api/preferences', InstructorPreferencesController.create);
     app.all('/api/preferences', (req, res) => {
         res.status(405).send({
-            message: 'Route Not Allowed. Include an ID (e.g. \'/api/preferences/1\')',
+            message: 'Method Not Allowed',
         });
     });
+
+    // Preferences (single)
     app.get('/api/preferences/:preferenceId', InstructorPreferencesController.retrieve);
     app.put('/api/preferences/:preferenceId', InstructorPreferencesController.update);
     app.delete('/api/preferences/:preferenceId', InstructorPreferencesController.destroy);

@@ -1,13 +1,13 @@
 'use strict';
 
-var defaultVaulue = process.env.DEFAULTVALUE || 1;
+var defaultValue = process.env.DEFAULTVALUE || 1;
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Lessons', [
             {
                 title: 'Starfish',
-                quantity: defaultVaulue,
+                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
@@ -25,7 +25,7 @@ module.exports = {
             },
             {
                 title: 'Sea Otter',
-                quantity: defaultVaulue,
+                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
@@ -55,7 +55,7 @@ module.exports = {
             },
             {
                 title: 'Level 1',
-                quantity: defaultVaulue,
+                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
@@ -85,7 +85,7 @@ module.exports = {
             },
             {
                 title: 'Level 6',
-                quantity: defaultVaulue,
+                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
@@ -114,13 +114,13 @@ module.exports = {
 				updatedAt: new Date()
             },
             {
-                title: 'Basics 1',
-                quantity: defaultVaulue,
+                title: 'Basics I',
+                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
-                title: 'Basics 2',
+                title: 'Basics II',
                 quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()

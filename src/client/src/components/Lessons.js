@@ -19,20 +19,7 @@ class Lessons extends React.Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("lessons") && sessionStorage.getItem("lessons") !== "{}") {
-            this.lessonSet = JSON.parse(sessionStorage.getItem("lessons"));
-        } else {
-            this.lessonSet = {
-                "Level 5": 1,
-                "Level 6": 1
-            };
-        }
-
-        this.setLessonValues();
-        this.numLessons = this.getNumLessons();
-
-        this.props.callback(this.lessonSet, this.props.controller);
-        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
+        this.props.connector.getLessonData().then(res => this.init(res));
 
         // Save on button click or on input deselect ('blur').
         $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
@@ -57,6 +44,20 @@ class Lessons extends React.Component {
                 });
             });
         });
+    }
+
+    /**
+     * Store the lessons data locally, as returned from the
+     *  asynchronous call.
+     */
+    init(lessonData) {
+        this.lessonSet = lessonData;
+
+        this.setLessonValues();
+        this.numLessons = this.getNumLessons();
+
+        this.props.callback(this.lessonSet, this.props.controller, false);
+        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
     }
 
     /**
@@ -131,7 +132,7 @@ class Lessons extends React.Component {
             delete this.lessonSet.empty;
         }
 
-        this.props.callback(this.lessonSet, this.props.controller);
+        this.props.callback(this.lessonSet, this.props.controller, true);
         this.props.gridChecklist.setQuantity("lessons", this.numLessons);
     }
 
@@ -312,6 +313,7 @@ class Lessons extends React.Component {
 
 Lessons.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
 }

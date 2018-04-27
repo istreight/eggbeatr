@@ -1,6 +1,6 @@
 {
     "name": "eggbeatr",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "eggbeatr is a web application to schedule instructors with  lessons. It does the tedious work, leaving you with creative control.",
     "main": "index.js",
     "scripts": {

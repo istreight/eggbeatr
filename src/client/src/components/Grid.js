@@ -14,13 +14,13 @@ import React from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-import GridFactory from './GridFactory';
 
 class Grid extends React.Component {
     constructor(props) {
         super(props);
 
         this.grid = {};
+        this.controllerData = {};
         this.lessonQueue = [[], [], ["Hose", "Swim"]];
         this.lessonCodes = {
             "02": "<div class='line line-left'></div>",
@@ -36,27 +36,31 @@ class Grid extends React.Component {
     }
 
     componentDidMount() {
-        var sessionGrid = sessionStorage.getItem("grid");
-        if (sessionGrid && sessionGrid !== "{}") {
-            this.grid = JSON.parse(sessionGrid);
-        } else {
-            this.grid = {
-                "lessonTimes": ["9:00", "9:30", "10:00", "10:30", "11:00"],
-                "duration": 1.5
-            };
-        }
+        this.props.connector.getGridData().then(res => this.init(res));
 
-        this.props.callback(this.grid, this.props.controller);
-
-        $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
-
-        $("#dynamicGrid input").attr("placeholder", this.grid.lessonTimes[0]);
         $("#dynamicGrid input").blur(this.setLessonTimes.bind(this));
 
         $("#dynamicGrid .duration-button").eq(0).addClass("pure-menu-selected");
         $("#dynamicGrid .duration-button").click(this.updateDuration.bind(this));
 
+
         $(window).click(this.hideModal);
+    }
+
+    /**
+     * Store the grid data locally, as returned from the
+     *  asynchronous call.
+     */
+    init(gridData) {
+        this.grid = gridData;
+
+        $("#dynamicGrid input").attr("placeholder", gridData.lessonTimes[0]);
+
+        $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
+
+        this.controllerData = this.props.controller.manipulateData(false);
+
+        this.props.callback(gridData, this.props.controller, false);
     }
 
     /**
@@ -75,8 +79,6 @@ class Grid extends React.Component {
 
         durationIndex = durationContainer.find("li a").index(event.target);
         duration = (durationIndex / 2.0) + 1;
-
-        this.grid.duration = duration;
 
         // If a grid exists, generate a new one with the new duration.
         if ($("#dynamicGrid .pure-menu-scrollable ul li").length > 0) {
@@ -135,7 +137,7 @@ class Grid extends React.Component {
             }
 
             if (minute < 10) {
-                minute = "0".concat(minute);
+                minute = "0" + minute;
             }
 
             newTime = [hour, minute].join(":");
@@ -143,7 +145,7 @@ class Grid extends React.Component {
             this.grid.lessonTimes.push(newTime);
         }
 
-        this.props.callback(this.grid, this.props.controller);
+        this.props.callback(this.grid, this.props.controller, true);
     }
 
     /**
@@ -162,7 +164,7 @@ class Grid extends React.Component {
         var notification = noGridsString.replace(/[0-9]/, numAddInstructors);
 
         if (numAddInstructors !== 1) {
-            notification = notification.concat("s");
+            notification = notification + "s";
         }
 
         $("#dynamicGrid p").empty().hide();
@@ -200,12 +202,12 @@ class Grid extends React.Component {
             "Strokes"
         ];
 
-        for (var key in this.props.controllerData.lessons) {
+        for (var key in this.controllerData.lessons) {
             if (key === "half" || key === "threequarter" || key === "empty") {
                 continue;
             }
 
-            var value = this.props.controllerData.lessons[key];
+            var value = this.controllerData.lessons[key];
             var keyArray = Array(value).fill(key);
 
             if (threeQuarterLessons.includes(key)) {
@@ -222,7 +224,8 @@ class Grid extends React.Component {
      * Sums the number of preferred lessons.
      */
     getPreferenceLength(newInstructor) {
-        return this.props.controllerData.instructorPreferences[newInstructor].reduce((sum, next) => {
+        console.log(this.controllerData.instructorPreferences, newInstructor)
+        return this.controllerData.instructorPreferences[newInstructor].reduce((sum, next) => {
             return sum + next.length;
         }, 0);
     }
@@ -258,7 +261,7 @@ class Grid extends React.Component {
         var newInstructorOrder = [];
         var instructorPreferenceLengths = [];
 
-        for (var instructor in this.props.controllerData.instructorPreferences) {
+        for (var instructor in this.controllerData.instructorPreferences) {
             var preferenceSize = this.getPreferenceLength(instructor);
 
             instructorPreferenceLengths.push([instructor, preferenceSize]);
@@ -272,7 +275,7 @@ class Grid extends React.Component {
             newInstructorOrder.push(instructorPreferenceLengths[i][0]);
         }
 
-        var noPreferenceInstructors = this.props.controllerData.instructors.filter((instructor) => {
+        var noPreferenceInstructors = this.controllerData.instructors.filter((instructor) => {
             return !newInstructorOrder.includes(instructor);
         });
 
@@ -287,7 +290,7 @@ class Grid extends React.Component {
      */
     assignLessons(instructor, index, q) {
         var lessonCode = instructor[index];
-        var prefs = this.props.controllerData.instructorPreferences;
+        var prefs = this.controllerData.instructorPreferences;
 
         // If the slot locarion is a code (string), it isn't a lesson.
         if (typeof lessonCode === "string") {
@@ -339,13 +342,16 @@ class Grid extends React.Component {
     }
 
     /**
-     * Gets an array generated by the GridFactory class.
+     * Gets an array generated by the GridFactory, server-side.
+     */
+    generateGridArrays(controllerData, lessonTimes) {
+        return this.props.connector.getGridArrays(controllerData, lessonTimes).then(newGrids => this.modifyGridArrays(newGrids));
+    }
+
+    /**
      * Modifies the array to map to Red Cross levels.
      */
-    generateGridArrays() {
-        this.props.controllerData.duration = this.grid.duration;
-
-        var newGrids = GridFactory(this.props.controllerData, this.grid.lessonTimes);
+    modifyGridArrays(newGrids) {
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
         // Set allocated lessons slots to Red Cross & private lessons.
@@ -373,34 +379,40 @@ class Grid extends React.Component {
         return newGrids;
     }
 
-    /**
-     * Transforms an array to a PureCSS table.
-     * The first row of the array is considered as the Header of the table.
-     */
     generateGrid() {
-        // Hide tutorial message, error notification, & current grids.
-        $("#dynamicGrid .content-section-footer").css({
-            "display": "none"
-        });
-
         // Create the queue of lessons.
         this.generateLessonQueue();
 
         // Get base array to represent grid.
-        var gridArrays = this.generateGridArrays();
+        this.generateGridArrays(this.controllerData, this.grid.lessonTimes).then(gridArrays => this.displayGrid(gridArrays));
+    }
+
+    /**
+     * Transforms an array to a PureCSS table.
+     * The first row of the array is considered as the Header of the table.
+     */
+    displayGrid(gridArrays) {
+        gridArrays = gridArrays.slice(1, 10);
+
+        var duration = this.grid.lessonTimes.length / 2.0;
 
         if (gridArrays.length === 0) {
             this.noGridsNotification(
-                this.grid.duration,
-                this.props.controllerData.instructors.length,
-                this.props.controllerData.lessons.half,
-                this.props.controllerData.lessons.threequarter
+                duration,
+                this.controllerData.instructors.length,
+                this.controllerData.lessons.half,
+                this.controllerData.lessons.threequarter
             );
 
             return;
         } else {
             $("#dynamicGrid p").hide();
         }
+
+        // Hide tutorial message, error notification, & current grids.
+        $("#dynamicGrid .content-section-footer").css({
+            "display": "none"
+        });
 
         // Empty list of Grids.
         $("#dynamicGrid .pure-menu-scrollable ul").empty();
@@ -416,7 +428,7 @@ class Grid extends React.Component {
                     newTable += "<tr" + ((instructor % 2 === 0) ? " class='table-even'" : " class='table-odd'") + ">";
                 }
 
-                for (var slot = 0; slot < 2 * this.grid.duration + 1; slot++) {
+                for (var slot = 0; slot < 2 * duration + 1; slot++) {
                     /**
                      * Minimize the if-else flow when moved to React objects.
                      */
@@ -488,13 +500,13 @@ class Grid extends React.Component {
 
         // Fit viewing window to the Grids' size.
         $("#dynamicGrid .pure-menu-scrollable").css({
-            "width": (122.5 * (2 * this.grid.duration + 1.5)) + "px"
+            "width": (122.5 * (2 * duration + 1.5)) + "px"
         });
 
         // Eliminate space conflict with the GridChecklist.
-        if (this.props.controllerData.instructors.length > 3) {
+        if (this.controllerData.instructors.length > 3) {
              $("#dynamicGrid").css({
-                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.props.controllerData.instructors.length - 3))) + "px"
+                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.controllerData.instructors.length - 3))) + "px"
              });
         }
 
@@ -521,7 +533,7 @@ class Grid extends React.Component {
         header = modalHeader.html();
         index = tableListElement.index() + 1;
         reHashNumber = new RegExp(/#[0-9]+/);
-        header = header.replace(reHashNumber, "#".concat(index));
+        header = header.replace(reHashNumber, "#" + index);
         modalHeader.html(header);
 
         // Rebind 'previous' button.
@@ -889,8 +901,8 @@ class Grid extends React.Component {
 
 Grid.propTypes =  {
     callback: React.PropTypes.func.isRequired,
-    controller: React.PropTypes.object.isRequired,
-    controllerData: React.PropTypes.object.isRequired
+    connector: React.PropTypes.object.isRequired,
+    controller: React.PropTypes.object.isRequired
 }
 
 export default Grid;

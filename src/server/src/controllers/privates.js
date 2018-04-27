@@ -13,10 +13,8 @@ module.exports = {
     create(req, res) {
         return Private.create({
             instructorId: req.body.instructorId,
-            instructor: req.body.instructor,
             time: req.body.time,
-            duration: req.body.duration,
-            include: req.body.include
+            duration: req.body.duration
         }).then((_private) => {
             res.status(201).send(_private);
         }).catch((error) => {
@@ -46,10 +44,8 @@ module.exports = {
 
             return _private.update({
                 instructorId: req.body.instructorId || _private.instructorId,
-                instructor: req.body.instructor || _private.instructor,
                 time: req.body.time || _private.time,
-                duration: req.body.duration || _private.duration,
-                include: req.body.include || _private.include
+                duration: req.body.duration || _private.duration
             }).then((_private) => {
                 res.status(200).send(_private);
             }).catch((error) => {

@@ -4,15 +4,21 @@ const Grid = Models.Grid;
 
 module.exports = {
     retrieve(req, res) {
-        return Grid.findAll().then((grid) => {
+        return Grid.find({
+            where: {
+                id: 1
+            }
+        }).then((grid) => {
             res.status(200).send(grid);
         }).catch((error) => {
             res.status(400).send(error);
         });
     },
     update(req, res) {
-        return Grid.findAll().then((grid) => {
-            return grid[0];
+        return Grid.find({
+            where: {
+                id: 1
+            }
         }).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
@@ -21,7 +27,7 @@ module.exports = {
             }
 
             return grid.update({
-                startTime: req.body.startTime || grid.startTime
+                lessonTimes: req.body.lessonTimes || grid.lessonTimes
             }).then((grid) => {
                 res.status(200).send(grid);
             }).catch((error) => {
@@ -32,8 +38,10 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Grid.findAll().then((grid) => {
-            return grid[0];
+        return Grid.find({
+            where: {
+                id: 1
+            }
         }).then((grid) => {
             if (!grid) {
                 return res.status(404).send({

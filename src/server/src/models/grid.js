@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
     var Grid = sequelize.define('Grid', {
-        startTime: DataTypes.TIME
+        lessonTimes: DataTypes.ARRAY(DataTypes.STRING)
     }, {});
 
     Grid.associate = (models) => {

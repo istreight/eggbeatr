@@ -17,6 +17,7 @@ import Footer from './Footer';
 import Landing from './Landing';
 import Lessons from './Lessons';
 import Private from './Private';
+import Connector from './Connector';
 import Instructors from './Instructors';
 import GridChecklist from './GridChecklist';
 import InstructorPreferences from './InstructorPreferences';
@@ -25,25 +26,52 @@ import InstructorPreferences from './InstructorPreferences';
 class Controller extends React.Component {
     constructor(props) {
         super(props);
+        this.i = 0;
 
-        this.componentsWithData = [];
-
-        // To be passed to GridFactory.
         this.controllerData = {};
+        this.serverURI = 'http://localhost:8081';
+        this.connector = new Connector({
+            serverURI: this.serverURI
+        });
 
-        // Clear storage from query string.
-        var searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get("clearStorage") === "session") {
-            sessionStorage.clear();
+        var populate = this.getPopulateParameter();
+
+        var initializations = [
+            this.connector.getGridData(populate).then(res => this.init("grid", res)),
+            this.connector.getInstructorData(populate).then(res => this.init("instructors", res)),
+            this.connector.getLessonData(populate).then(res => this.init("lessons", res)),
+            this.connector.getPreferenceData(populate).then(res => this.init("instructorPreferences", res)),
+            this.connector.getPrivatesData(populate).then(res => this.init("private", res))
+        ];
+
+        Promise.all(initializations)
+            .then(() => this.renderComponents())
+            .catch(error => console.error(error));
+    }
+
+    /**
+     * Store the data locally, as returned from the
+     *  asynchronous call.
+     */
+    init(classVariable, res) {
+        this[classVariable] = res;
+    }
+
+    /**
+     * Get parameter from the query string, detailing how
+     *  to seed the starting data.
+     */
+    getPopulateParameter() {
+        var validPopulates = ["db", "default", "none"];
+        var searchParams = new URLSearchParams(location.search);
+
+        var populate = searchParams.get('populate');
+
+        if (!(validPopulates.includes(populate))) {
+            populate = "db";
         }
 
-        this.grid = JSON.parse(sessionStorage.getItem("grid") || "{}");
-        this.instructors = JSON.parse(sessionStorage.getItem("instructors") || "{}");
-        this.instructorPreferences = JSON.parse(sessionStorage.getItem("instructorPreferences") || "{}");
-        this.lessons = JSON.parse(sessionStorage.getItem("lessons") || "{}");
-        this.private = JSON.parse(sessionStorage.getItem("private") || "{}");
-
-        this.renderComponents();
+        return populate;
     }
 
     /**
@@ -70,61 +98,47 @@ class Controller extends React.Component {
 
         grid = ReactDOM.render(<Grid
             callback={this.gridCallback}
+            connector={this.connector}
             controller={this}
-            controllerData={this.manipulateData()}
         />, document.getElementById('dynamicGrid'));
-        this.componentsWithData.push(grid);
 
-        gridChecklist = ReactDOM.render(<GridChecklist />, document.getElementById('dynamicGridChecklist'));
-        this.componentsWithData.push(gridChecklist);
+        gridChecklist = ReactDOM.render(<GridChecklist
+            createGridHandler={grid.generateGrid.bind(grid)}
+        />, document.getElementById('dynamicGridChecklist'));
 
         instructorPreferences = ReactDOM.render(<InstructorPreferences
             callback={this.instructorPreferencesCallback}
+            connector={this.connector}
             controller={this}
         />, document.getElementById('dynamicInstructorPreferences'));
-        this.componentsWithData.push(instructorPreferences);
 
         instructors = ReactDOM.render(<Instructors
             callback={this.instructorsCallback}
+            connector={this.connector}
             controller={this}
             instructorPreferences={instructorPreferences}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicInstructors'));
-        this.componentsWithData.push(instructors);
 
         lessons = ReactDOM.render(<Lessons
             callback={this.lessonsCallback}
+            connector={this.connector}
             controller={this}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicLessons'));
-        this.componentsWithData.push(lessons);
 
         privates = ReactDOM.render(<Private
             callback={this.privateCallback}
+            connector={this.connector}
             controller={this}
             gridChecklist={gridChecklist}
         />, document.getElementById('dynamicPrivate'));
-        this.componentsWithData.push(privates);
-
-        header = ReactDOM.render(<Header
-            callback={this.headerCallback}
-            controller={this}
-        />, document.getElementById('dynamicHeader'));
-        this.componentsWithData.push(header);
-
-        var searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.get("clearSet")) {
-            var clearSet = searchParams.get("clearSet");
-
-            this.removeSetFromComponents(clearSet);
-        }
     }
 
     /**
      * Callback to store data from Grid.js
      */
-     gridCallback(_grid, controller) {
-         console.log(controller);
+     gridCallback(_grid, controller, minimize) {
          console.log("retrieving data from Grid.js...");
 
          console.log("grid: ", controller.grid);
@@ -133,13 +147,13 @@ class Controller extends React.Component {
 
          console.log("adding data from Grid.js to controllerData...");
 
-         controller.manipulateData();
+         controller.manipulateData(minimize);
      }
 
     /**
      * Callback to store data from Instructors.js
      */
-    instructorsCallback(_instructor, controller) {
+    instructorsCallback(_instructor, controller, minimize) {
         console.log("retrieving data from Instructors.js...");
 
         console.log("instructors: ", controller.instructors);
@@ -148,13 +162,13 @@ class Controller extends React.Component {
 
         console.log("adding data from Instructors.js to controllerData...");
 
-        controller.manipulateData();
+        controller.manipulateData(minimize);
     }
 
     /**
      * Callback to store data from InstructorsPreferences.js
      */
-    instructorPreferencesCallback(_instructorPreference, controller) {
+    instructorPreferencesCallback(_instructorPreference, controller, minimize) {
         console.log("retrieving data from InstructorsPreferences.js...");
 
         console.log("instructorPreferences: ", controller.instructorPreferences);
@@ -163,13 +177,13 @@ class Controller extends React.Component {
 
         console.log("adding data from InstructorsPreferences.js to controllerData...");
 
-        controller.manipulateData();
+        controller.manipulateData(minimize);
     }
 
     /**
      * Callback to store data from Lessons.js
      */
-    lessonsCallback(_lesson, controller) {
+    lessonsCallback(_lesson, controller, minimize) {
         console.log("retrieving data from Lessons.js...");
 
         console.log("lessons: ", controller.lessons);
@@ -178,13 +192,13 @@ class Controller extends React.Component {
 
         console.log("adding data from Lessons.js to controllerData...");
 
-        controller.manipulateData();
+        controller.manipulateData(minimize);
     }
 
     /**
      * Callback to store data from Private.js
      */
-    privateCallback(_private, controller) {
+    privateCallback(_private, controller, minimize) {
         console.log("retrieving data from Private.js...");
 
         console.log("private: ", controller.private);
@@ -193,28 +207,7 @@ class Controller extends React.Component {
 
         console.log("adding data from Private.js to controllerData...");
 
-        controller.manipulateData();
-    }
-
-    /**
-     * Callback to store data from Header.js
-     */
-    headerCallback(controller, newSetName) {
-        return;
-    }
-
-    /**
-     * Remove a new set from each component with data.
-     */
-    removeSetFromComponents(set) {
-        // Go to each component and remove the key-value pair.
-        for (var compontentIndex = 0; compontentIndex < this.componentsWithData.length; compontentIndex++) {
-            var component = this.componentsWithData[compontentIndex];
-
-            if (component.constructor.name === "Header") {
-                component.removeSet(set);
-            }
-        }
+        controller.manipulateData(minimize);
     }
 
     /**
@@ -263,10 +256,13 @@ class Controller extends React.Component {
      * Organizes data from the Lessons, Instructors, and Private components.
      * Duration of lessons set is contained in the Grid component.
      */
-    manipulateData() {
+    manipulateData(minimize) {
         console.log("manipulating controllerData...");
 
-        this.minimizeData();
+        if (minimize) {
+            this.minimizeData();
+        }
+
         this.quantifyLessonTypes();
 
         // Add instructors to controllerData.
@@ -301,18 +297,11 @@ class Controller extends React.Component {
          * Eliminate empty strings and arrays in instructorPreferences.
          * Eliminate instructorPreferences if all keys are full.
          */
-        var isConsistent = true;
         for (var instructor in this.instructorPreferences) {
             var instructorPreferences = this.instructorPreferences[instructor];
 
-            for (var lessonGroup = 0; lessonGroup < instructorPreferences.length; lessonGroup++) {
-                for (var lesson = 0; lesson < instructorPreferences[lessonGroup].length; lesson++) {
-                    isConsistent = isConsistent && (instructorPreferences[lessonGroup][lesson].charAt(0) !== "r");
-                }
-            }
-
             // Delete key-value pairing if all values are filled or empty.
-            if (isConsistent) {
+            if (instructorPreferences.length === 0 || instructorPreferences.length === 21) {
                 delete this.instructorPreferences[instructor];
             }
         }
@@ -331,18 +320,109 @@ class Controller extends React.Component {
             }
         }
 
-        this.updateSessionStorage();
+        this.updateDatabase();
     }
 
     /**
-     * Set the gathered data in sessionStorage.
+     * Set the gathered data in the database.
      */
-    updateSessionStorage() {
-        sessionStorage.setItem("grid", JSON.stringify(this.grid));
-        sessionStorage.setItem("instructors", JSON.stringify(this.instructors));
-        sessionStorage.setItem("instructorPreferences", JSON.stringify(this.instructorPreferences));
-        sessionStorage.setItem("lessons", JSON.stringify(this.lessons));
-        sessionStorage.setItem("private", JSON.stringify(this.private));
+    updateDatabase() {
+        console.log("Sending updates to database...");
+
+        console.log("Updating Grid...");
+        this.connector.setGridData(this.grid)
+            .then(gridRes => console.log("Updated Grid:", gridRes));
+
+        console.log("Updating Instructors...");
+        var instructorUpdates = [];
+        for (var key in this.instructors) {
+            var instructor = this.instructors[key];
+            var id = instructor.id;
+            var body = {
+                "instructor": key,
+                "dateOfHire": instructor.dateOfHire,
+                "wsiExpirationDate": instructor.wsiExpirationDate
+            };
+
+            instructorUpdates.push(this.connector.setInstructorData(id, body));
+        }
+        Promise.all(instructorUpdates).then((instructorRes) => {
+            this.instructors = this.assignUpdates(instructorRes);
+
+            console.log("Updated Instructors:", this.instructors);
+        });
+
+        console.log("Updating Lessons...");
+        var lessonsUpdates = [];
+        for (var key in this.lessons) {
+            if (key === "half" || key === "threequarter") {
+                continue;
+            }
+
+            var lesson = this.lessons[key];
+            var id = lesson.id;
+            var body = {
+                "quantity": lesson.quantity
+            };
+
+            lessonsUpdates.push(this.connector.setLessonData(id, body));
+        }
+        Promise.all(lessonsUpdates).then((lessonRes) => {
+            this.lessons = this.assignUpdates(lessonRes);
+
+            console.log("Updated Lessons:", this.lessons);
+        });
+
+        console.log("Updating instructorPreferences...");
+        var preferenceUpdates = [];
+        for (var key in this.instructorPreferences) {
+            var preference = this.instructorPreferences[key];
+            var id = preference.id;
+            var body = {
+                "instructorId": preference.instructorId,
+                "lessons": preference.lessons
+            };
+
+
+            preferenceUpdates.push(this.connector.setPreferenceData(id, body));
+        }
+        Promise.all(preferenceUpdates).then((preferenceRes) => {
+            this.instructorPreferences = this.assignUpdates(preferenceRes);
+
+            console.log("Updated InstructorPreferences:", this.instructorPreferences);
+        });
+
+        console.log("Updating Privates...");
+        var privateUpdates = [];
+        for (var key in this.private) {
+            var _private = this.private[key];
+            var id = _private.id;
+            var body = {
+                "duration": _private.duration,
+                "instructorId": _private.instructorId,
+                "time": _private.time
+            };
+
+            privateUpdates.push(this.connector.setPrivatesData(id, body))
+        }
+        Promise.all(privateUpdates).then((privateRes) => {
+            this.privates = this.assignUpdates(privateRes);
+
+            console.log("Updated Privates:", this.privates);
+        });
+
+
+        console.log("All updates sent.")
+    }
+
+    assignUpdates(res) {
+        var object = {};
+
+        for (var i = 0; i < res.length; i++) {
+            Object.assign(object, res[i]);
+        }
+
+        return object;
     }
 }
 

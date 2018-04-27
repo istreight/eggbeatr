@@ -19,40 +19,9 @@ class Instructors extends React.Component {
     }
 
     componentDidMount() {
-        var sessionInstructors = sessionStorage.getItem("instructors");
-        if (sessionInstructors && sessionInstructors !== "{}") {
-            this.instructors = JSON.parse(sessionInstructors);
-        } else {
-            // For default table display.
-            this.instructors["Alfa"] = ["01/02/11", "03/04/21"];
-            this.instructors["Bravo"] = ["05/06/12", "07/08/22"];
-            this.instructors["Charlie"] = ["09/10/13", "11/12/23"];
-        }
-
-        this.generateInstructorTable();
-        this.numInstructors = this.getNumInstructors();
-
-        this.props.callback(this.instructors, this.props.controller);
-        this.props.instructorPreferences.setPreferencesButtons(true);
-        this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
+        this.props.connector.getInstructorData().then(res => this.init(res));
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
-
-        $("#dynamicInstructors td").each((index, element) => {
-            if ($(element).children().length > 0) {
-                return;
-            }
-
-            var expiryTime = $(element).text();
-            var reName = new RegExp(/^[A-Za-z\s]+$/);
-
-            if (expiryTime !== "" && !reName.test(expiryTime)) {
-                var [day, month, year] = expiryTime.split("/");
-                expiryTime = Date.parse([month, day, year].join("/"));
-
-                this.checkWSIExpiration($(element), expiryTime);
-            }
-        });
 
         // Link tutorital button to next section.
         $("#dynamicInstructors .pure-button-primary").click(() => {
@@ -71,6 +40,34 @@ class Instructors extends React.Component {
                     "display": "none"
                 });
             });
+        });
+    }
+
+    /**
+     * Store the instructors data locally, as returned from
+     *  the asynchronous call.
+     */
+    init(instructorData) {
+        this.instructors = instructorData;
+
+        this.generateInstructorTable();
+        this.numInstructors = this.getNumInstructors();
+
+        this.props.callback(this.instructors, this.props.controller, false);
+        this.props.instructorPreferences.setPreferencesButtons(true);
+        this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
+
+        $("#dynamicInstructors td").each((index, element) => {
+            if ($(element).children().length > 0) {
+                return;
+            }
+
+            var expiryTime = $(element).text();
+            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
+
+            if (reDate.test(expiryTime)) {
+                this.checkWSIExpiration($(element), Date.parse(expiryTime));
+            }
         });
     }
 
@@ -370,7 +367,7 @@ class Instructors extends React.Component {
 
         this.numInstructors = this.getNumInstructors();
 
-        this.props.callback(this.instructors, this.props.controller);
+        this.props.callback(this.instructors, this.props.controller, true);
         this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
     }
@@ -494,6 +491,7 @@ class Instructors extends React.Component {
 
 Instructors.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
     instructorPreferences: React.PropTypes.object.isRequired,
     gridChecklist: React.PropTypes.object.isRequired
