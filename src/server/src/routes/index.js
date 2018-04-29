@@ -8,22 +8,26 @@ const GridFactoryController = Controller.GridFactory;
 const InstructorPreferencesController = Controller.InstructorPreferences;
 
 module.exports = (app) => {
+    app.options('/*', (req, res, next) => {
+        res.send(200);
+    });
+
     app.get('/api', (req, res) => res.status(200).send({
         routes: {
             list: [
-                "/api/grid",
-                "/api/factory",
-                "/api/lessons",
-                "/api/privates",
-                "/api/instructors",
-                "/api/preferences"
+                '/api/grid',
+                '/api/factory',
+                '/api/lessons',
+                '/api/privates',
+                '/api/instructors',
+                '/api/preferences'
             ],
             description: {
-                "/api/grid": "The list of generated grids and grid data.",
-                "/api/lessons": "The current quantities of lessons",
-                "/api/privates": "The current list of private lessons and related information.",
-                "/api/instructors": "The list of instructors and related information, including preferences and privates.",
-                "/api/preferences": "The list of preferred lessons from a specified instructor."
+                '/api/grid': 'The list of generated grids and grid data.',
+                '/api/lessons': 'The current quantities of lessons',
+                '/api/privates': 'The current list of private lessons and related information.',
+                '/api/instructors': 'The list of instructors and related information, including preferences and privates.',
+                '/api/preferences': 'The list of preferred lessons from a specified instructor.'
             }
         }
     }));

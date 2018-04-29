@@ -19,9 +19,29 @@ class Instructors extends React.Component {
     }
 
     componentDidMount() {
-        this.props.connector.getInstructorData().then(res => this.init(res));
+        this.sortInstructors(this.props.initData);
+
+        this.generateInstructorTable();
+        this.numInstructors = this.getNumInstructors();
+
+        this.props.callback(this.instructors, this.props.controller, false);
+        this.props.instructorPreferences.setPreferencesButtons(true);
+        this.props.setChecklistQuantity("instructors", this.numInstructors);
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
+
+        $("#dynamicInstructors td").each((index, element) => {
+            if ($(element).children().length > 0) {
+                return;
+            }
+
+            var expiryTime = $(element).text();
+            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
+
+            if (reDate.test(expiryTime)) {
+                this.checkWSIExpiration($(element), Date.parse(expiryTime));
+            }
+        });
 
         // Link tutorital button to next section.
         $("#dynamicInstructors .pure-button-primary").click(() => {
@@ -40,34 +60,6 @@ class Instructors extends React.Component {
                     "display": "none"
                 });
             });
-        });
-    }
-
-    /**
-     * Store the instructors data locally, as returned from
-     *  the asynchronous call.
-     */
-    init(instructorData) {
-        this.instructors = instructorData;
-
-        this.generateInstructorTable();
-        this.numInstructors = this.getNumInstructors();
-
-        this.props.callback(this.instructors, this.props.controller, false);
-        this.props.instructorPreferences.setPreferencesButtons(true);
-        this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
-
-        $("#dynamicInstructors td").each((index, element) => {
-            if ($(element).children().length > 0) {
-                return;
-            }
-
-            var expiryTime = $(element).text();
-            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
-
-            if (reDate.test(expiryTime)) {
-                this.checkWSIExpiration($(element), Date.parse(expiryTime));
-            }
         });
     }
 
@@ -150,7 +142,16 @@ class Instructors extends React.Component {
 
         var instructorName = instructor.attr("placeholder");
         if (instructorName in this.instructors) {
-            delete this.instructors[instructorName];
+            var instructorId = this.instructors[instructorName].id;
+
+            console.log("Sending delete Instructor request to database...");
+            this.props.connector.deleteInstructorData(instructorId)
+                .then((res) => {
+                    console.log("Deleted Private:", res);
+                    delete this.instructors[instructorName];
+                    this.numInstructors = this.getNumInstructors();
+                }).catch(error => console.error(error));
+            console.log("Sent delete Instructor request to database.");
         }
 
         removedRow.remove();
@@ -202,24 +203,37 @@ class Instructors extends React.Component {
 
         // Add row to instructors object.
         var instructorName;
+        var body = {};
         var addedData = $(event.target).closest("tr").find("input");
         addedData.each((index, element) => {
             var inputPlaceholder = $(element).attr("placeholder");
 
+            if (inputPlaceholder === "...") {
+                return true;
+            }
+
             if (index === 0) {
-                if (inputPlaceholder !== "...") {
                     instructorName = inputPlaceholder;
-                    this.instructors[instructorName] = [];
-                }
-            } else {
-                if (instructorName) {
-                    var data = inputPlaceholder;
-                    this.instructors[instructorName].push(data);
-                }
+
+                    body.instructor = instructorName;
+            } else if (index === 1) {
+                body.dateOfHire = inputPlaceholder;
+            } else if (index === 2) {
+                var newDate = new Date(inputPlaceholder);
+                this.checkWSIExpiration(element, newDate);
+
+                body.wsiExpirationDate = inputPlaceholder;
             }
         });
 
-        this.numInstructors = this.getNumInstructors();
+        console.log("Sending create new Instructor request to database...");
+        this.props.connector.setInstructorData(body)
+            .then((res) => {
+                console.log("Created new Instructor:", res);
+                this.sortInstructors(Object.assign(res, this.instructors));
+                this.numInstructors = this.getNumInstructors();
+            }).catch(error => console.error(error));
+        console.log("Sent create new Instructor request to database.");
 
         // Put 'remove' in the last cell of the row.
         $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
@@ -227,6 +241,7 @@ class Instructors extends React.Component {
         // Rebind each 'remove'.
         $("#dynamicInstructors table .remove").click(this.removeRow.bind(this));
 
+        this.colourTable();
         this.sizeTable();
     }
 
@@ -252,40 +267,22 @@ class Instructors extends React.Component {
             var isValidData = false;
             if (isFirstChild) {
                 var reName = new RegExp(/^[A-Za-z\s]+$/);
+
                 isValidData = reName.test(newData) && !instructorList.includes(newData);
 
                 instructorList.push(newData);
-            } else if (newData.split("/").length === 3) {
-                // Order could be day/month/year or month/day/year.
-                var testDay, testMonth, testYear;
-                var reDay = new RegExp(/^(0?[1-9]|[1-2][0-9]|3[0-1])$/);
-                var reMonth = new RegExp(/^(0?[1-9]|1[0-2])$/);
-                var reYear = new RegExp(/^[0-9]?[0-9]?[0-9]?[0-9]$/);
-                var [day, month, year] = newData.split("/");
-
-                // Date objects use 'Month/Day/Year' order with forward slash seperated values.
-                expiryTime = Date.parse([month, day, year].join("/"));
-
-                // Expect first & second values to by day/month.
-                testDay = reDay.test(day);
-                testMonth = reMonth.test(month);
-                if (!(testDay && testMonth)) {
-                    // Accept first & second value to be month/day.
-                    testMonth = reMonth.test(day);
-                    testDay = reDay.test(month);
-                    expiryTime = Date.parse(newData);
-                }
-
-                testYear = reYear.test(year);
-
-                isValidData = testDay && testMonth && testYear;
+            } else if (newData.split("-").length === 3) {
+                isValidData = !isNaN(Date.parse(newData));
+                expiryTime = Date.parse(newData);
             }
 
             if (isValidData) {
                 $(cell).html(newData);
                 $(cell).removeClass("error-cell");
 
-                this.checkWSIExpiration(cell, expiryTime);
+                if (expiryTime) {
+                    this.checkWSIExpiration(cell, expiryTime);
+                }
             } else {
                 $(cell).hide().addClass("error-cell").fadeIn(800);
                 cellElement.val("");
@@ -321,45 +318,6 @@ class Instructors extends React.Component {
             }
         });
 
-        var instructor;
-        var instructorName;
-        var instructors = [];
-        tableRows.each((index, row) => {
-            // Skip header row.
-            if (index === 0) {
-                return;
-            }
-
-            $(row).children("td").each((index, element) => {
-                var cellText = $(element).text();
-
-                if (cellText !== "...") {
-                    if (index === 0) {
-                        instructorName = cellText;
-                        instructor = this.instructors[instructorName];
-
-                        if (instructor === undefined) {
-                            instructor = [];
-                            this.instructors[instructorName] = instructor;
-                        }
-
-                        instructors.push(instructorName);
-                    } else {
-                        if (instructorName) {
-                            // Offset the index from the name cell.
-                            instructor[index - 1] = cellText;
-                        }
-                    }
-                }
-            })
-        });
-
-        for (let instructor in this.instructors) {
-            if (!instructors.includes(instructor)) {
-                delete this.instructors[instructor];
-            }
-        }
-
         // Re-title and re-bind 'Edit Instructors' button.
         editInstructorsButton.html("Edit Instructors");
         editInstructorsButton.unbind("click");
@@ -367,9 +325,9 @@ class Instructors extends React.Component {
 
         this.numInstructors = this.getNumInstructors();
 
-        this.props.callback(this.instructors, this.props.controller, true);
         this.props.instructorPreferences.setPreferencesButtons(true);
-        this.props.gridChecklist.setQuantity("instructors", this.numInstructors);
+        this.props.callback(this.instructors, this.props.controller, true);
+        this.props.setChecklistQuantity("instructors", this.numInstructors);
     }
 
     /**
@@ -382,13 +340,14 @@ class Instructors extends React.Component {
         for (var instructorName in this.instructors) {
             var rowClass = isOdd ? "table-odd" : "table-even";
             var instructor = this.instructors[instructorName];
+            var dateOfHire = instructor.dateOfHire;
+            var wsiExpirationDate = instructor.wsiExpirationDate;
 
             newTable += "<tr class='" + rowClass + "'>";
-            newTable += "<td>" + instructorName + "</td>";
 
-            for (var info = 0; info < instructor.length; info++) {
-                newTable += "<td>" + instructor[info] + "</td>";
-            }
+            newTable += "<td>" + instructorName + "</td>";
+            newTable += "<td>" + dateOfHire + "</td>";
+            newTable += "<td>" + wsiExpirationDate + "</td>";
 
             newTable += "<td><a class='pure-button preferences'>...</a></td>";
             newTable += "</tr>";
@@ -396,12 +355,14 @@ class Instructors extends React.Component {
             isOdd = !isOdd;
         }
 
-        // Reposition container on new HTML table.
         $("#dynamicInstructors tbody").append(newTable);
+
+        this.colourTable();
+        this.sizeTable();
     }
 
     checkWSIExpiration(cell, expiryTime) {
-        const ninetyDaysInMilliseconds = 90 * 24 * 60 * 60 * 1000
+        const ninetyDaysInMilliseconds = 90 * 24 * 60 * 60 * 1000;
 
         var cellIndex = $(cell).index();
         var thCells = $(cell).closest("table").find("th");
@@ -419,6 +380,15 @@ class Instructors extends React.Component {
 
     getNumInstructors() {
         return Object.keys(this.instructors).length;
+    }
+
+    /**
+     * Sort object keys alphabetically into instructors.
+     */
+    sortInstructors(instructors) {
+        Object.keys(instructors).sort().forEach((key) => {
+          this.instructors[key] = instructors[key];
+        });
     }
 
     sizeTable() {
@@ -491,10 +461,11 @@ class Instructors extends React.Component {
 
 Instructors.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
     instructorPreferences: React.PropTypes.object.isRequired,
-    gridChecklist: React.PropTypes.object.isRequired
+    setChecklistQuantity: React.PropTypes.func.isRequired
 }
 
 export default Instructors;

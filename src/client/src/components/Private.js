@@ -13,12 +13,18 @@ class Private extends React.Component {
     constructor(props) {
         super(props);
 
-        this.numPrivate = 0;
         this.privateLessons = {};
+        this.numPrivates = 0;
     }
 
     componentDidMount() {
-        this.props.connector.getPrivatesData().then((res) => this.init(res));
+        this.sortPrivates(this.props.initData);
+
+        this.generatePrivate();
+        this.numPrivates = this.getNumPrivates();
+
+        this.props.callback(this.privateLessons, this.props.controller, false);
+        this.props.setChecklistQuantity("privates", this.numPrivates);
 
         $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
 
@@ -46,59 +52,6 @@ class Private extends React.Component {
     }
 
     /**
-     * Store the private lessons data locally, as returned
-     *  from the asynchronous call.
-     */
-    init(privateLessonsData) {
-        this.privateLessons = privateLessonsData;
-
-        this.generatePrivate();
-        this.numPrivate = this.getNumPrivates();
-
-        this.props.callback(this.privateLessons, this.props.controller, false);
-        this.props.gridChecklist.setQuantity("privates", this.numPrivate);
-
-        // Include onclick event.
-        // Assign text in drop down to 'privateLessons'.
-        $("#dynamicPrivate table td li a").click(() => {
-            // Update privateLessons.
-            var timeSlot;
-            var instructor;
-            var row = $(event.target).closest("tr").children();
-            row.each((index, element) => {
-                var elementText = $(element).text();
-
-                if (index === 0) {
-                    instructor = this.privateLessons[elementText];
-
-                    return instructor !== undefined;
-                } else if (index === 1) {
-                    timeSlot = instructor[elementText];
-
-                    return timeSlot !== undefined;
-                } else {
-                    if ($(element).children().length === 0) {
-                        timeSlot[0] = elementText;
-                    } else {
-                        timeSlot[1] = $(event.target).text();
-                    }
-                }
-            });
-
-            this.numPrivate = this.getNumPrivates();
-
-            this.props.gridChecklist.setQuantity("privates", this.numPrivate);
-
-            if (timeSlot !== undefined) {
-                this.props.callback(this.privateLessons, this.props.controller, true);
-            }
-
-            // Modify displayed text.
-            this.updateIncludeText(event.target);
-        });
-    }
-
-    /**
      * Replaces the text of the Instructor table cells
      *  with input fields.
      * The placeholder values of the existing fields are
@@ -122,7 +75,7 @@ class Private extends React.Component {
         var className = (numRows % 2 === 0) ? "table-odd" : "table-even";
 
         // Append row of input fields and 'add' button.
-        privateTable.append("<tr class='" + className + "'><td><td></td><td></td><td><div></div></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+        privateTable.append("<tr class='" + className + "'><td><td></td><td></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
 
         // Bind 'Add' buttons for new rows.
         privateTable.find(".add").click(this.addRow.bind(this));
@@ -168,16 +121,48 @@ class Private extends React.Component {
      * Removes the row of the table of a clicked 'remove' button.
      */
     removeRow() {
+        var instructorName;
+        var time;
+        var duration;
         var removedRow = $(event.target).closest("tr");
         var removedData = removedRow.find("input");
         var reName = new RegExp(/^[A-Za-z\s]+$/);
-        var instructor = removedData.filter((index, element) => {
-            return reName.test($(element).attr("placeholder"));
+        var reTime = new RegExp(/^(0?[0-9]|1[0-2]):([0-5][05]|60)$/);
+        var reDuration = new RegExp(/^([0-5][05]|60)$/);
+
+        removedData.each((index, element) => {
+            var inputPlaceholder = $(element).attr("placeholder");
+
+            if (reName.test(inputPlaceholder)) {
+                instructorName = inputPlaceholder;
+            } else if (reTime.test(inputPlaceholder)) {
+                time = inputPlaceholder;
+            } else if (reDuration.test(inputPlaceholder)) {
+                duration = parseInt(inputPlaceholder, 10);
+            }
         });
 
-        var instructorName = instructor.attr("placeholder");
         if (instructorName in this.privateLessons) {
-            delete this.privateLessons[instructorName];
+            var privateInstructor = this.privateLessons[instructorName];
+
+            for (var i = 0; i < privateInstructor.length; i++) {
+                var validTime = time + ":00" === privateInstructor[i].time;
+                var validDuration = duration === privateInstructor[i].duration;
+
+                if (validTime && validDuration) {
+                    var sliceIndex = i;
+                    var privatesId = privateInstructor[i].id;
+
+                    console.log("Sending delete Private request to database...");
+                    this.props.connector.deletePrivatesData(privatesId)
+                        .then((res) => {
+                            console.log("Deleted Private:", res);
+                            this.privateLessons[instructorName].splice(sliceIndex, 1);
+                            this.numPrivates = this.getNumPrivates();
+                        }).catch(error => console.error(error));
+                    console.log("Sent delete Private request to database.");
+                }
+            }
         }
 
         removedRow.remove();
@@ -227,27 +212,47 @@ class Private extends React.Component {
         this.inputifyRows();
 
         // Add row to privateLessons object.
-        var timeSlot;
-        var instructorName;
+        var instructorData;
+        var body = {};
         var addedData = $(event.target).closest("tr").find("input");
-        addedData.each((index, element) => {
+        $(addedData.get().reverse()).each((index, element) => {
             var inputPlaceholder = $(element).attr("placeholder");
 
-            if (inputPlaceholder !== "...") {
-                if (index === 0) {
-                    instructorName = inputPlaceholder;
-                    this.privateLessons[instructorName] = {};
-                } else if (index === 1) {
-                    timeSlot = inputPlaceholder;
-                    this.privateLessons[instructorName][timeSlot] = [];
-                } else if (instructorName) {
-                    this.privateLessons[instructorName][timeSlot].push(inputPlaceholder);
-                }
+            if (inputPlaceholder === "...") {
+                return true;
+            }
+
+            if (index === 0) {
+                body.duration = inputPlaceholder;
+            } else if (index === 1) {
+                body.time = inputPlaceholder;
+            } else if (index === 2) {
+                var validInstructor;
+                var instructorName = inputPlaceholder;
+                instructorData = this.props.connector.getInstructorData()
+                    .then((instructors) => {
+                        validInstructor = instructorName in instructors;
+
+                        if (validInstructor) {
+                            body.instructorId = instructors[instructorName].id;
+                        } else {
+                            $(element).closest("td").hide().addClass("error-cell").fadeIn(800);
+                        }
+                    }).catch(error => console.error(error));
             }
         });
 
+        console.log("Sending create new Private request to database...");
+        Promise.all([instructorData])
+            .then(() => this.props.connector.setPrivatesData(body))
+            .then((res) => {
+                console.log("Created new Private:", res);
+                this.sortPrivates(res);
+                this.numPrivates = this.getNumPrivates();
+            }).catch(error => console.error(error));
+        console.log("Sent create new Private request to database.");
 
-        this.numPrivate = this.getNumPrivates();
+        this.numPrivates = this.getNumPrivates();
 
         // Put 'remove' in the last cell of the row.
         $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
@@ -255,6 +260,7 @@ class Private extends React.Component {
         // Rebind each 'remove'.
         $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
 
+        this.colourTable();
         this.sizeTable();
     }
 
@@ -263,7 +269,6 @@ class Private extends React.Component {
      *  the input fields to the table.
      */
     addCells(cell, isFirstChild, removeInputRow) {
-        var isValidData = false;
         var cellElement = $(cell).children().first();
 
         if (cellElement.is("input")) {
@@ -277,6 +282,7 @@ class Private extends React.Component {
             var newData = cellElement.val() || cellElement.attr("placeholder");
             newData = newData.replace(/^\s+|\s+$/, "");
 
+            var isValidData = false;
             if (isFirstChild) {
                 var reName = new RegExp(/^[A-Za-z\s]+$/);
 
@@ -284,11 +290,11 @@ class Private extends React.Component {
             } else if (newData.split(":").length === 2){
                 var [hour, minute] = newData.split(":");
                 var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
-                var reMinute = new RegExp(/^(00|15|30|45)$/);
+                var reMinute = new RegExp(/^([0-5][05]|60)$/);
 
                 isValidData = reHour.test(hour) && reMinute.test(minute);
             } else {
-                var reDuration = new RegExp(/^(0|15|30|45)$/);
+                var reDuration = new RegExp(/^([0-5][05]|60)$/);
                 var duration = parseInt(newData, 10) % 60;
 
                 isValidData = reDuration.test(duration);
@@ -303,42 +309,6 @@ class Private extends React.Component {
             }
 
             return isValidData;
-        } else if (cellElement.is("div") && cellElement.children().length === 0) {
-            // Place a 'include' dropdown menu.
-            $(cell).html(
-                "<div class='pure-menu pure-menu-horizontal'><ul class='pure-menu-list'><li class='pure-menu-item pure-menu-has-children pure-menu-allow-hover'><a class='pure-menu-link menu-odd'>No</a><ul class='pure-menu-children'><li class='pure-menu-item'><a class='pure-menu-link'>Yes</a></li><li class='pure-menu-item'><a class='pure-menu-link'>No</a></li></ul></li></ul></div>"
-            );
-
-            // Bind 'include' buttons to show selected option.
-            var newIncludeAnchor = $(cell).find("a");
-            newIncludeAnchor.click(() => {
-                // Set visible string.
-                this.updateIncludeText(event.target);
-
-                // Update privateLessons.
-                var timeSlot;
-                var instructor;
-                var row = $(event.target).closest("tr").children();
-                row.each((index, element) => {
-                    var elementText = $(element).text();
-
-                    if (index === 0) {
-                        instructor = this.privateLessons[elementText];
-                    } else if (index === 1) {
-                        timeSlot = instructor[elementText];
-                    } else {
-                        if ($(element).children().length === 0) {
-                            timeSlot[0] = elementText;
-                        } else {
-                            timeSlot[1] = $(element).find("a").first().text();
-                        }
-                    }
-                });
-
-                if (timeSlot !== undefined) {
-                    this.props.callback(this.privateLessons, this.props.controller, true);
-                }
-            });
         }
 
         return true;
@@ -368,69 +338,15 @@ class Private extends React.Component {
             }
         });
 
-        // Update privateLessons.
-        var timeSlot;
-        var instructor;
-        var instructorName;
-        var privateTimeSlots = {};
-        var privateInstructors = {};
-        var row = $("#dynamicPrivate table").find("tbody").find("tr").children();
-        row.each((index, element) => {
-            if (index % 4 === 0) {
-                instructorName = $(element).text();
-                instructor = this.privateLessons[instructorName];
-
-                if (instructor === undefined) {
-                    instructor = {};
-                    this.privateLessons[instructorName] = instructor;
-                }
-            } else if (index % 4 === 1) {
-                var startTime = $(element).text();
-
-                if (instructor[startTime] === undefined) {
-                    instructor[startTime] = [];
-                }
-
-                if (privateTimeSlots[instructorName] === undefined) {
-                    var newPrivate = {};
-                    newPrivate[startTime] = instructor[startTime];
-                    privateTimeSlots[instructorName] = newPrivate;
-                } else {
-                    privateTimeSlots[instructorName][startTime] = instructor[startTime];
-                }
-
-                timeSlot = instructor[startTime];
-            } else {
-                if ($(element).children().length === 0) {
-                    timeSlot[0] = $(element).text();
-                } else {
-                    timeSlot[1] = $(element).find("a").first().text();
-                }
-            }
-        });
-
-        // Remove overwritten lesson time slots.
-        for (var instructor in this.privateLessons) {
-            if (!(instructor in privateTimeSlots)) {
-                delete this.privateLessons[instructor];
-            }
-
-            for (var time in this.privateLessons[instructor]) {
-                if (!(time in privateTimeSlots[instructor])) {
-                    delete this.privateLessons[instructor][time];
-                }
-            }
-        }
-
         // Re-title and re-bind 'Edit Private' button.
         editPrivate.unbind("click");
         editPrivate.html("Edit Private");
         editPrivate.click(this.editPrivate.bind(this));
 
-        this.numPrivate = this.getNumPrivates();
+        this.numPrivates = this.getNumPrivates();
 
         this.props.callback(this.privateLessons, this.props.controller, true);
-        this.props.gridChecklist.setQuantity("privates", this.numPrivate);
+        this.props.setChecklistQuantity("privates", this.numPrivates);
     }
 
     /**
@@ -444,28 +360,28 @@ class Private extends React.Component {
             var rowClass = isOdd ? "table-odd" : "table-even";
             var instructor = this.privateLessons[instructorName];
 
-            newTable += "<tr class='" + rowClass + "'>";
-            newTable += "<td>" + instructorName + "</td>";
+            for (var lessonIndex = 0; lessonIndex < instructor.length; lessonIndex++) {
+                var lesson = instructor[lessonIndex];
+                var time = lesson.time;
 
-
-            for (var time in instructor) {
-                var timeSlot = instructor[time];
-
-                newTable += "<td>" + time + "</td>";
-
-                for (var info = 0; info < timeSlot.length - 1; info++) {
-                    newTable += "<td>" + timeSlot[info] + "</td>";
+                if (time.split(":").length > 2) {
+                    time = time.replace(/:[0-9][0-9]$/, "");
                 }
 
-                newTable += "<td><div class='pure-menu pure-menu-horizontal'><ul class='pure-menu-list'><li class='pure-menu-item pure-menu-has-children pure-menu-allow-hover'><a class='pure-menu-link menu-odd'>" + timeSlot[info] + "</a><ul class='pure-menu-children'><li class='pure-menu-item'><a  class='pure-menu-link'>Yes</a></li><li class='pure-menu-item'><a  class='pure-menu-link'>No</a></li></ul></li></div></td>";
+                newTable += "<tr class='" + rowClass + "'>"
+                    + "<td>" + instructorName + "</td>"
+                    + "<td>" + time + "</td>"
+                    + "<td>" + lesson.duration + "</td>"
+                    + "</tr>";
+
+                isOdd = !isOdd;
             }
-
-            newTable += "</tr>";
-
-            isOdd = !isOdd;
         }
 
         $("#dynamicPrivate table tbody").append(newTable);
+
+        this.colourTable();
+        this.sizeTable();
     }
 
     /**
@@ -484,26 +400,24 @@ class Private extends React.Component {
     getNumPrivates() {
         var numPrivate = 0;
 
-        var instructors = [];
-        var instructorRows = $("#dynamicPrivate tr");
-        instructorRows.each((index, element) => {
-            var cell = $(element).find("td").first();
-            var elementText = cell.text();
-
-            if (cell.length > 0 && !instructors.includes(elementText)) {
-                instructors.push(elementText);
-            }
-        });
-
         for (var instructor in this.privateLessons) {
-            for (var timeSlot in this.privateLessons[instructor]) {
-                if (this.privateLessons[instructor][timeSlot][1] === "Yes" && instructors.includes(instructor)) {
-                    numPrivate++;
-                }
-            }
+            numPrivate += this.privateLessons[instructor].length;
         }
 
         return numPrivate;
+    }
+
+    /**
+     * Sort object keys alphabetically into 'privateLessons'.
+     */
+    sortPrivates(privates) {
+        Object.keys(privates).sort().forEach((key) => {
+            if (key in this.privateLessons) {
+                this.privateLessons[key].push(privates[key][0]);
+            } else {
+                this.privateLessons[key] = privates[key];
+            }
+        });
     }
 
     /**
@@ -553,9 +467,6 @@ class Private extends React.Component {
                                 <th className="is-center">
                                     Duration
                                 </th>
-                                <th className="is-center">
-                                    Include
-                                </th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -578,9 +489,10 @@ class Private extends React.Component {
 
 Private.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
-    gridChecklist: React.PropTypes.object.isRequired
+    setChecklistQuantity: React.PropTypes.func.isRequired
 }
 
 export default Private;
