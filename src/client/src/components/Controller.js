@@ -41,7 +41,7 @@ class Controller extends React.Component {
             this.connector.getInstructorData(populate).then(res => this.init("instructors", res)),
             this.connector.getLessonData(populate).then(res => this.init("lessons", res)),
             this.connector.getPreferenceData(populate).then(res => this.init("instructorPreferences", res)),
-            this.connector.getPrivatesData(populate).then(res => this.init("private", res))
+            this.connector.getPrivatesData(populate).then(res => this.init("privates", res))
         ];
 
         Promise.all(initializations)
@@ -65,7 +65,7 @@ class Controller extends React.Component {
         var validPopulates = ["db", "default", "none"];
         var searchParams = new URLSearchParams(location.search);
 
-        var populate = searchParams.get('populate');
+        var populate = searchParams.get("populate");
 
         if (!(validPopulates.includes(populate))) {
             populate = "db";
@@ -98,6 +98,7 @@ class Controller extends React.Component {
 
         grid = ReactDOM.render(<Grid
             callback={this.gridCallback}
+            initData={this.grid}
             connector={this.connector}
             controller={this}
         />, document.getElementById('dynamicGrid'));
@@ -108,30 +109,34 @@ class Controller extends React.Component {
 
         instructorPreferences = ReactDOM.render(<InstructorPreferences
             callback={this.instructorPreferencesCallback}
+            initData={this.instructorPreferences}
             connector={this.connector}
             controller={this}
         />, document.getElementById('dynamicInstructorPreferences'));
 
         instructors = ReactDOM.render(<Instructors
             callback={this.instructorsCallback}
+            initData={this.instructors}
             connector={this.connector}
             controller={this}
             instructorPreferences={instructorPreferences}
-            gridChecklist={gridChecklist}
+            setChecklistQuantity={gridChecklist.setQuantity.bind(gridChecklist)}
         />, document.getElementById('dynamicInstructors'));
 
         lessons = ReactDOM.render(<Lessons
             callback={this.lessonsCallback}
+            initData={this.lessons}
             connector={this.connector}
             controller={this}
-            gridChecklist={gridChecklist}
+            setChecklistQuantity={gridChecklist.setQuantity.bind(gridChecklist)}
         />, document.getElementById('dynamicLessons'));
 
         privates = ReactDOM.render(<Private
             callback={this.privateCallback}
             connector={this.connector}
             controller={this}
-            gridChecklist={gridChecklist}
+            initData={this.privates}
+            setChecklistQuantity={gridChecklist.setQuantity.bind(gridChecklist)}
         />, document.getElementById('dynamicPrivate'));
     }
 
@@ -139,15 +144,20 @@ class Controller extends React.Component {
      * Callback to store data from Grid.js
      */
      gridCallback(_grid, controller, minimize) {
-         console.log("retrieving data from Grid.js...");
+        console.log("retrieving data from Grid.js...");
 
-         console.log("grid: ", controller.grid);
-         controller.grid = jQuery.extend(true, {}, _grid);
-         console.log("grid: ", controller.grid);
+        console.log("grid: ", controller.grid);
+        controller.grid = jQuery.extend(true, {}, _grid);
+        console.log("grid: ", controller.grid);
 
-         console.log("adding data from Grid.js to controllerData...");
+        console.log("adding data from Grid.js to controllerData...");
 
-         controller.manipulateData(minimize);
+        var database = minimize;
+        if (minimize) {
+            database = "Grid";
+        }
+
+        controller.manipulateData(database);
      }
 
     /**
@@ -162,7 +172,12 @@ class Controller extends React.Component {
 
         console.log("adding data from Instructors.js to controllerData...");
 
-        controller.manipulateData(minimize);
+        var database = minimize;
+        if (minimize) {
+            database = "Instructors";
+        }
+
+        controller.manipulateData(database);
     }
 
     /**
@@ -177,7 +192,12 @@ class Controller extends React.Component {
 
         console.log("adding data from InstructorsPreferences.js to controllerData...");
 
-        controller.manipulateData(minimize);
+        var database = minimize;
+        if (minimize) {
+            database = "InstructorPreferences";
+        }
+
+        controller.manipulateData(database);
     }
 
     /**
@@ -192,7 +212,12 @@ class Controller extends React.Component {
 
         console.log("adding data from Lessons.js to controllerData...");
 
-        controller.manipulateData(minimize);
+        var database = minimize;
+        if (minimize) {
+            database = "Lessons";
+        }
+
+        controller.manipulateData(database);
     }
 
     /**
@@ -201,13 +226,18 @@ class Controller extends React.Component {
     privateCallback(_private, controller, minimize) {
         console.log("retrieving data from Private.js...");
 
-        console.log("private: ", controller.private);
-        controller.private = jQuery.extend(true, {}, _private);
-        console.log("private: ", controller.private);
+        console.log("private: ", controller.privates);
+        controller.privates = jQuery.extend(true, {}, _private);
+        console.log("private: ", controller.privates);
 
         console.log("adding data from Private.js to controllerData...");
 
-        controller.manipulateData(minimize);
+        var database = minimize;
+        if (minimize) {
+            database = "Privates";
+        }
+
+        controller.manipulateData(database);
     }
 
     /**
@@ -245,9 +275,9 @@ class Controller extends React.Component {
 
         for (var lesson in this.lessons) {
             if (halfLessons.includes(lesson)) {
-                this.lessons.half += this.lessons[lesson];
+                this.lessons.half += this.lessons[lesson].quantity;
             } else if (threeQuarterLessons.includes(lesson)) {
-                this.lessons.threequarter += this.lessons[lesson];
+                this.lessons.threequarter += this.lessons[lesson].quantity;
             }
         }
     }
@@ -256,11 +286,11 @@ class Controller extends React.Component {
      * Organizes data from the Lessons, Instructors, and Private components.
      * Duration of lessons set is contained in the Grid component.
      */
-    manipulateData(minimize) {
+    manipulateData(database) {
         console.log("manipulating controllerData...");
 
-        if (minimize) {
-            this.minimizeData();
+        if (database) {
+            this.minimizeData(database);
         }
 
         this.quantifyLessonTypes();
@@ -275,7 +305,7 @@ class Controller extends React.Component {
         this.controllerData.lessons = jQuery.extend(true, {}, this.lessons);
 
         // Add private lessons to controllerData.
-        this.controllerData.private = jQuery.extend(true, {}, this.private);
+        this.controllerData.private = jQuery.extend(true, {}, this.privates);
 
         return this.controllerData;
     }
@@ -288,9 +318,9 @@ class Controller extends React.Component {
      *      instructorPreferences   - remove keys for empty pairings
      *                              - remove if all/no preferences exist
      *      lessons                 - remove keys for empty pairings
-     *      private                 - remove private without "Yes"
+     *      private                 - remove empty private lessons
      */
-    minimizeData() {
+    minimizeData(database) {
         console.log("minimizing controllerData...");
 
         /**
@@ -314,105 +344,113 @@ class Controller extends React.Component {
         }
 
         // Remove instructors in Privates without private lessons.
-        for (var instructor in this.private) {
-            if (jQuery.isEmptyObject(this.private[instructor])) {
-                delete this.private[instructor];
+        for (var instructor in this.privates) {
+            if (jQuery.isEmptyObject(this.privates[instructor])) {
+                delete this.privates[instructor];
             }
         }
 
-        this.updateDatabase();
+        this.updateDatabase(database);
     }
 
     /**
      * Set the gathered data in the database.
      */
-    updateDatabase() {
-        console.log("Sending updates to database...");
+    updateDatabase(database) {
+        console.log("Sending updates to database \"" + database + "\"...");
 
-        console.log("Updating Grid...");
-        this.connector.setGridData(this.grid)
-            .then(gridRes => console.log("Updated Grid:", gridRes));
+        if (database === "Grid") {
+            console.log("Updating Grid...");
+            this.connector.updateGridData(this.grid)
+                .then(gridRes => console.log("Updated Grid:", gridRes));
+        } else if (database === "Instructors") {
+            console.log("Updating Instructors...");
+            var instructorUpdates = [];
+            for (var key in this.instructors) {
+                var instructor = this.instructors[key];
+                var id = instructor.id;
+                var body = {
+                    "instructor": key,
+                    "dateOfHire": instructor.dateOfHire,
+                    "wsiExpirationDate": instructor.wsiExpirationDate
+                };
 
-        console.log("Updating Instructors...");
-        var instructorUpdates = [];
-        for (var key in this.instructors) {
-            var instructor = this.instructors[key];
-            var id = instructor.id;
-            var body = {
-                "instructor": key,
-                "dateOfHire": instructor.dateOfHire,
-                "wsiExpirationDate": instructor.wsiExpirationDate
-            };
-
-            instructorUpdates.push(this.connector.setInstructorData(id, body));
-        }
-        Promise.all(instructorUpdates).then((instructorRes) => {
-            this.instructors = this.assignUpdates(instructorRes);
-
-            console.log("Updated Instructors:", this.instructors);
-        });
-
-        console.log("Updating Lessons...");
-        var lessonsUpdates = [];
-        for (var key in this.lessons) {
-            if (key === "half" || key === "threequarter") {
-                continue;
+                instructorUpdates.push(this.connector.updateInstructorData(id, body));
             }
 
-            var lesson = this.lessons[key];
-            var id = lesson.id;
-            var body = {
-                "quantity": lesson.quantity
-            };
+            Promise.all(instructorUpdates).then((instructorRes) => {
+                this.instructors = this.assignUpdates(instructorRes);
 
-            lessonsUpdates.push(this.connector.setLessonData(id, body));
+                console.log("Updated Instructors:", this.instructors);
+            });
+        } else if (database === "Lessons") {
+            console.log("Updating Lessons...");
+            var lessonsUpdates = [];
+            for (var key in this.lessons) {
+                if (key === "half" || key === "threequarter") {
+                    continue;
+                }
+
+                var lesson = this.lessons[key];
+                var id = lesson.id;
+                var body = {
+                    "quantity": lesson.quantity
+                };
+
+                lessonsUpdates.push(this.connector.updateLessonData(id, body));
+            }
+
+            Promise.all(lessonsUpdates).then((lessonRes) => {
+                this.lessons = this.assignUpdates(lessonRes);
+
+                console.log("Updated Lessons:", this.lessons);
+            });
+        } else if (database === "InstructorPreferences") {
+            console.log("Updating InstructorPreferences...");
+            var preferenceUpdates = [];
+            for (var key in this.instructorPreferences) {
+                var preference = this.instructorPreferences[key];
+                var id = preference.id;
+                var body = {
+                    "instructorId": preference.instructorId,
+                    "lessons": preference.lessons
+                };
+
+                preferenceUpdates.push(this.connector.updatePreferenceData(id, body));
+            }
+
+            Promise.all(preferenceUpdates).then((preferenceRes) => {
+                this.instructorPreferences = this.assignUpdates(preferenceRes);
+
+                console.log("Updated InstructorPreferences:", this.instructorPreferences);
+            });
+        } else if (database === "Privates") {
+            console.log("Updating Privates...");
+            var privateUpdates = [];
+            for (var key in this.privates) {
+                var privateInstructor = this.privates[key];
+
+                for (var i = 0; i < privateInstructor.length; i++) {
+                    var privateLesson = privateInstructor[i];
+                    var id = privateLesson.id;
+                    var body = {
+                        "duration": privateLesson.duration,
+                        "instructorId": privateLesson.instructorId,
+                        "time": privateLesson.time
+                    };
+
+                    privateUpdates.push(this.connector.updatePrivatesData(id, body))
+                }
+            }
+
+            Promise.all(privateUpdates).then((privateRes) => {
+                this.privates = this.assignUpdates(privateRes);
+
+                console.log("Updated Privates:", this.privates);
+            });
         }
-        Promise.all(lessonsUpdates).then((lessonRes) => {
-            this.lessons = this.assignUpdates(lessonRes);
 
-            console.log("Updated Lessons:", this.lessons);
-        });
-
-        console.log("Updating instructorPreferences...");
-        var preferenceUpdates = [];
-        for (var key in this.instructorPreferences) {
-            var preference = this.instructorPreferences[key];
-            var id = preference.id;
-            var body = {
-                "instructorId": preference.instructorId,
-                "lessons": preference.lessons
-            };
-
-
-            preferenceUpdates.push(this.connector.setPreferenceData(id, body));
-        }
-        Promise.all(preferenceUpdates).then((preferenceRes) => {
-            this.instructorPreferences = this.assignUpdates(preferenceRes);
-
-            console.log("Updated InstructorPreferences:", this.instructorPreferences);
-        });
-
-        console.log("Updating Privates...");
-        var privateUpdates = [];
-        for (var key in this.private) {
-            var _private = this.private[key];
-            var id = _private.id;
-            var body = {
-                "duration": _private.duration,
-                "instructorId": _private.instructorId,
-                "time": _private.time
-            };
-
-            privateUpdates.push(this.connector.setPrivatesData(id, body))
-        }
-        Promise.all(privateUpdates).then((privateRes) => {
-            this.privates = this.assignUpdates(privateRes);
-
-            console.log("Updated Privates:", this.privates);
-        });
-
-
-        console.log("All updates sent.")
+        console.log("All updates sent to \"" + database + "\".");
     }
 
     assignUpdates(res) {

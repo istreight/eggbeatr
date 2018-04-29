@@ -16,12 +16,13 @@ class Connector extends React.Component {
         super(props);
     }
 
-    getGridArrays(data, lessonTimes) {
+    getGridArrays(data, duration, lessonTimes) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
         var payload = {
             "data": data,
+            "duration": duration,
             "lessonTimes": lessonTimes
         };
 
@@ -60,7 +61,7 @@ class Connector extends React.Component {
         return returnValue;
     }
 
-    setGridData(payload) {
+    updateGridData(payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -68,7 +69,7 @@ class Connector extends React.Component {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
-            })
+        })
             .then(res => res.json())
             .then(json => this.formatGridRes(json))
             .catch(error => console.error(error));
@@ -118,7 +119,21 @@ class Connector extends React.Component {
         return returnValue;
     }
 
-    setInstructorData(instructorId, payload) {
+    setInstructorData(payload) {
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        return fetch(this.props.serverURI + '/api/instructors', {
+                headers: headers,
+                method: 'POST',
+                body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+            .then(json => this.formatInstructorRes([json]))
+            .catch(error => console.error(error));
+    }
+
+    updateInstructorData(instructorId, payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -126,9 +141,17 @@ class Connector extends React.Component {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
-            })
+        })
             .then(res => res.json())
             .then(json => this.formatInstructorRes([json]))
+            .catch(error => console.error(error));
+    }
+
+    deleteInstructorData(instructorId) {
+        return fetch(this.props.serverURI + '/api/instructors/' + instructorId, {
+                method: 'DELETE'
+        })
+            .then(res => res.json())
             .catch(error => console.error(error));
     }
 
@@ -194,7 +217,7 @@ class Connector extends React.Component {
         return returnValue;
     }
 
-    setLessonData(lessonId, payload) {
+    updateLessonData(lessonId, payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -202,7 +225,7 @@ class Connector extends React.Component {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
-            })
+        })
             .then(res => res.json())
             .then(json => this.formatLessonsRes([json]))
             .catch(error => console.error(error));
@@ -269,7 +292,7 @@ class Connector extends React.Component {
         return returnValue;
     }
 
-    setPreferenceData(preferenceId, payload) {
+    updatePreferenceData(preferenceId, payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -277,7 +300,7 @@ class Connector extends React.Component {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
-            })
+        })
             .then(res => res.json())
             .then(json => this.formatPreferenceRes([json]))
             .catch(error => console.error(error));
@@ -313,24 +336,24 @@ class Connector extends React.Component {
     getPrivatesData(populate) {
         var returnValue;
         var defaultReturn = {
-            "Alfa":{
-                "duration": 30,
+            "Alfa": [{
                 "id": 1,
                 "instructorId": 1,
-                "time": "9:00"
-            },
-            "Bravo": {
                 "duration": 30,
+                "time": "9:00"
+            }],
+            "Bravo": [{
                 "id": 2,
                 "instructorId": 2,
-                "time": "9:30"
-            },
-            "Charlie": {
                 "duration": 30,
+                "time": "9:30"
+            }],
+            "Charlie": [{
                 "id": 3,
                 "instructorId": 3,
+                "duration": 30,
                 "time": "10:00"
-            }
+            }]
         };
 
         if (populate === "default") {
@@ -351,7 +374,21 @@ class Connector extends React.Component {
         return returnValue;
     }
 
-    setPrivatesData(privateId, payload) {
+    setPrivatesData(payload) {
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        return fetch(this.props.serverURI + '/api/privates', {
+                headers: headers,
+                method: 'POST',
+                body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+            .then(json => this.formatPrivatesRes([json]))
+            .catch(error => console.error(error));
+    }
+
+    updatePrivatesData(privateId, payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -359,9 +396,17 @@ class Connector extends React.Component {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
-            })
+        })
             .then(res => res.json())
             .then(json => this.formatPrivatesRes([json]))
+            .catch(error => console.error(error));
+    }
+
+    deletePrivatesData(privatesId) {
+        return fetch(this.props.serverURI + '/api/privates/' + privatesId, {
+                method: 'DELETE'
+        })
+            .then(res => res.json())
             .catch(error => console.error(error));
     }
 
@@ -386,12 +431,21 @@ class Connector extends React.Component {
 
                     var newInstructor = newInstructorObject.instructor;
 
-                    newObject[newInstructor] = {
-                        "duration": newDuration,
-                        "id": newId,
-                        "instructorId": newInstructorId,
-                        "time": newTime
-                    };
+                    if (newInstructor in newObject) {
+                        newObject[newInstructor].push({
+                            "id": newId,
+                            "instructorId": newInstructorId,
+                            "duration": newDuration,
+                            "time": newTime
+                        });
+                    } else {
+                        newObject[newInstructor] = [{
+                            "id": newId,
+                            "instructorId": newInstructorId,
+                            "duration": newDuration,
+                            "time": newTime
+                        }];
+                    }
                 });
 
                 return newObject;

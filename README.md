@@ -105,7 +105,7 @@ The Lessons component is the main data field of the application. This section ta
 
 The Private Lessons component is similar to the Lessons component, however, these lessons have fixed instructors, times, and durations.
 
-A private lesson can be added to the schedule by entering the required information and selecting "Yes" in the "Include" column. Private lessons with "No" in the "Include" column will be ignored when creating the schedule.
+A private lesson can be added to the schedule by entering the required information. By default, each private lesson will be included in the schedule.
 
 The private lessons are mapped to instructors by the "Instructor" fields of both components. As an example, if an instructor named "Alice" is added in the Instructors component, any private lessons with the name "Alice" will be linked to the instructor "Alice". It is important to note that names are case sensitive; "Alice" and "alice" are two different names and will be evaluated differently.
 

@@ -10,14 +10,10 @@
  */
 
 
-var lessonTimes;
-var hasBothTypes;
-var gridList = [];
-
 const gridFactory =  {
+    gridList: null,
     lessonTimes: null,
     hasBothTypes: null,
-    gridList: [],
     /**
      * LESSON CODES
      *  Empty:              0
@@ -26,12 +22,13 @@ const gridFactory =  {
      *  1/4 hour activity:  3   (SINGLE)
      *  Private lesson:     4
      */
-    generateGrid(data, lessonTimes) {
+    generateGrid(data, duration, lessonTimes) {
         console.log(data);
 
+        this.gridList = [];
         this.lessonTimes = lessonTimes;
+        this.hasBothTypes = data.lessons.half > 0 && data.lessons.threequarter > 0;
 
-        var duration = lessonTimes.length / 2.0;
 
         /**
          * Generate dynamic array.
@@ -61,9 +58,6 @@ const gridFactory =  {
     fillGridList(props) {
         console.log(props);
 
-        // Combination 1/2 && 3/4 hour lessons.
-        this.hasBothTypes = props.numHalfLessons > 0 && props.numThreeQuarterLessons > 0;
-
         var grid = Array(props.instructors.length).fill(Array(4 * props.duration).fill(0));
         for (var instructor = 0; instructor < props.instructors.length; instructor++) {
             grid[instructor] = [props.instructors[instructor]].concat(grid[instructor]);
@@ -73,43 +67,41 @@ const gridFactory =  {
         for (var privateInstructor in props.privates) {
             if (props.instructors.includes(privateInstructor)) {
                 for (var privateTimeSlot in props.privates[privateInstructor]) {
-                    if (props.privates[privateInstructor][privateTimeSlot][1] === "Yes") {
-                        var [startHour, startMinute] = this.lessonTimes[0].split(":");
-                        var [privateHour, privateMinute] = privateTimeSlot.split(":");
-                        var duration = props.privates[privateInstructor][privateTimeSlot][0];
+                    var [startHour, startMinute] = this.lessonTimes[0].split(":");
+                    var [privateHour, privateMinute] = privateTimeSlot.split(":");
+                    var duration = props.privates[privateInstructor][privateTimeSlot][0];
 
-                        privateHour = parseInt(privateHour, 10);
-                        privateMinute = parseInt(privateMinute, 10);
-                        startHour = parseInt(startHour, 10);
-                        startMinute = parseInt(startMinute, 10);
+                    privateHour = parseInt(privateHour, 10);
+                    privateMinute = parseInt(privateMinute, 10);
+                    startHour = parseInt(startHour, 10);
+                    startMinute = parseInt(startMinute, 10);
 
-                        if (privateHour < startHour) {
-                            continue;
-                        } else if (privateHour === startHour && privateMinute < startMinute) {
-                            continue;
+                    if (privateHour < startHour) {
+                        continue;
+                    } else if (privateHour === startHour && privateMinute < startMinute) {
+                        continue;
+                    }
+
+                    // Find instructor row.
+                    var instructor;
+                    grid.some((row, index) => {
+                        if (row[0] === privateInstructor) {
+                            instructor = index;
+                            return true;
                         }
 
-                        // Find instructor row.
-                        var instructor;
-                        grid.some((row, index) => {
-                            if (row[0] === privateInstructor) {
-                                instructor = index;
-                                return true;
-                            }
+                        return false;
+                    });
 
-                            return false;
-                        });
+                    // Find proper time slot.
+                    var slot = 1 + 4 * (privateHour - startHour) + Math.floor((privateMinute - startMinute) / 15);
 
-                        // Find proper time slot.
-                        var slot = 1 + 4 * (privateHour - startHour) + Math.floor((privateMinute - startMinute) / 15);
+                    // Number of slots private lesson will occupy.
+                    var numSlots = Math.floor(duration / 15);
 
-                        // Number of slots private lesson will occupy.
-                        var numSlots = Math.floor(duration / 15);
-
-                        // Allocate slot for private.
-                        if (slot + numSlots < grid[instructor].length + 1) {
-                            grid[instructor].fill(4, slot, slot + numSlots);
-                        }
+                    // Allocate slot for private.
+                    if (slot + numSlots < grid[instructor].length + 1) {
+                        grid[instructor].fill(4, slot, slot + numSlots);
                     }
                 }
             }
@@ -253,7 +245,7 @@ const gridFactory =  {
 
 module.exports = {
     create(req, res) {
-        var result = gridFactory.generateGrid(req.body.data, req.body.lessonTimes);
+        var result = gridFactory.generateGrid(req.body.data, req.body.duration, req.body.lessonTimes);
 
         res.status(200).send(result);
     }

@@ -19,7 +19,13 @@ class Lessons extends React.Component {
     }
 
     componentDidMount() {
-        this.props.connector.getLessonData().then(res => this.init(res));
+        this.lessonSet = this.props.initData;
+
+        this.setLessonValues();
+        this.numLessons = this.getNumLessons();
+
+        this.props.callback(this.lessonSet, this.props.controller, false);
+        this.props.setChecklistQuantity("lessons", this.numLessons);
 
         // Save on button click or on input deselect ('blur').
         $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
@@ -47,20 +53,6 @@ class Lessons extends React.Component {
     }
 
     /**
-     * Store the lessons data locally, as returned from the
-     *  asynchronous call.
-     */
-    init(lessonData) {
-        this.lessonSet = lessonData;
-
-        this.setLessonValues();
-        this.numLessons = this.getNumLessons();
-
-        this.props.callback(this.lessonSet, this.props.controller, false);
-        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
-    }
-
-    /**
      * Get number of stored lessons.
      */
     getNumLessons() {
@@ -71,11 +63,7 @@ class Lessons extends React.Component {
                 continue;
             }
 
-            var lessonQuantity = this.lessonSet[lesson];
-
-            if (lessonQuantity > 0) {
-                numLessons += lessonQuantity;
-            }
+            numLessons += this.lessonSet[lesson].quantity;;
         }
 
         return numLessons;
@@ -110,7 +98,7 @@ class Lessons extends React.Component {
                         $(element).hide().removeClass("error-cell").fadeIn(800);
                     }
 
-                    this.lessonSet[lessonType] = lessonQuantity;
+                    this.lessonSet[lessonType].quantity = lessonQuantity;
                 } else {
                     $(element).hide().addClass("error-cell").fadeIn(800);
 
@@ -124,16 +112,8 @@ class Lessons extends React.Component {
 
         this.numLessons = this.getNumLessons();
 
-        if (this.numLessons === 0) {
-            this.lessonSet = {
-                "empty": -1
-            }
-        } else {
-            delete this.lessonSet.empty;
-        }
-
         this.props.callback(this.lessonSet, this.props.controller, true);
-        this.props.gridChecklist.setQuantity("lessons", this.numLessons);
+        this.props.setChecklistQuantity("lessons", this.numLessons);
     }
 
     /**
@@ -144,8 +124,15 @@ class Lessons extends React.Component {
             var lessonInput = $(element).find("input");
 
             if (lessonInput.length > 0) {
+                var lessonQuantity;
                 var lessonType = $(element).find("span").text();
-                var lessonQuantity = this.lessonSet[lessonType];
+                var lesson = this.lessonSet[lessonType];
+
+                if (lesson === undefined) {
+                    lessonQuantity = 0;
+                } else {
+                    lessonQuantity = lesson.quantity;
+                }
 
                 if (lessonQuantity > 0) {
                     lessonInput.val(lessonQuantity);
@@ -313,9 +300,10 @@ class Lessons extends React.Component {
 
 Lessons.propTypes =  {
     callback: React.PropTypes.func.isRequired,
+    initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
     controller: React.PropTypes.object.isRequired,
-    gridChecklist: React.PropTypes.object.isRequired
+    setChecklistQuantity: React.PropTypes.func.isRequired
 }
 
 export default Lessons;
