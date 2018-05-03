@@ -7,6 +7,20 @@
  */
 
 
+ @-webkit-keyframes scale {
+   0% {
+     opacity: 0;
+     -webkit-transform: scale(0);
+   }
+   70% {
+     opacity: 1;
+   }
+   100% {
+     opacity: 0;
+     -webkit-transform: scale(1);
+   }
+ }
+
 /* Show scrollbars */
 ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -251,6 +265,37 @@ tbody td:first-child {
     text-transform: none;
 }
 
+#dynamicHeader .pure-menu-heading {
+    padding: 8px 16px;
+}
+
+#dynamicHeader .pure-menu-link {
+    padding-top: 10px;
+}
+
+#dynamicHeader .pure-menu-scrollable {
+    position: absolute;
+
+    width: 50%;
+
+    top: 0;
+    left: 16%;
+}
+
+#dynamicHeader .pure-menu-scrollable a {
+    color: auto;
+}
+
+#dynamicHeader .pure-menu-scrollable ul {
+    position: relative;
+
+    float: left;
+}
+
+#dynamicHeader .pure-menu-scrollable .pure-menu-heading {
+    font-weight: bold;
+}
+
 
 
 /* LANDING */
@@ -358,6 +403,12 @@ tbody td:first-child {
 
 #dynamicInstructors table {
     margin: -9.75% 0 0 27.5%;
+
+    table-layout: fixed;
+}
+
+#dynamicInstructors th {
+    width: 145px;
 }
 
 #dynamicInstructors .ribbon-section-footer {
@@ -513,10 +564,6 @@ tbody td:first-child {
     width: 125px;
 }
 
-#dynamicPrivate table .pure-menu-link {
-    width: 100px;
-}
-
 #dynamicPrivate .ribbon-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
@@ -620,6 +667,60 @@ tbody td:first-child {
     color: #1f8dd6;
 }
 
+.create-indicator {
+    display: none;
+    margin-top: 80px;
+    margin-left: 16%;
+}
+
+.create-spinner {
+    height: 45px;
+    width: 45px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.create-spinner span {
+    border-radius: 40px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border: 3px solid #1f8dd6;
+    opacity: 0;
+    -webkit-animation: scale 3s ease-out infinite;
+}
+
+.create-spinner span:nth-child(2) {
+    -webkit-animation-delay: 2s;
+}
+
+.create-spinner span:nth-child(3) {
+    -webkit-animation-delay: 1s;
+}
+
+.create-label {
+    color: #1f8dd6;
+    font-size: 34px;
+    font-family: "Helvetica Neue";
+    font-weight: 100;
+    display: inline-block;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-left: 7px;
+}
+
+.create-error {
+    color: red;
+}
+
+.create-error p {
+    text-transform: none;
+    font-size: 18px;
+}
 
 #dynamicGrid {
     position: relative;

@@ -3,8 +3,9 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 19th, 2016
  *
- * This file contains the Landing class for the landing page content of the
- * lesson calendar web application. The Landing class is exported.
+ * This file contains the Landing class for the landing
+ *  page content of the lesson calendar web application.
+ * The Landing class is exported.
  */
 
 import React from 'react';
@@ -60,7 +61,8 @@ class Landing extends React.Component {
     }
 
     /**
-     * Rotates through 3 styles of the application name, fading in and out.
+     * Rotates through 3 styles of the application name,
+     *  fading in and out.
      */
     cycle(stage) {
         var style = "";

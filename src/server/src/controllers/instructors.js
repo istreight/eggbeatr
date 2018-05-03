@@ -24,7 +24,7 @@ module.exports = {
         return Instructor.create({
             instructor: req.body.instructor,
             dateOfHire: req.body.dateOfHire,
-            wsiExpirationDate: req.body.wsiExpirationDate
+            wsiExpiration: req.body.wsiExpiration
         }).then((instructor) => {
             res.status(201).send(instructor);
         }).catch((error) => {
@@ -71,7 +71,7 @@ module.exports = {
             return instructor.update({
                 instructor: req.body.instructor || instructor.instructor,
                 dateOfHire: req.body.dateOfHire || instructor.dateOfHire,
-                wsiExpirationDate: req.body.wsiExpirationDate || instructor.wsiExpirationDate
+                wsiExpiration: req.body.wsiExpiration || instructor.wsiExpiration
             }).then((instructor) => {
                 res.status(200).send(instructor);
             }).catch((error) => {

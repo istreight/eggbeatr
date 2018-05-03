@@ -26,6 +26,7 @@ module.exports = {
                 type: Sequelize.TIME
             },
             duration: {
+                allowNull: false,
                 defaultValue: 30,
                 type: Sequelize.INTEGER
             },

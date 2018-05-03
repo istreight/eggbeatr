@@ -87,13 +87,15 @@ The WSI certification field reacts to the currency the instructor's certificatio
 
 To facilitate the colour coding, the dates must be input with forward slashes as separators (e.g., 31/12/00) and ordered either as dd/mm/yy or mm/dd/yy. If only one value for the field is input, the preceding value will be interpreted as zero.
 
+It is important to note that instructors with expired WSI certifications will not be included in the process to create grids, and will not be included in the checklist.
+
 Instructors may be given preferences on the lessons they teach. It is important to note that they give priority to the selected lesson types and does not prevent them from teaching non-preferred lesson types. An instructor's preferences default to any of the available lesson types.
 
 The values input to the Instructors section must match specific patterns, listed below:
 
 * Instructor: At least one of uppercase or lowercase letters, followed by uppercase or lowercase letters or spaces.
-* Date of Hire: Three numbers, 1 to 31, 1 to 12, and 0 to 99, separated by forward slashes.
-* WSI Expiration Date: Same as Date of Hire.
+* Date of Hire: Three numbers (four digits, two digits, two digits), separated by hyphens slashes, that parse into a valid date.
+* WSI Expiration: Same as Date of Hire.
 
 
 ### Lessons

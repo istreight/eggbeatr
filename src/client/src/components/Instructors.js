@@ -3,8 +3,9 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 25th, 2016
  *
- * This file contains the Intructors class for the collection of instructors for
- * the lesson calendar web application. The Instructors class is exported.
+ * This file contains the Intructors class for the
+ *  collection of instructors for the web application.
+ * The Instructors class is exported.
  */
 
 import React from 'react';
@@ -15,18 +16,19 @@ class Instructors extends React.Component {
         super(props);
 
         this.instructors = {};
-        this.numInstructors = 0;
     }
 
     componentDidMount() {
+        var numValidInstructors;
         this.sortInstructors(this.props.initData);
 
         this.generateInstructorTable();
-        this.numInstructors = this.getNumInstructors();
+
+        numValidInstructors = this.getNumInstructors() - this.getNumExpiredInstructors();
 
         this.props.callback(this.instructors, this.props.controller, false);
         this.props.instructorPreferences.setPreferencesButtons(true);
-        this.props.setChecklistQuantity("instructors", this.numInstructors);
+        this.props.setChecklistQuantity("instructors", numValidInstructors);
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
 
@@ -95,18 +97,19 @@ class Instructors extends React.Component {
     /**
      * Resets the table to appropriate colour scheme.
      */
-     colourTable() {
-         $("#dynamicInstructors tbody tr").each((index, element) => {
-             $(element).removeClass("table-odd table-even");
+    colourTable() {
+        $("#dynamicInstructors tbody tr").each((index, element) => {
+            $(element).removeClass("table-odd table-even");
              $(element).addClass((index % 2 === 0) ? "table-odd" : "table-even");
-         });
-     }
+        });
+    }
 
     /**
-     * Places the instructor table in a state where the contents of the table
-     *  can be changed.
-     * The data in the input field will replace any data that was previously in
-     *  the table cell. Leaving any input field empty will not replace the
+     * Places the instructor table in a state where the
+     *  contents of the table can be changed.
+     * The data in the input field will replace any data
+     *  that was previously in the table cell.
+     * Leaving any input field empty will not replace the
      *  original data.
      */
     editInstructors() {
@@ -130,7 +133,8 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Removes the row of the table of a clicked 'remove' button.
+     * Removes the row of the table of a clicked
+     *  'remove' button.
      */
     removeRow() {
         var removedRow = $(event.target).closest("tr");
@@ -144,14 +148,7 @@ class Instructors extends React.Component {
         if (instructorName in this.instructors) {
             var instructorId = this.instructors[instructorName].id;
 
-            console.log("Sending delete Instructor request to database...");
-            this.props.connector.deleteInstructorData(instructorId)
-                .then((res) => {
-                    console.log("Deleted Private:", res);
-                    delete this.instructors[instructorName];
-                    this.numInstructors = this.getNumInstructors();
-                }).catch(error => console.error(error));
-            console.log("Sent delete Instructor request to database.");
+            this.deleteInstructor(instructorId, instructorName);
         }
 
         removedRow.remove();
@@ -161,7 +158,8 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Verify the contents of each input field and commit it to the table.
+     * Verify the contents of each input field and commit
+     *  to the table.
      */
     addTableContents(removeInputRow) {
         var tableRows = $("#dynamicInstructors tr");
@@ -189,7 +187,8 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Add a row to the table when the 'add' button is clicked.
+     * Add a row to the table when the 'add' button
+     *  is clicked.
      */
     addRow() {
         var isValid = this.addTableContents(false);
@@ -222,18 +221,13 @@ class Instructors extends React.Component {
                 var newDate = new Date(inputPlaceholder);
                 this.checkWSIExpiration(element, newDate);
 
-                body.wsiExpirationDate = inputPlaceholder;
+                body.wsiExpiration = inputPlaceholder;
             }
         });
 
-        console.log("Sending create new Instructor request to database...");
-        this.props.connector.setInstructorData(body)
-            .then((res) => {
-                console.log("Created new Instructor:", res);
-                this.sortInstructors(Object.assign(res, this.instructors));
-                this.numInstructors = this.getNumInstructors();
-            }).catch(error => console.error(error));
-        console.log("Sent create new Instructor request to database.");
+        this.createInstructor(body).then((res) => {
+            $("#dynamicInstructors table tr").last().prev().attr("data-instructor-id", res[instructorName].id);
+        });
 
         // Put 'remove' in the last cell of the row.
         $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
@@ -246,8 +240,8 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Adds the input values or valid placeholder values from
-     *  the input fields to the table.
+     * Adds the input values or valid placeholder values
+     *  from the input fields to the table.
      */
     addCells(cell, instructorList, isFirstChild, removeInputRow) {
         var cellElement = $(cell).children().first();
@@ -296,10 +290,13 @@ class Instructors extends React.Component {
 
     /**
      * Saves changes made in input fields to specific cell.
-     * Empty inputs will leave the cell with its original data.
+     * Empty inputs will leave the cell with its original
+     *  data.
      */
     finishEditingInstructors() {
         var tableRows;
+        var numValidInstructors;
+        var editPromises = [];
         var editInstructorsButton = $("#dynamicInstructors .ribbon-section-description a");
 
         var isValid = this.addTableContents(true);
@@ -308,26 +305,60 @@ class Instructors extends React.Component {
             return;
         }
 
-        // Remove 'Modify' column.
         tableRows = $("#dynamicInstructors tr");
-        tableRows.each((index, element) => {
-            if (index === 0) {
-                $(element).children("th").last().remove();
+
+        // Update class object with new values.
+        tableRows.each((rowIndex, row) => {
+            var instructor;
+            var instructorId;
+            var instructorName;
+
+            // Remove 'Modify' column & skip header row.
+            if (rowIndex === 0) {
+                $(row).children("th").last().remove();
+
+                return true;
             } else {
-                $(element).children("td").last().remove();
+                $(row).children("td").last().remove();
             }
+
+            instructorId = $(row).attr("data-instructor-id");
+
+            [instructor, instructorName] = this.findInstructorById(instructorId);
+
+            $(row).children("td").each((cellIndex, element) => {
+                var cellText = $(element).text();
+
+                if (cellText !== "...") {
+                    if (cellIndex === 0) {
+                        if (!(cellText in this.instructors)) {
+                            this.instructors[cellText] = instructor;
+
+                            delete this.instructors[instructorName];
+                        }
+                    } else if (cellIndex === 1) {
+                        if (cellText !== instructor.dateOfHire) {
+                            instructor.dateOfHire = cellText;
+                        }
+                    } else if (cellIndex === 2) {
+                        if (cellText !== instructor.wsiExpiration) {
+                            instructor.wsiExpiration = cellText;
+                        }
+                    }
+                }
+            });
         });
 
         // Re-title and re-bind 'Edit Instructors' button.
-        editInstructorsButton.html("Edit Instructors");
         editInstructorsButton.unbind("click");
+        editInstructorsButton.html("Edit Instructors");
         editInstructorsButton.click(this.editInstructors.bind(this));
 
-        this.numInstructors = this.getNumInstructors();
+        numValidInstructors = this.getNumInstructors() - this.getNumExpiredInstructors();
 
         this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.callback(this.instructors, this.props.controller, true);
-        this.props.setChecklistQuantity("instructors", this.numInstructors);
+        this.props.setChecklistQuantity("instructors", numValidInstructors);
     }
 
     /**
@@ -340,14 +371,15 @@ class Instructors extends React.Component {
         for (var instructorName in this.instructors) {
             var rowClass = isOdd ? "table-odd" : "table-even";
             var instructor = this.instructors[instructorName];
+            var instructorId = instructor.id;
             var dateOfHire = instructor.dateOfHire;
-            var wsiExpirationDate = instructor.wsiExpirationDate;
+            var wsiExpiration = instructor.wsiExpiration;
 
-            newTable += "<tr class='" + rowClass + "'>";
+            newTable += "<tr class='" + rowClass + "' data-instructor-id='" + instructorId + "'>";
 
             newTable += "<td>" + instructorName + "</td>";
             newTable += "<td>" + dateOfHire + "</td>";
-            newTable += "<td>" + wsiExpirationDate + "</td>";
+            newTable += "<td>" + wsiExpiration + "</td>";
 
             newTable += "<td><a class='pure-button preferences'>...</a></td>";
             newTable += "</tr>";
@@ -361,25 +393,100 @@ class Instructors extends React.Component {
         this.sizeTable();
     }
 
+    /*
+     * Add an instructor to the database.
+     */
+    createInstructor(body) {
+        var promise;
+
+        console.log("Sending create new Instructor request to database...");
+        promise = this.props.connector.setInstructorData(body)
+            .then((res) => {
+                console.log("Created new Instructor:", res);
+                this.sortInstructors(Object.assign(this.instructors, res));
+
+                return res;
+            }).catch(error => console.error(error));
+        console.log("Sent create new Instructor request to database.");
+
+        return promise;
+    }
+
+    /*
+     * Remove an instructor from the database.
+     */
+    deleteInstructor(id, instructorName) {
+        var promise;
+
+        console.log("Sending delete Instructor request to database...");
+        promise = this.props.connector.deleteInstructorData(id)
+            .then((res) => {
+                console.log("Deleted Private:", res);
+                delete this.instructors[instructorName];
+            }).catch(error => console.error(error));
+        console.log("Sent delete Instructor request to database.");
+
+        return promise;
+    }
+
     checkWSIExpiration(cell, expiryTime) {
-        const ninetyDaysInMilliseconds = 90 * 24 * 60 * 60 * 1000;
+        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
         var cellIndex = $(cell).index();
         var thCells = $(cell).closest("table").find("th");
-        if (thCells.eq(cellIndex).text() === "WSI Expiration Date") {
+        if (thCells.eq(cellIndex).text() === "WSI Expiration") {
             // Only check expiration of WSI certification column.
             if (expiryTime < Date.now()) {
                 // Date has expired.
                 $(cell).addClass("error-cell");
-            } else if (expiryTime < Date.now() + ninetyDaysInMilliseconds) {
-                // Date is expiring in 30 days.
+            } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
+                // Date is expiring in 60 days.
                 $(cell).addClass("warning-table");
             }
         }
     }
 
+    /**
+     * Find the instructor object & instructor name by id.
+     */
+    findInstructorById(id) {
+        var instructorId = parseInt(id, 10);
+
+        for (var instructorName in this.instructors) {
+            var instructor = this.instructors[instructorName];
+
+            if (instructor.id === instructorId) {
+                return [instructor, instructorName];
+            }
+        }
+
+        return [false, ""];
+    }
+
+    /**
+     * Get the number of stored instructors.
+     */
     getNumInstructors() {
         return Object.keys(this.instructors).length;
+    }
+
+    /**
+     * Get the number of instructors with expired WSI certifications.
+     */
+    getNumExpiredInstructors() {
+        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
+
+        var instructorsArray = Object.keys(this.instructors);
+
+        instructorsArray = instructorsArray.filter((instructorName) => {
+            var instructor = this.instructors[instructorName];
+            var expiryTime = instructor.wsiExpiration;
+
+            return Date.parse(expiryTime) < Date.now() + sixtyDaysInMilliseconds;
+        });
+
+
+        return instructorsArray.length;
     }
 
     /**
@@ -391,6 +498,9 @@ class Instructors extends React.Component {
         });
     }
 
+    /**
+     * Size the table based on the number of instructors.
+     */
     sizeTable() {
         var newHeight;
         var numRows = $("#dynamicInstructors tr").length;
@@ -433,7 +543,7 @@ class Instructors extends React.Component {
                                 Date of Hire
                             </th>
                             <th className="is-center">
-                                WSI Expiration Date
+                                WSI Expiration
                             </th>
                             <th className="is-center">
                                 Preferences

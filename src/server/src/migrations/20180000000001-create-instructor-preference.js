@@ -21,6 +21,7 @@ module.exports = {
                 }
             },
             lessons: {
+                defaultValue: [],
                 type: Sequelize.ARRAY(Sequelize.STRING)
             },
             createdAt: {

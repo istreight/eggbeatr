@@ -3,9 +3,10 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  April 17th, 2018
  *
- * This file contains the Connector class that links the front-end & back-end
- *  points of the application.
- * This component uses network requests to query data from the server.
+ * This file contains the Connector class that links the
+ *  front-end & back-end  points of the application.
+ * This component uses network requests to query data
+ *  from the server.
  */
 
 import React from 'react';
@@ -40,7 +41,7 @@ class Connector extends React.Component {
         var returnValue;
         var defaultReturn = {
             "lessonTimes": [
-                "9:00", "9:30", "10:00", "10:30", "11:00"
+                "9:00:00", "9:30:00", "10:00:00", "10:30:00", "11:00:00"
             ]
         };
 
@@ -87,17 +88,17 @@ class Connector extends React.Component {
             "Alfa": {
                 "id": 1,
                 "dateOfHire": "2011-02-01",
-                "wsiExpirationDate": "2021-04-03"
+                "wsiExpiration": "2021-04-03"
             },
             "Bravo": {
                 "id": 2,
                 "dateOfHire": "2012-06-05",
-                "wsiExpirationDate": "2022-08-07"
+                "wsiExpiration": "2022-08-07"
             },
             "Charlie": {
                 "id": 3,
                 "dateOfHire": "2013-10-09",
-                "wsiExpirationDate": "2023-12-11"
+                "wsiExpiration": "2023-12-11"
             }
         };
 
@@ -162,12 +163,12 @@ class Connector extends React.Component {
             var newId = instructor.id;
             var newInstructor = instructor.instructor;
             var newDateOfHire = instructor.dateOfHire;
-            var newWsiExpirationDate = instructor.wsiExpirationDate;
+            var newWsiExpiration = instructor.wsiExpiration;
 
             newObject[newInstructor] = {
                 "id": newId,
                 "dateOfHire": newDateOfHire,
-                "wsiExpirationDate": newWsiExpirationDate
+                "wsiExpiration": newWsiExpiration
             };
         });
 
@@ -340,19 +341,19 @@ class Connector extends React.Component {
                 "id": 1,
                 "instructorId": 1,
                 "duration": 30,
-                "time": "9:00"
+                "time": "9:00:00"
             }],
             "Bravo": [{
                 "id": 2,
                 "instructorId": 2,
                 "duration": 30,
-                "time": "9:30"
+                "time": "9:30:00"
             }],
             "Charlie": [{
                 "id": 3,
                 "instructorId": 3,
                 "duration": 30,
-                "time": "10:00"
+                "time": "10:00:00"
             }]
         };
 

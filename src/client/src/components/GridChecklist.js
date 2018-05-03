@@ -3,8 +3,8 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  September 14th, 2017
  *
- * This file contains the GridChecklist class, to display the requirements
- * to create a lesson grid.
+ * This file contains the GridChecklist class, to display
+ *  the requirements to create a lesson grid.
  */
 
 import React from 'react';

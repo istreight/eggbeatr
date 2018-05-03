@@ -3,8 +3,9 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  November 2nd, 2016
  *
- * This file contains the Intructors class for the collection of instructors for
- * the lesson calendar web application. The Instructors class is exported.
+ * This file contains the Intructors class for the
+ *  collection of instructors for the web application.
+ * The Instructors class is exported.
  */
 
 import React from 'react';
@@ -70,7 +71,7 @@ class Lessons extends React.Component {
     }
 
     /**
-     * Finds the value in the input field and stores it in lessonSet.
+     * Finds values in the input field to store in lessonSet.
      */
     storeLessonValues() {
         // Disable 'Save Lessons' button.
@@ -117,7 +118,8 @@ class Lessons extends React.Component {
     }
 
     /**
-     * Place the values in the Lessons object as values in the related inputs.
+     * Place the values in the Lessons object as values
+     *  in the related inputs.
      */
     setLessonValues() {
         $("#dynamicLessons td").each((index, element) => {

@@ -14,10 +14,12 @@ module.exports = {
                 type: Sequelize.STRING
             },
             dateOfHire: {
+                allowNull: false,
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },
-            wsiExpirationDate: {
+            wsiExpiration: {
+                allowNull: false,
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },

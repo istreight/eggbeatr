@@ -3,24 +3,25 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 18th, 2016
  *
- * This file contains the Header class for the header content of the
- * lesson calendar web application. The Header class is exported.
+ * This file contains the Header class for the header
+ *  content of the lesson calendar web application.
+ * The Header class is exported.
  */
 
 import React from 'react';
 
 class Header extends React.Component {
     componentDidMount() {
-        // Bind header buttons.
-        $("#dynamicHeader .pure-menu-heading").click(this.scrollToDiv);
+        // Scrolling header buttons.
         $("#dynamicHeader .pure-menu-link").click(this.scrollToDiv);
+        $("#dynamicHeader .pure-menu-heading").click(this.scrollToDiv);
     }
 
     /**
      * Scrolls page to div tag based on contents of clicked item.
      */
     scrollToDiv() {
-        var locationSelector = "#dynamic" + $(this).html();
+        var locationSelector = "#dynamic" + $(event.target).html();
 
         if (locationSelector.includes("eggbeatr")) {
             locationSelector = "#dynamicHeader";
@@ -41,7 +42,7 @@ class Header extends React.Component {
         return (
             <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
                 <a className="pure-menu-heading">
-                    eggbeatr &ndash; BETA
+                    eggbeatr &mdash; BETA
                 </a>
                 <ul className="pure-menu-list">
                     <li className="pure-menu-item">

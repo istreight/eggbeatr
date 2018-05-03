@@ -3,6 +3,9 @@
 
 cd $(pwd)/../etc
 
+# Drop database and current set of data.
+dropdb 'eggbeatr';
+
 # Creates new database; requires "create" privileges on database role specified in etc/config.json.
 ../node_modules/.bin/sequelize db:create
 

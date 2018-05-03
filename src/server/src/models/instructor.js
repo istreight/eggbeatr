@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     var Instructor = sequelize.define('Instructor', {
         instructor: DataTypes.STRING,
         dateOfHire: DataTypes.DATEONLY,
-        wsiExpirationDate: DataTypes.DATEONLY
+        wsiExpiration: DataTypes.DATEONLY
     }, {});
 
     Instructor.associate = (models) => {

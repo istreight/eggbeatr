@@ -4,9 +4,9 @@
  * START DATE:  October 26th, 2016
  * MIRGRATION DATE:  April 25th, 2018 (from /src/client/src/components)
  *
- * This file contains the GridFactory class that generates an array of the grid
- * for the lesson calendar web application. This class requires input props.
- * The result array from the generateGrid() function is exported.
+ * This file contains the GridFactory class that generates
+ *  an array of the grid for the web application.
+ * This class requires input props.
  */
 
 
@@ -29,24 +29,15 @@ const gridFactory =  {
         this.lessonTimes = lessonTimes;
         this.hasBothTypes = data.lessons.half > 0 && data.lessons.threequarter > 0;
 
-
         /**
          * Generate dynamic array.
          * Add names of instructors and time slots.
-         * parameter: [
-         *  number of 1/2 hour lessons,
-         *  number of 3/4 hour lessons,
-         *  private lessons,
-         *  number of instructors,
-         *  length of lesson set,
-         *  minimum number of hours per instructor.
-         * ]
          */
         return this.fillGridList({
             numHalfLessons: data.lessons.half,
             numThreeQuarterLessons: data.lessons.threequarter,
             privates: data.private,
-            instructors: data.instructors,
+            instructors: data.instructorsArray,
             duration: duration,
             minHoursPerInstructor: 0
         });

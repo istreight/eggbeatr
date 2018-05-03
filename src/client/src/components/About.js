@@ -4,7 +4,7 @@
  * START DATE:  November 1st, 2016
  *
  * This file contains the About class, displaying a description of the lesson
- * calendar web application. The About class is exported.
+ *  calendar web application. The About class is exported.
  */
 
 import React from 'react';

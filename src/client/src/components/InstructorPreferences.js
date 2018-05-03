@@ -3,8 +3,10 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 25th, 2016
  *
- * This file contains the Intructors class for the collection of instructors for
- * the lesson calendar web application. The Instructors class is exported.
+ * This file contains the Intructors class for
+ *  the collection of instructors for the lesson
+ *  calendar web application.
+ * The Instructors class is exported.
  */
 
 import React from 'react';
@@ -66,7 +68,8 @@ class InstructorPreferences extends React.Component {
     }
 
     /**
-     * Generates the list of all lesson types in the Preferences table.
+     * Generates the list of all lesson types in
+     *  the Preferences table.
      */
     levelPreferences(instructor) {
         var preferences;
@@ -106,7 +109,8 @@ class InstructorPreferences extends React.Component {
     }
 
     /**
-     * Sets the state of the Preferences table to allow removal of cells.
+     * Sets the state of the Preferences table to
+     *  allow removal of cells.
      */
     editPreferences() {
         var lessonCells = $("#dynamicInstructorPreferences .modal td").filter((cell) => {
@@ -138,8 +142,9 @@ class InstructorPreferences extends React.Component {
     }
 
     /**
-     * Toggles contents to the cell in the Preferences table and appends
-     * 'remove-preference' or 'add-preference' span.
+     * Toggles contents to the cell in the Preferences
+     *  table and appends 'remove-preference' or
+     * 'add-preference' span.
      */
     togglePreferenceCell(remove) {
         var className;
@@ -188,8 +193,8 @@ class InstructorPreferences extends React.Component {
     }
 
     /**
-     * Removes the 'remove-preference' and 'add-preference' spans from
-     * the Preferences table .
+     * Removes the 'remove-preference' and 'add-preference'
+     *  spans from the Preferences table .
      */
     finishEditingPreferences() {
         // Key in preferences to add updated value.

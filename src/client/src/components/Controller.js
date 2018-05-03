@@ -26,7 +26,6 @@ import InstructorPreferences from './InstructorPreferences';
 class Controller extends React.Component {
     constructor(props) {
         super(props);
-        this.i = 0;
 
         this.controllerData = {};
         this.serverURI = 'http://localhost:8081';
@@ -143,7 +142,7 @@ class Controller extends React.Component {
     /**
      * Callback to store data from Grid.js
      */
-     gridCallback(_grid, controller, minimize) {
+    gridCallback(_grid, controller, minimize) {
         console.log("retrieving data from Grid.js...");
 
         console.log("grid: ", controller.grid);
@@ -158,7 +157,7 @@ class Controller extends React.Component {
         }
 
         controller.manipulateData(database);
-     }
+    }
 
     /**
      * Callback to store data from Instructors.js
@@ -282,6 +281,12 @@ class Controller extends React.Component {
         }
     }
 
+    checkWSIExpiration(expiryTime) {
+        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
+
+        return Date.parse(expiryTime) > Date.now() + sixtyDaysInMilliseconds;
+    }
+
     /**
      * Organizes data from the Lessons, Instructors, and Private components.
      * Duration of lessons set is contained in the Grid component.
@@ -296,10 +301,19 @@ class Controller extends React.Component {
         this.quantifyLessonTypes();
 
         // Add instructors to controllerData.
-        this.controllerData.instructors = jQuery.extend(true, [], Object.keys(this.instructors));
+        this.controllerData.instructors = jQuery.extend(true, {}, this.instructors);
 
         // Add instructor instructorPreferences to controllerData.
         this.controllerData.instructorPreferences = jQuery.extend(true, {}, this.instructorPreferences);
+
+        // Array of valid instructors.
+        var instructorsArray = Object.keys(this.controllerData.instructors);
+        instructorsArray = instructorsArray.filter((instructorName) => {
+            var instructor = this.controllerData.instructors[instructorName];
+
+            return this.checkWSIExpiration(instructor.wsiExpiration);
+        });
+        this.controllerData.instructorsArray = instructorsArray;
 
         // Add lesson quantites and number of 1/2 & 3/4 hour lessons to controllerData.
         this.controllerData.lessons = jQuery.extend(true, {}, this.lessons);
@@ -372,7 +386,7 @@ class Controller extends React.Component {
                 var body = {
                     "instructor": key,
                     "dateOfHire": instructor.dateOfHire,
-                    "wsiExpirationDate": instructor.wsiExpirationDate
+                    "wsiExpiration": instructor.wsiExpiration
                 };
 
                 instructorUpdates.push(this.connector.updateInstructorData(id, body));

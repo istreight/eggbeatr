@@ -8,7 +8,7 @@ const GridFactoryController = Controller.GridFactory;
 const InstructorPreferencesController = Controller.InstructorPreferences;
 
 module.exports = (app) => {
-    app.options('/*', (req, res, next) => {
+    app.options('/api/*', (req, res, next) => {
         res.send(200);
     });
 

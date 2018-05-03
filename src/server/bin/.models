@@ -5,7 +5,7 @@
 
 cd $(pwd)/../etc
 
-../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,dateOfHire:dateonly,wsiExpirationDate:dateonly
+../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,dateOfHire:dateonly,wsiExpiration:dateonly
 
 ../node_modules/.bin/sequelize model:generate --name InstructorPreference --attributes lessons:array:string
 

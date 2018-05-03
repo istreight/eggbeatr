@@ -3,8 +3,9 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  October 19th, 2016
  *
- * This file contains the About class that displays content about the contruction
- * of the lesson calendar web application. The Footer class is exported.
+ * This file contains the About class that displays content about the
+ *  contruction of the lesson calendar web application.
+ * The Footer class is exported.
  */
 
 import React from 'react';
