@@ -1,17 +1,16 @@
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('Grids', {
+        return queryInterface.createTable('Headers', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            lessonTimes: {
+            setTitle: {
                 allowNull: false,
-                primaryKey: true,
-                type: Sequelize.ARRAY(Sequelize.STRING)
+                type: Sequelize.STRING
             },
             createdAt: {
                 allowNull: false,
@@ -24,6 +23,6 @@ module.exports = {
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('Grids');
+        return queryInterface.dropTable('Headers');
     }
 };

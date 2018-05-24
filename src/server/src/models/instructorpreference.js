@@ -6,6 +6,11 @@ module.exports = (sequelize, DataTypes) => {
     }, {});
 
     InstructorPreference.associate = (models) => {
+        InstructorPreference.belongsTo(models.Header, {
+            foreignKey: 'headerId',
+            onDelete: 'CASCADE'
+        });
+
         InstructorPreference.belongsTo(models.Instructor, {
             foreignKey: 'instructorId',
             onDelete: 'CASCADE'

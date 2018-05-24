@@ -6,128 +6,149 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Lessons', [
             {
+                headerId: 1,
+                quantity: defaultValue,
                 title: 'Starfish',
-                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Duck',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Sea Turtle',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: defaultValue,
                 title: 'Sea Otter',
-                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Salamander',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Sunfish',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Crocodile',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Whale',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: defaultValue,
                 title: 'Level 1',
-                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 2',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 3',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 4',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 5',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: defaultValue,
                 title: 'Level 6',
-                quantity: defaultValue,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 7',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 8',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 9',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Level 10',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
-                title: 'Basics I',
+                headerId: 1,
                 quantity: defaultValue,
+                title: 'Basics I',
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
+                quantity: 0,
                 title: 'Basics II',
-                quantity: 0,
 				createdAt: new Date(),
 				updatedAt: new Date()
             },
             {
-                title: 'Strokes',
+                headerId: 1,
                 quantity: 0,
+                title: 'Strokes',
 				createdAt: new Date(),
 				updatedAt: new Date()
             }

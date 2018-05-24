@@ -5,6 +5,9 @@
 
 cd $(pwd)/../etc
 
+# Create seed for the default header.
+../node_modules/.bin/sequelize seed:generate --name default-header
+
 # Create seed for the default instructors.
 ../node_modules/.bin/sequelize seed:generate --name default-instructors
 

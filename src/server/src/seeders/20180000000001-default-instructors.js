@@ -4,6 +4,7 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Instructors', [
             {
+                headerId: 1,
                 instructor: 'Alfa',
                 dateOfHire: new Date('Feb 01 2011'),
                 wsiExpiration: new Date('Apr 03 2021'),
@@ -11,6 +12,7 @@ module.exports = {
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
                 instructor: 'Beta',
                 dateOfHire: new Date('Jun 05 2012'),
                 wsiExpiration: new Date('Aug 07 2022'),
@@ -18,6 +20,7 @@ module.exports = {
 				updatedAt: new Date()
             },
             {
+                headerId: 1,
                 instructor: 'Charlie',
                 dateOfHire: new Date('Oct 09 2013'),
                 wsiExpiration: new Date('Dec 11 2023'),

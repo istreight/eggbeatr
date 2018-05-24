@@ -39,8 +39,7 @@ class Grid extends React.Component {
 
     componentDidMount() {
         this.grid = this.props.initData;
-        this.controllerData = this.props.controller.manipulateData(false);
-        this.props.callback(this.grid, this.props.controller, false);
+        this.controllerData = this.props.callback(this.grid, "grid", false);
 
         var lessonTimes = this.grid.lessonTimes;
         if (lessonTimes === undefined) {
@@ -88,7 +87,8 @@ class Grid extends React.Component {
     /**
      * Validate the 'Start Time' input.
      */
-    validateStartTime(startTime, target) {
+    validateStartTime(startTime) {
+        var target = $("#dynamicGrid input");
         var reHour = new RegExp(/^([1-9]|1[0-2])$/);
         var reMinute = new RegExp(/^([0-5][05]|60)$/);
 
@@ -110,10 +110,21 @@ class Grid extends React.Component {
      * Sets all 5 possible lesson start times.
      */
     setLessonTimes() {
-        var startTime = $(event.target).val() || $("#dynamicGrid input").attr("placeholder");
-        var validStartTime = this.validateStartTime(startTime, event.target);
+        var startTime;
 
-        if (!validStartTime) {
+        $("#dynamicGrid input").attr("placeholder", "");
+
+        if (event && $(event.target).is("input")) {
+            startTime = $(event.target).val();
+        } else {
+            if (!this.grid.lessonTimes) {
+                return;
+            }
+
+            startTime = this.grid.lessonTimes[0];
+        }
+
+        if (!this.validateStartTime(startTime)) {
             return;
         }
 
@@ -142,7 +153,19 @@ class Grid extends React.Component {
             this.grid.lessonTimes.push(newTime);
         }
 
-        this.props.callback(this.grid, this.props.controller, true);
+        $("#dynamicGrid input").val("");
+        $("#dynamicGrid input").attr("placeholder", this.grid.lessonTimes[0]);
+
+        if (!this.grid.id) {
+            var body = this.grid;
+
+            this.props.createComponent(body, "Grid")
+                .then((res) => {
+                    this.grid = res;
+                });
+        } else {
+            this.props.callback(this.grid, "grid", true);
+        }
     }
 
     /**
@@ -370,26 +393,33 @@ class Grid extends React.Component {
     }
 
     handleGridError() {
+        var createLabel = $("#dynamicGrid .create-label");
         var gridErrorMessasge = "ERROR<br /><p>An error occured creating grids.<br />Please contact administrator.</p>";
 
-        $(".create-spinner").hide();
+        $("#dynamicGrid .create-spinner").hide();
 
-        $(".create-label").html(gridErrorMessasge);
-        $(".create-label").addClass("create-error");
+        createLabel.html(gridErrorMessasge);
+        createLabel.addClass("create-error");
     }
 
     generateGrid() {
+        var createIndicatorMessage = "creating...";
+        var createLabel = $("#dynamicGrid .create-label");
+
         // Empty list of Grids.
         $("#dynamicGrid .pure-menu-scrollable ul").empty();
 
         // Show loading indicator.
-        var createIndicatorMessage = "creating...";
-        $(".create-label").html(createIndicatorMessage);
-        $(".create-label").removeClass("create-error");
-        $(".create-indicator").show();
+        createLabel.removeClass("create-error");
+        createLabel.html(createIndicatorMessage);
+        $("#dynamicGrid .create-spinner").show();
+        $("#dynamicGrid .create-indicator").css("visibility", "visible")
 
         // Create the queue of lessons.
         this.generateLessonQueue();
+
+        // Update controllerData with components' data.
+        this.controllerData = this.props.callback(this.grid, "grid", false);
 
         // Get base array to represent grid.
         this.generateGridArrays()
@@ -517,7 +547,7 @@ class Grid extends React.Component {
         }
 
         // Hide loading indicator.
-        $(".create-indicator").hide();
+        $("#dynamicGrid .create-indicator").css("visibility", "hidden")
 
         $("#dynamicGrid .pure-menu-scrollable ul").append(newTables);
 
@@ -752,9 +782,10 @@ class Grid extends React.Component {
      addPageContent(doc, data, dateCreated) {
          doc.text("Grid - " + dateCreated, 40, 30);
 
-         return [data.table.pageStartX,
+         return [
+             data.table.pageStartX,
              data.table.pageStartY,
-             data.table.width + data.table.pageStartX,
+             data.table.width  + data.table.pageStartX,
              data.table.height + data.table.pageStartY
          ];
      }
@@ -764,9 +795,8 @@ class Grid extends React.Component {
      */
      createdCell(cell, data, isRowOdd, numColumns, splitCellIndices) {
          var cellIndex = (data.row.index * numColumns) + data.column.index;
-         var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
 
-         if (splitArrayIndex > -1) {
+         if (splitCellIndices.includes(cellIndex)) {
              cell.styles.lineColor = cell.styles.fillColor;
              cell.styles.lineWidth = 0.001;
          }
@@ -789,9 +819,8 @@ class Grid extends React.Component {
      */
      drawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
          var cellIndex = (data.row.index * numColumns) + data.column.index;
-         var splitArrayIndex = splitCellIndices.indexOf(cellIndex);
 
-         if (splitArrayIndex > -1 && prevCell) {
+         if (splitCellIndices.includes(cellIndex) && prevCell) {
              if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
                  // Place Hose/Swim on the right side of cell divider.
                  cell.textPos.x += cell.width / 2;
@@ -919,8 +948,7 @@ class Grid extends React.Component {
 Grid.propTypes =  {
     callback: React.PropTypes.func.isRequired,
     initData: React.PropTypes.object.isRequired,
-    connector: React.PropTypes.object.isRequired,
-    controller: React.PropTypes.object.isRequired
+    connector: React.PropTypes.object.isRequired
 }
 
 export default Grid;

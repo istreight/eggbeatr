@@ -4,9 +4,9 @@ const Grid = Models.Grid;
 
 module.exports = {
     retrieve(req, res) {
-        return Grid.find({
+        return Grid.findAll({
             where: {
-                id: 1
+                headerId: req.query.headerId
             }
         }).then((grid) => {
             res.status(200).send(grid);
@@ -14,19 +14,26 @@ module.exports = {
             res.status(400).send(error);
         });
     },
-    update(req, res) {
-        return Grid.find({
-            where: {
-                id: 1
-            }
+    create(req, res) {
+        return Grid.create({
+            headerId: req.query.headerId,
+            lessonTimes: req.body.lessonTimes
         }).then((grid) => {
+            res.status(201).send(grid);
+        }).catch((error) => {
+            res.status(400).send(error);
+        });
+    },
+    update(req, res) {
+        return Grid.findById(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
-                    message: 'Grid Not Found'
+                    message: 'Grid Not Found.'
                 });
             }
 
             return grid.update({
+                headerId: req.query.headerId || grid.headerId,
                 lessonTimes: req.body.lessonTimes || grid.lessonTimes
             }).then((grid) => {
                 res.status(200).send(grid);
@@ -38,14 +45,10 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Grid.find({
-            where: {
-                id: 1
-            }
-        }).then((grid) => {
+        return Grid.findById(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
-                    message: 'Grid Not Found'
+                    message: 'Grid Not Found.'
                 });
             }
 

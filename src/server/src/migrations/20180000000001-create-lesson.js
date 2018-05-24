@@ -9,14 +9,23 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            title: {
+            headerId: {
                 allowNull: false,
-                primaryKey: true,
-                type: Sequelize.STRING
+                type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
+                references: {
+                    model: 'Headers',
+                    key: 'id',
+                    as: 'headerId',
+                }
             },
             quantity: {
                 defaultValue: 0,
                 type: Sequelize.INTEGER
+            },
+            title: {
+                allowNull: false,
+                type: Sequelize.STRING
             },
             createdAt: {
                 allowNull: false,

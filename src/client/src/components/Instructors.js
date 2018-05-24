@@ -20,30 +20,18 @@ class Instructors extends React.Component {
 
     componentDidMount() {
         var numValidInstructors;
+
         this.sortInstructors(this.props.initData);
 
         this.generateInstructorTable();
 
-        numValidInstructors = this.getNumInstructors() - this.getNumExpiredInstructors();
+        numValidInstructors = this.getNumInstructors();
 
-        this.props.callback(this.instructors, this.props.controller, false);
+        this.props.callback(this.instructors, "instructors", false);
         this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.setChecklistQuantity("instructors", numValidInstructors);
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
-
-        $("#dynamicInstructors td").each((index, element) => {
-            if ($(element).children().length > 0) {
-                return;
-            }
-
-            var expiryTime = $(element).text();
-            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
-
-            if (reDate.test(expiryTime)) {
-                this.checkWSIExpiration($(element), Date.parse(expiryTime));
-            }
-        });
 
         // Link tutorital button to next section.
         $("#dynamicInstructors .pure-button-primary").click(() => {
@@ -148,7 +136,7 @@ class Instructors extends React.Component {
         if (instructorName in this.instructors) {
             var instructorId = this.instructors[instructorName].id;
 
-            this.deleteInstructor(instructorId, instructorName);
+            this.props.removeComponent(instructorId, "Instructor").then((res) => delete this.instructors[instructorName]);
         }
 
         removedRow.remove();
@@ -219,15 +207,20 @@ class Instructors extends React.Component {
                 body.dateOfHire = inputPlaceholder;
             } else if (index === 2) {
                 var newDate = new Date(inputPlaceholder);
-                this.checkWSIExpiration(element, newDate);
+                var cell = $(element).closest("td");
+                this.checkWSIExpiration(cell, newDate);
 
                 body.wsiExpiration = inputPlaceholder;
             }
         });
 
-        this.createInstructor(body).then((res) => {
-            $("#dynamicInstructors table tr").last().prev().attr("data-instructor-id", res[instructorName].id);
-        });
+        this.props.createComponent(body, "Instructor")
+            .then((res) => {
+                this.sortInstructors(Object.assign(this.instructors, res));
+
+                // Embed ID in DOM.
+                $("#dynamicInstructors table tr").last().prev().attr("data-instructor-id", res[instructorName].id);
+            });
 
         // Put 'remove' in the last cell of the row.
         $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
@@ -244,7 +237,14 @@ class Instructors extends React.Component {
      *  from the input fields to the table.
      */
     addCells(cell, instructorList, isFirstChild, removeInputRow) {
+        var isWSIValue = false;
+        var cellIndex = $(cell).index();
         var cellElement = $(cell).children().first();
+        var thCells = $(cell).closest("table").find("th");
+
+        if (thCells.eq(cellIndex).html() === "WSI Expiration") {
+            isWSIValue = true;
+        }
 
         if (cellElement.is("input")) {
             if (cellElement.attr("placeholder") === "..." && removeInputRow) {
@@ -274,7 +274,7 @@ class Instructors extends React.Component {
                 $(cell).html(newData);
                 $(cell).removeClass("error-cell");
 
-                if (expiryTime) {
+                if (expiryTime && isWSIValue) {
                     this.checkWSIExpiration(cell, expiryTime);
                 }
             } else {
@@ -354,10 +354,10 @@ class Instructors extends React.Component {
         editInstructorsButton.html("Edit Instructors");
         editInstructorsButton.click(this.editInstructors.bind(this));
 
-        numValidInstructors = this.getNumInstructors() - this.getNumExpiredInstructors();
+        numValidInstructors = this.getNumInstructors();
 
         this.props.instructorPreferences.setPreferencesButtons(true);
-        this.props.callback(this.instructors, this.props.controller, true);
+        this.props.callback(this.instructors, "instructors", true);
         this.props.setChecklistQuantity("instructors", numValidInstructors);
     }
 
@@ -368,18 +368,38 @@ class Instructors extends React.Component {
         var isOdd = true;
         var newTable = "";
 
+        this.sortInstructors(this.instructors);
+
+        $("#dynamicInstructors tbody").empty();
+
         for (var instructorName in this.instructors) {
-            var rowClass = isOdd ? "table-odd" : "table-even";
+            var wsiExpirationCell;
+            var rowColour = isOdd ? "table-odd" : "table-even";
+            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
+
             var instructor = this.instructors[instructorName];
             var instructorId = instructor.id;
             var dateOfHire = instructor.dateOfHire;
             var wsiExpiration = instructor.wsiExpiration;
 
-            newTable += "<tr class='" + rowClass + "' data-instructor-id='" + instructorId + "'>";
+            newTable += "<tr class='" + rowColour + "' data-instructor-id='" + instructorId + "'>";
 
             newTable += "<td>" + instructorName + "</td>";
             newTable += "<td>" + dateOfHire + "</td>";
-            newTable += "<td>" + wsiExpiration + "</td>";
+
+            wsiExpirationCell = "<td>" + wsiExpiration + "</td>";
+
+            // Placing indicators if WSI is expiring or expired.
+            if (reDate.test(wsiExpiration)) {
+                var cellObject = this.checkWSIExpiration(
+                    $(wsiExpirationCell),
+                    Date.parse(wsiExpiration)
+                );
+
+                wsiExpirationCell = cellObject.get(0).outerHTML;
+            }
+
+            newTable += wsiExpirationCell
 
             newTable += "<td><a class='pure-button preferences'>...</a></td>";
             newTable += "</tr>";
@@ -393,57 +413,18 @@ class Instructors extends React.Component {
         this.sizeTable();
     }
 
-    /*
-     * Add an instructor to the database.
-     */
-    createInstructor(body) {
-        var promise;
-
-        console.log("Sending create new Instructor request to database...");
-        promise = this.props.connector.setInstructorData(body)
-            .then((res) => {
-                console.log("Created new Instructor:", res);
-                this.sortInstructors(Object.assign(this.instructors, res));
-
-                return res;
-            }).catch(error => console.error(error));
-        console.log("Sent create new Instructor request to database.");
-
-        return promise;
-    }
-
-    /*
-     * Remove an instructor from the database.
-     */
-    deleteInstructor(id, instructorName) {
-        var promise;
-
-        console.log("Sending delete Instructor request to database...");
-        promise = this.props.connector.deleteInstructorData(id)
-            .then((res) => {
-                console.log("Deleted Private:", res);
-                delete this.instructors[instructorName];
-            }).catch(error => console.error(error));
-        console.log("Sent delete Instructor request to database.");
-
-        return promise;
-    }
-
     checkWSIExpiration(cell, expiryTime) {
         const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
-        var cellIndex = $(cell).index();
-        var thCells = $(cell).closest("table").find("th");
-        if (thCells.eq(cellIndex).text() === "WSI Expiration") {
-            // Only check expiration of WSI certification column.
-            if (expiryTime < Date.now()) {
-                // Date has expired.
-                $(cell).addClass("error-cell");
-            } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
-                // Date is expiring in 60 days.
-                $(cell).addClass("warning-table");
-            }
+        if (expiryTime < Date.now()) {
+            // Date has expired.
+            $(cell).addClass("error-cell");
+        } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
+            // Date is expiring in 60 days.
+            $(cell).addClass("warning-table");
         }
+
+        return cell;
     }
 
     /**
@@ -467,35 +448,31 @@ class Instructors extends React.Component {
      * Get the number of stored instructors.
      */
     getNumInstructors() {
-        return Object.keys(this.instructors).length;
-    }
-
-    /**
-     * Get the number of instructors with expired WSI certifications.
-     */
-    getNumExpiredInstructors() {
+        var expiredArray;
+        var instructorsArray = Object.keys(this.instructors);
         const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
-        var instructorsArray = Object.keys(this.instructors);
-
-        instructorsArray = instructorsArray.filter((instructorName) => {
+        expiredArray = instructorsArray.filter((instructorName) => {
             var instructor = this.instructors[instructorName];
             var expiryTime = instructor.wsiExpiration;
 
             return Date.parse(expiryTime) < Date.now() + sixtyDaysInMilliseconds;
         });
 
-
-        return instructorsArray.length;
+        return instructorsArray.length - expiredArray.length;
     }
 
     /**
      * Sort object keys alphabetically into instructors.
      */
     sortInstructors(instructors) {
+        var sorted = {};
+
         Object.keys(instructors).sort().forEach((key) => {
-          this.instructors[key] = instructors[key];
+            sorted[key] = instructors[key];
         });
+
+        this.instructors = sorted;
     }
 
     /**
@@ -573,7 +550,8 @@ Instructors.propTypes =  {
     callback: React.PropTypes.func.isRequired,
     initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
-    controller: React.PropTypes.object.isRequired,
+    createComponent: React.PropTypes.func.isRequired,
+    removeComponent: React.PropTypes.func.isRequired,
     instructorPreferences: React.PropTypes.object.isRequired,
     setChecklistQuantity: React.PropTypes.func.isRequired
 }

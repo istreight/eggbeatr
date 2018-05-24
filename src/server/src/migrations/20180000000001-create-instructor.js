@@ -3,11 +3,21 @@
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.createTable('Instructors', {
-                id: {
+            id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
+            },
+            headerId: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
+                references: {
+                    model: 'Headers',
+                    key: 'id',
+                    as: 'headerId',
+                }
             },
             instructor: {
                 allowNull: false,

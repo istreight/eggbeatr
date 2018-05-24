@@ -2,11 +2,16 @@
 
 module.exports = (sequelize, DataTypes) => {
     var Private = sequelize.define('Private', {
-        time: DataTypes.TIME,
-        duration: DataTypes.INTEGER
+        duration: DataTypes.INTEGER,
+        time: DataTypes.TIME
     }, {});
 
     Private.associate = (models) => {
+        Private.belongsTo(models.Header, {
+            foreignKey: 'headerId',
+            onDelete: 'CASCADE'
+        });
+
         Private.belongsTo(models.Instructor, {
             foreignKey: 'instructorId',
             onDelete: 'CASCADE'

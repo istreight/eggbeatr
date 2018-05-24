@@ -2,16 +2,25 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('Privates', {
+        return queryInterface.createTable('InstructorPreferences', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            headerId: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
+                references: {
+                    model: 'Headers',
+                    key: 'id',
+                    as: 'headerId',
+                }
+            },
             instructorId: {
                 allowNull: false,
-                primaryKey: true,
                 type: Sequelize.INTEGER,
                 onDelete: 'CASCADE',
                 references: {
@@ -20,15 +29,9 @@ module.exports = {
                     as: 'instructorId',
                 }
             },
-            time: {
-                allowNull: false,
-                primaryKey: true,
-                type: Sequelize.TIME
-            },
-            duration: {
-                allowNull: false,
-                defaultValue: 30,
-                type: Sequelize.INTEGER
+            lessons: {
+                defaultValue: [],
+                type: Sequelize.ARRAY(Sequelize.STRING)
             },
             createdAt: {
                 allowNull: false,
@@ -41,6 +44,6 @@ module.exports = {
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('Privates');
+        return queryInterface.dropTable('InstructorPreferences');
     }
 };

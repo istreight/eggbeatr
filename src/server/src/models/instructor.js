@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
     }, {});
 
     Instructor.associate = (models) => {
+        Instructor.belongsTo(models.Header, {
+            foreignKey: 'headerId',
+            onDelete: 'CASCADE'
+        });
+
         Instructor.hasMany(models.InstructorPreference, {
             foreignKey: 'instructorId',
             as: 'instructorPreferences'

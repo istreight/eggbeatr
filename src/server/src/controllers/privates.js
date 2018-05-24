@@ -4,7 +4,11 @@ const Private = Models.Private;
 
 module.exports = {
     list(req, res) {
-        return Private.findAll().then((_private) => {
+        return Private.findAll({
+            where: {
+                headerId: req.query.headerId
+            }
+        }).then((_private) => {
             res.status(200).send(_private);
         }).catch((error) => {
             res.status(400).send(error);
@@ -12,9 +16,10 @@ module.exports = {
     },
     create(req, res) {
         return Private.create({
+            headerId: req.query.headerId,
             instructorId: req.body.instructorId,
-            time: req.body.time,
-            duration: req.body.duration
+            duration: req.body.duration,
+            time: req.body.time
         }).then((_private) => {
             res.status(201).send(_private);
         }).catch((error) => {
@@ -25,7 +30,7 @@ module.exports = {
         return Private.findById(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(404).send({
-                    message: 'Private Not Found'
+                    message: 'Private Not Found.'
                 });
             }
 
@@ -38,14 +43,15 @@ module.exports = {
         return Private.findById(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(404).send({
-                    message: 'Private Not Found'
+                    message: 'Private Not Found.'
                 });
             }
 
             return _private.update({
+                headerId: req.query.headerId || _private.headerId,
                 instructorId: req.body.instructorId || _private.instructorId,
-                time: req.body.time || _private.time,
-                duration: req.body.duration || _private.duration
+                duration: req.body.duration || _private.duration,
+                time: req.body.time || _private.time
             }).then((_private) => {
                 res.status(200).send(_private);
             }).catch((error) => {
@@ -59,7 +65,7 @@ module.exports = {
         return Private.findById(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(400).send({
-                    message: 'Private Not Found',
+                    message: 'Private Not Found.',
                 });
             }
 

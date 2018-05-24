@@ -7,6 +7,9 @@ const InstructorPreference = Models.InstructorPreference;
 module.exports = {
     list(req, res) {
         return Instructor.findAll({
+            where: {
+                headerId: req.query.headerId
+            },
             include: [{
                     model: InstructorPreference,
                     as: 'instructorPreferences'
@@ -22,6 +25,7 @@ module.exports = {
     },
     create(req, res) {
         return Instructor.create({
+            headerId: req.query.headerId,
             instructor: req.body.instructor,
             dateOfHire: req.body.dateOfHire,
             wsiExpiration: req.body.wsiExpiration
@@ -43,7 +47,7 @@ module.exports = {
         }).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
-                    message: 'Instructor Not Found'
+                    message: 'Instructor Not Found.'
                 });
             }
 
@@ -64,11 +68,12 @@ module.exports = {
         }).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
-                    message: 'Instructor Not Found'
+                    message: 'Instructor Not Found.'
                 });
             }
 
             return instructor.update({
+                headerId: req.query.headerId || instructor.headerId,
                 instructor: req.body.instructor || instructor.instructor,
                 dateOfHire: req.body.dateOfHire || instructor.dateOfHire,
                 wsiExpiration: req.body.wsiExpiration || instructor.wsiExpiration
@@ -85,7 +90,7 @@ module.exports = {
         return Instructor.findById(req.params.instructorId).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
-                    message: 'Instructor Not Found'
+                    message: 'Instructor Not Found.'
                 });
             }
 
@@ -109,7 +114,7 @@ module.exports = {
         }).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
-                    message: 'Instructor Not Found'
+                    message: 'Instructor Not Found.'
                 });
             }
 
@@ -127,7 +132,7 @@ module.exports = {
         }).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
-                    message: 'Instructor Not Found'
+                    message: 'Instructor Not Found.'
                 });
             }
 

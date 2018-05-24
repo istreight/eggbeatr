@@ -7,19 +7,20 @@
  */
 
 
- @-webkit-keyframes scale {
-   0% {
-     opacity: 0;
-     -webkit-transform: scale(0);
-   }
-   70% {
-     opacity: 1;
-   }
-   100% {
-     opacity: 0;
-     -webkit-transform: scale(1);
-   }
- }
+/* "Creating Grids" & "Switch Sets" loading indicator */
+@-webkit-keyframes scale {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0);
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: scale(1);
+    }
+}
 
 /* Show scrollbars */
 ::-webkit-scrollbar {
@@ -230,7 +231,7 @@ tbody td:first-child {
 }
 
 .remove-preference:hover {
-    color: red;
+    color: rgb(202, 60, 60);
 }
 
 .add-preference {
@@ -242,7 +243,42 @@ tbody td:first-child {
 }
 
 .add-preference:hover {
-    color: green;
+    color: rgb(28, 184, 65);
+}
+
+.create-spinner {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.create-spinner span {
+    border-radius: 40px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    opacity: 0;
+    -webkit-animation: scale 3s ease-out infinite;
+}
+
+.create-spinner span:nth-child(2) {
+    -webkit-animation-delay: 2s;
+}
+
+.create-spinner span:nth-child(3) {
+    -webkit-animation-delay: 1s;
+}
+
+.create-label {
+    font-family: "Helvetica Neue";
+    font-weight: 100;
+    display: inline-block;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-left: 7px;
 }
 
 .left-button {
@@ -263,37 +299,72 @@ tbody td:first-child {
 
 #dynamicHeader a {
     text-transform: none;
+    vertical-align: middle;
+}
+
+#dynamicHeader input[type="text"] {
+    width: 132px;
+    height: 27px;
+}
+
+#dynamicHeader ::-webkit-scrollbar {
+    display: none;
+}
+
+#dynamicHeader .create-indicator {
+    position: absolute;
+    visibility: hidden;
+    top: 15px;
+    margin-left: 34%;
+    color: #6FBEF3;
+}
+
+#dynamicGrid .create-label {
+    font-size: 16px;
+}
+
+#dynamicHeader .create-spinner {
+    height: 24px;
+    width: 24px;
+}
+
+#dynamicHeader .create-spinner span {
+    border: 3px solid #6FBEF3;
+}
+
+#dynamicHeader .header-input {
+    padding: 8px 16px;
+
+    display: inline;
+
+    visibility: hidden;
 }
 
 #dynamicHeader .pure-menu-heading {
     padding: 8px 16px;
 }
 
-#dynamicHeader .pure-menu-link {
-    padding-top: 10px;
-}
-
-#dynamicHeader .pure-menu-scrollable {
-    position: absolute;
-
-    width: 50%;
-
-    top: 0;
-    left: 16%;
-}
-
-#dynamicHeader .pure-menu-scrollable a {
-    color: auto;
-}
-
 #dynamicHeader .pure-menu-scrollable ul {
-    position: relative;
+    width: 28%;
 
-    float: left;
+    float: none;
+
+    overflow: auto;
 }
 
-#dynamicHeader .pure-menu-scrollable .pure-menu-heading {
-    font-weight: bold;
+#dynamicHeader .pure-button {
+    color: white;
+    font-size: 12px;
+}
+
+#dynamicHeader .pure-button:hover,
+#dynamicHeader .pure-button.hover {
+    background-color: #1f8dd6;
+    background-image: linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10));
+}
+
+#dynamicHeader .removable-header {
+    color: rgb(223, 117, 20);
 }
 
 
@@ -377,6 +448,7 @@ tbody td:first-child {
 
     background-color: rgb(28, 184, 65);
 }
+
 .remove {
     font-size: 12px;
 
@@ -451,12 +523,12 @@ tbody td:first-child {
 
 .warning-table {
     color: white;
-    background-color: goldenrod !important;
+    background-color: rgb(223, 117, 20) !important;
 }
 
 .error-cell {
     color: white;
-    background-color: indianred !important;
+    background-color: rgb(202, 60, 60) !important;
 }
 
 #dynamicLessons {
@@ -667,54 +739,8 @@ tbody td:first-child {
     color: #1f8dd6;
 }
 
-.create-indicator {
-    display: none;
-    margin-top: 80px;
-    margin-left: 16%;
-}
-
-.create-spinner {
-    height: 45px;
-    width: 45px;
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.create-spinner span {
-    border-radius: 40px;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    border: 3px solid #1f8dd6;
-    opacity: 0;
-    -webkit-animation: scale 3s ease-out infinite;
-}
-
-.create-spinner span:nth-child(2) {
-    -webkit-animation-delay: 2s;
-}
-
-.create-spinner span:nth-child(3) {
-    -webkit-animation-delay: 1s;
-}
-
-.create-label {
-    color: #1f8dd6;
-    font-size: 34px;
-    font-family: "Helvetica Neue";
-    font-weight: 100;
-    display: inline-block;
-    vertical-align: middle;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-left: 7px;
-}
-
 .create-error {
-    color: red;
+    color: rgb(202, 60, 60);
 }
 
 .create-error p {
@@ -723,15 +749,13 @@ tbody td:first-child {
 }
 
 #dynamicGrid {
-    position: relative;
-
     padding: 45px;
 }
 
 #dynamicGrid input[type="text"] {
     margin: 0 20px;
 
-    width: 60px;
+    width: 72px;
     height: 32px;
 
     text-align: right;
@@ -751,6 +775,27 @@ tbody td:first-child {
     margin-left: 40px;
 }
 
+#dynamicGrid .create-indicator {
+    position: absolute;
+    visibility: hidden;
+    margin-top: 80px;
+    margin-left: 16%;
+    color: #1f8dd6;
+}
+
+#dynamicGrid .create-label {
+    font-size: 34px;
+}
+
+#dynamicGrid .create-spinner {
+    height: 45px;
+    width: 45px;
+}
+
+#dynamicGrid .create-spinner span {
+    border: 3px solid #1f8dd6;
+}
+
 #dynamicGrid .pure-menu-heading {
     margin: -64px 0;
 }
@@ -763,7 +808,7 @@ tbody td:first-child {
     margin: 0 0 0 3.5%;
 }
 
-#dynamicGrid .pure-menu-scrollable ul, #dynamicGrid .pure-menu-scrollable li {
+#dynamicGrid .pure-menu-scrollable ul {
     overflow: scroll;
 }
 

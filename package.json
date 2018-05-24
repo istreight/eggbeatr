@@ -6,6 +6,7 @@
     "scripts": {
         "install": "cd src/client; npm install; cd ../server; npm install",
         "start": "osascript -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/client; npm run start\"' -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/server; npm run start\"'",
+        "database": "cd $(pwd)/src/server/bin; bash initdb.bash",
         "build": "cd src/client; npm run build; cd ../server; npm run build"
     },
     "repository": {

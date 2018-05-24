@@ -21,7 +21,7 @@ class Private extends React.Component {
         this.sortPrivates([this.props.initData]);
         this.generatePrivate();
 
-        this.props.callback(this.privateLessons, this.props.controller, false);
+        this.props.callback(this.privateLessons, "privates", false);
         this.props.setChecklistQuantity("privates", this.getNumPrivates());
 
         $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
@@ -152,7 +152,10 @@ class Private extends React.Component {
                 if (validTime && validDuration) {
                     var privatesId = privateInstructor[i].id;
 
-                    this.removePrivate(privatesId, instructorName, i);
+                    this.props.removeComponent(privatesId, "Private")
+                        .then((res) => {
+                            this.privateLessons[instructorName].splice(i - 1, 1);
+                        });
                 }
             }
         }
@@ -248,25 +251,27 @@ class Private extends React.Component {
         });
 
         instructorData.then(() => {
-                // If instructor is invalid, reject promise and don't add new row or remove button...
+                // If instructor is invalid, reject promise and don't add new row or remove button.
                 if (!validInstructor) {
                     return Promise.reject("Private Instructor \"" + instructorName + "\" is not in the Instructors table.");
                 }
             })
-            .then(() => this.createPrivate(body))
+            .then(() => this.props.createComponent(body, "Private"))
             .then((res) => {
+                this.sortPrivates([this.privateLessons, res]);
+
                 // Store id in HTMl.
                 $("#dynamicPrivate table tr:last").attr("data-privates-id", res[instructorName][0].id);
 
                 // Put 'remove' in the last cell of the row.
                 $(target).closest("td").html("<a class='pure-button remove'>Remove</a>");
 
+                // Rebind each 'remove'.
+                $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
+
                 this.addInputRow();
                 this.inputifyRows();
             }).catch(error => console.error(error));
-
-        // Rebind each 'remove'.
-        $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
 
         this.colourTable();
         this.sizeTable();
@@ -401,7 +406,7 @@ class Private extends React.Component {
 
         Promise.all(newInstructorIds)
             .then(() => {
-                this.props.callback(this.privateLessons, this.props.controller, true);
+                this.props.callback(this.privateLessons, "privates", true);
                 this.props.setChecklistQuantity("privates", this.getNumPrivates());
             }).catch(error => console.error(error));
 
@@ -417,6 +422,10 @@ class Private extends React.Component {
     generatePrivate() {
         var isOdd = true;
         var newTable = "";
+
+        this.sortPrivates([this.privateLessons]);
+
+        $("#dynamicPrivate table tbody").empty();
 
         for (var instructorName in this.privateLessons) {
             var rowClass = isOdd ? "table-odd" : "table-even";
@@ -447,44 +456,8 @@ class Private extends React.Component {
         this.sizeTable();
     }
 
-    /*
-     * Add an instructor to the database.
-     */
-    createPrivate(body) {
-        var promise;
-
-        console.log("Sending create new Private request to database...");
-        promise = this.props.connector.setPrivatesData(body)
-            .then((res) => {
-                console.log("Created new Private:", res);
-                this.sortPrivates([this.privateLessons, res]);
-
-                return res;
-            }).catch(error => console.error(error));
-        console.log("Sent create new Private request to database.");
-
-        return promise;
-    }
-
-    /*
-     * Remove an instructor from the database.
-     */
-    removePrivate(id, instructorName, sliceIndex) {
-        var promise;
-
-        console.log("Sending delete Private request to database...");
-        promise = this.props.connector.deletePrivatesData(id)
-            .then((res) => {
-                console.log("Deleted Private:", res);
-                this.privateLessons[instructorName].splice(sliceIndex, 1);
-            }).catch(error => console.error(error));
-        console.log("Sent delete Private request to database.");
-
-        return promise;
-    }
-
     /**
-     * Count the number of included private lessons.
+     * Count the number of private lessons.
      */
     getNumPrivates() {
         var numPrivate = 0;
@@ -592,7 +565,6 @@ class Private extends React.Component {
 
                 if (existingInstructor) {
                     var privates = this.privateLessons[existingInstructor];
-                    console.log(privates);
 
                     for (var i = 0; i < privates.length; i++) {
                         if (privates[i].time === placeholderMilliseconds) {
@@ -677,7 +649,8 @@ Private.propTypes =  {
     callback: React.PropTypes.func.isRequired,
     initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
-    controller: React.PropTypes.object.isRequired,
+    createComponent: React.PropTypes.func.isRequired,
+    removeComponent: React.PropTypes.func.isRequired,
     setChecklistQuantity: React.PropTypes.func.isRequired
 }
 

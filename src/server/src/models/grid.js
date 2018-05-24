@@ -6,7 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     }, {});
 
     Grid.associate = (models) => {
-        // associations can be defined here
+        Grid.belongsTo(models.Header, {
+            foreignKey: 'headerId',
+            onDelete: 'CASCADE'
+        });
     };
 
     return Grid;

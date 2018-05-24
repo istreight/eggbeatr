@@ -4,7 +4,7 @@
 cd $(pwd)/../etc
 
 # Drop database and current set of data.
-dropdb 'eggbeatr';
+../node_modules/.bin/sequelize db:drop
 
 # Creates new database; requires "create" privileges on database role specified in etc/config.json.
 ../node_modules/.bin/sequelize db:create
@@ -16,5 +16,5 @@ dropdb 'eggbeatr';
 ../node_modules/.bin/sequelize db:seed:all
 
 # /api/lessons rejects POST or DELETE requests to add/remove rows in the relation, so seeding lessons is required.
-# To seed without the complete default data, replace the previous command the following.
+# To seed without the default data, replace the previous command the following.
 # DEFAULTVALUE=0 ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000000-default-lessons.js

@@ -4,6 +4,7 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('InstructorPreferences', [
             {
+                headerId: 1,
                 instructorId: 1,
                 lessons: [
                     'Starfish',
@@ -19,6 +20,7 @@ module.exports = {
                 updatedAt: new Date()
             },
             {
+                headerId: 1,
                 instructorId: 2,
                 lessons: [
                     'Level 1',
@@ -36,6 +38,7 @@ module.exports = {
                 updatedAt: new Date()
             },
             {
+                headerId: 1,
                 instructorId: 3,
                 lessons: [
                     'Basics I',

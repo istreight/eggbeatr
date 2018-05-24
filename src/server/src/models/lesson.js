@@ -2,12 +2,15 @@
 
 module.exports = (sequelize, DataTypes) => {
     var Lesson = sequelize.define('Lesson', {
-        title: DataTypes.STRING,
-        quantity: DataTypes.INTEGER
+        quantity: DataTypes.INTEGER,
+        title: DataTypes.STRING
     }, {});
 
     Lesson.associate = (models) => {
-        // associations can be defined here
+        Lesson.belongsTo(models.Header, {
+            foreignKey: 'headerId',
+            onDelete: 'CASCADE'
+        });
     };
 
     return Lesson;

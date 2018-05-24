@@ -5,12 +5,20 @@
 
 cd $(pwd)/../etc
 
+# Header model
+../node_modules/.bin/sequelize model:generate --name Header --attributes setTitle:string
+
+# Instructor model
 ../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,dateOfHire:dateonly,wsiExpiration:dateonly
 
+# InstructorPreference model
 ../node_modules/.bin/sequelize model:generate --name InstructorPreference --attributes lessons:array:string
 
+# Lesson model
 ../node_modules/.bin/sequelize model:generate --name Lesson --attributes title:string,quantity:integer
 
-../node_modules/.bin/sequelize model:generate --name Private --attributes instructor:string,time:time,duration:integer,include:boolean
+# Private model
+../node_modules/.bin/sequelize model:generate --name Private --attributes instructor:string,time:time,duration:integer
 
+# Grid model
 ../node_modules/.bin/sequelize model:generate --name Grid --attributes startTime:time

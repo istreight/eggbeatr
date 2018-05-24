@@ -16,17 +16,15 @@ class Lessons extends React.Component {
 
         // Object containing number of each lesson type.
         this.lessonSet = {};
-        this.numLessons = 0;
     }
 
     componentDidMount() {
         this.lessonSet = this.props.initData;
 
         this.setLessonValues();
-        this.numLessons = this.getNumLessons();
 
-        this.props.callback(this.lessonSet, this.props.controller, false);
-        this.props.setChecklistQuantity("lessons", this.numLessons);
+        this.props.callback(this.lessonSet, "lessons", false);
+        this.props.setChecklistQuantity("lessons", this.getNumLessons());
 
         // Save on button click or on input deselect ('blur').
         $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
@@ -90,20 +88,23 @@ class Lessons extends React.Component {
                 var reSingleDigit = new RegExp(/^[0-9]$/);
                 var lessonQuantity = parseInt(lessonValue, 10);
 
-                if (isNaN(lessonQuantity)) {
+                if (lessonValue === "") {
                     lessonQuantity = 0;
                 }
 
                 if (reSingleDigit.test(lessonQuantity)) {
-                    if ($(element).hasClass("error-cell")) {
-                        $(element).hide().removeClass("error-cell").fadeIn(800);
+                    $(element).removeClass("error-cell");
+                    if (this.lessonSet[lessonType]) {
+                        this.lessonSet[lessonType].quantity = lessonQuantity;
+                    } else {
+                        this.lessonSet[lessonType] = {
+                            "quantity": lessonQuantity
+                        };
                     }
-
-                    this.lessonSet[lessonType].quantity = lessonQuantity;
                 } else {
                     $(element).hide().addClass("error-cell").fadeIn(800);
 
-                    this.lessonSet[lessonType] = 0;
+                    this.lessonSet[lessonType].quantity = 0;
                 }
             }
         });
@@ -111,10 +112,37 @@ class Lessons extends React.Component {
         // Re-enable "Save Lessons" button.
         $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
 
-        this.numLessons = this.getNumLessons();
+        var missingId = Object.keys(this.lessonSet).filter((value, index) => this.lessonSet[value].id === undefined);
 
-        this.props.callback(this.lessonSet, this.props.controller, true);
-        this.props.setChecklistQuantity("lessons", this.numLessons);
+        // Ignore half and threequarter lesson quantities.
+        if (missingId.length > 2) {
+            var promise;
+            var promiseArray = [];
+
+            for (var i = 0; i < missingId.length; i++) {
+                var lessonTitle = missingId[i];
+                var body = {
+                    quantity: 0,
+                    title: lessonTitle,
+                },
+
+                promise = this.props.createComponent(body, "Lesson");
+
+                promiseArray.push(promise);
+            }
+
+            Promise.all(promiseArray).then((res) => {
+                for (var i = 0; i < res.length; i++) {
+                    var data = res[i];
+                    var lessonTitle = Object.keys(data)[0];
+                    this.lessonSet[lessonTitle] = data[lessonTitle];
+                }
+            }).catch(error => console.error(error));
+        } else {
+            this.props.callback(this.lessonSet, "lessons", true);
+            this.props.setChecklistQuantity("lessons", this.getNumLessons());
+        }
+
     }
 
     /**
@@ -138,6 +166,8 @@ class Lessons extends React.Component {
 
                 if (lessonQuantity > 0) {
                     lessonInput.val(lessonQuantity);
+                } else {
+                    lessonInput.val("");
                 }
             }
         });
@@ -304,7 +334,6 @@ Lessons.propTypes =  {
     callback: React.PropTypes.func.isRequired,
     initData: React.PropTypes.object.isRequired,
     connector: React.PropTypes.object.isRequired,
-    controller: React.PropTypes.object.isRequired,
     setChecklistQuantity: React.PropTypes.func.isRequired
 }
 

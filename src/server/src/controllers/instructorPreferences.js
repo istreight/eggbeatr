@@ -4,7 +4,11 @@ const InstructorPreference = Models.InstructorPreference;
 
 module.exports = {
     list(req, res) {
-        return InstructorPreference.findAll().then((preference) => {
+        return InstructorPreference.findAll({
+            where: {
+                headerId: req.query.headerId
+            }
+        }).then((preference) => {
             res.status(200).send(preference);
         }).catch((error) => {
             res.status(400).send(error);
@@ -12,6 +16,7 @@ module.exports = {
     },
     create(req, res) {
         return InstructorPreference.create({
+            headerId: req.query.headerId,
             instructorId: req.body.instructorId,
             lessons: req.body.lessons
         }).then((preference) => {
@@ -24,7 +29,7 @@ module.exports = {
         return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
-                    message: 'InstructorPreference Not Found'
+                    message: 'InstructorPreference Not Found.'
                 });
             }
 
@@ -37,11 +42,12 @@ module.exports = {
         return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
-                    message: 'InstructorPreference Not Found',
+                    message: 'InstructorPreference Not Found.',
                 });
             }
 
             return instructorPreference.update({
+                headerId: req.query.headerId || instructorPreference.headerId,
                 instructorId: req.body.instructorId || instructorPreference.instructorId,
                 lessons: req.body.lessons || instructorPreference.lessons
             }).then((instructorPreference) => {
@@ -57,7 +63,7 @@ module.exports = {
         return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
-                    message: 'InstructorPreference Not Found',
+                    message: 'InstructorPreference Not Found.',
                 });
             }
 
