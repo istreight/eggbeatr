@@ -151,6 +151,21 @@ module.exports = {
                 title: 'Strokes',
 				createdAt: new Date(),
 				updatedAt: new Date()
+            },
+
+            {
+                headerId: 1,
+                quantity: 0,
+                title: 'Schoolboard',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                headerId: 1,
+                quantity: 0,
+                title: 'Simple Set',
+                createdAt: new Date(),
+                updatedAt: new Date()
             }
         ], {});
     },

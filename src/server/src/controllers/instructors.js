@@ -28,6 +28,7 @@ module.exports = {
             headerId: req.query.headerId,
             instructor: req.body.instructor,
             dateOfHire: req.body.dateOfHire,
+            privateOnly: req.body.privateOnly,
             wsiExpiration: req.body.wsiExpiration
         }).then((instructor) => {
             res.status(201).send(instructor);
@@ -72,10 +73,16 @@ module.exports = {
                 });
             }
 
+            var p = req.body.privateOnly || instructor.privateOnly;
+            if (req.body.privateOnly === false) {
+                p = false;
+            }
+
             return instructor.update({
                 headerId: req.query.headerId || instructor.headerId,
                 instructor: req.body.instructor || instructor.instructor,
                 dateOfHire: req.body.dateOfHire || instructor.dateOfHire,
+                privateOnly: p,
                 wsiExpiration: req.body.wsiExpiration || instructor.wsiExpiration
             }).then((instructor) => {
                 res.status(200).send(instructor);
@@ -101,42 +108,6 @@ module.exports = {
             }).catch((error) => {
                 res.status(400).send(error);
             });
-        }).catch((error) => {
-            res.status(400).send(error);
-        });
-    },
-    retrievePreferences(req, res) {
-        return Instructor.findById(req.params.instructorId, {
-            include: [{
-                    model: InstructorPreference,
-                    as: 'instructorPreferences'
-                }]
-        }).then((instructor) => {
-            if (!instructor) {
-                return res.status(404).send({
-                    message: 'Instructor Not Found.'
-                });
-            }
-
-            return res.status(200).send(instructor.instructorPreferences);
-        }).catch((error) => {
-            res.status(400).send(error);
-        });
-    },
-    retrievePrivates(req, res) {
-        return Instructor.findById(req.params.instructorId, {
-            include: [{
-                    model: Private,
-                    as: 'privates'
-            }]
-        }).then((instructor) => {
-            if (!instructor) {
-                return res.status(404).send({
-                    message: 'Instructor Not Found.'
-                });
-            }
-
-            return res.status(200).send(instructor.privates);
         }).catch((error) => {
             res.status(400).send(error);
         });

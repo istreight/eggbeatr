@@ -28,6 +28,11 @@ module.exports = {
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },
+            privateOnly: {
+                allowNull: false,
+                defaultValue: false,
+                type: Sequelize.BOOLEAN
+            },
             wsiExpiration: {
                 allowNull: false,
                 defaultValue: Sequelize.NOW,

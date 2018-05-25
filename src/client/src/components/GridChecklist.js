@@ -8,7 +8,9 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+//import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
+
 
 class GridChecklist extends React.Component {
     constructor(props) {
@@ -123,7 +125,7 @@ class GridChecklist extends React.Component {
 }
 
 GridChecklist.propTypes =  {
-    createGridHandler: React.PropTypes.func.isRequired
+    createGridHandler: PropTypes.func.isRequired
 }
 
 export default GridChecklist;

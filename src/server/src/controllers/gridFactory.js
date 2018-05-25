@@ -6,7 +6,7 @@
  *
  * This file contains the GridFactory class that generates
  *  an array of the grid for the web application.
- * This class requires input props.
+ * This class requires input data.
  */
 
 
@@ -14,6 +14,7 @@ const gridFactory =  {
     gridList: null,
     lessonTimes: null,
     hasBothTypes: null,
+
     /**
      * LESSON CODES
      *  Empty:              0
@@ -22,11 +23,11 @@ const gridFactory =  {
      *  1/4 hour activity:  3   (SINGLE)
      *  Private lesson:     4
      */
-    generateGrid(data, duration, lessonTimes) {
+    generateGrid(data) {
         console.log(data);
 
         this.gridList = [];
-        this.lessonTimes = lessonTimes;
+        this.lessonTimes = data.lessonTimes;
         this.hasBothTypes = data.lessons.half > 0 && data.lessons.threequarter > 0;
 
         /**
@@ -38,29 +39,35 @@ const gridFactory =  {
             numThreeQuarterLessons: data.lessons.threequarter,
             privates: data.private,
             instructors: data.instructorsArray,
-            duration: duration,
+            privateOnlyInstructors: data.privateOnlyInstructors,
+            duration: data.duration,
             minHoursPerInstructor: 0
         });
     },
+
     /**
      * Creates an array of Grids, with elements representing 15-minute slots
      *  via single digit codes.
      */
-    fillGridList(props) {
-        console.log(props);
+    fillGridList(data) {
+        console.log(data);
 
-        var grid = Array(props.instructors.length).fill(Array(4 * props.duration).fill(0));
-        for (var instructor = 0; instructor < props.instructors.length; instructor++) {
-            grid[instructor] = [props.instructors[instructor]].concat(grid[instructor]);
+        var instructorSet = data.instructors;
+        var privateOnlySet = data.privateOnlyInstructors;
+        var groupInstructors = instructorSet.filter(value => !privateOnlySet.includes(value));
+
+        var grid = Array(groupInstructors.length).fill(Array(4 * data.duration).fill(0));
+        for (var instructor = 0; instructor < groupInstructors.length; instructor++) {
+            grid[instructor] = [groupInstructors[instructor]].concat(grid[instructor]);
         }
 
         // Set private lessons slots.
-        for (var privateInstructor in props.privates) {
-            if (props.instructors.includes(privateInstructor)) {
-                for (var privateTimeSlot in props.privates[privateInstructor]) {
+        for (var privateInstructor in data.privates) {
+            if (data.instructors.includes(privateInstructor)) {
+                for (var privateTimeSlot in data.privates[privateInstructor]) {
                     var [startHour, startMinute] = this.lessonTimes[0].split(":");
                     var [privateHour, privateMinute] = privateTimeSlot.split(":");
-                    var duration = props.privates[privateInstructor][privateTimeSlot][0];
+                    var duration = data.privates[privateInstructor][privateTimeSlot][0];
 
                     privateHour = parseInt(privateHour, 10);
                     privateMinute = parseInt(privateMinute, 10);
@@ -98,12 +105,13 @@ const gridFactory =  {
             }
         }
 
-        this.generateGridArray(grid, 0, 0, props.numHalfLessons, props.numThreeQuarterLessons, props.minHoursPerInstructor);
+        this.generateGridArray(grid, 0, 0, data.numHalfLessons, data.numThreeQuarterLessons, data.minHoursPerInstructor);
 
         console.log("Number of Grids:", this.gridList.length);
 
         return this.gridList;
     },
+
     generateGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuarterHourLessons, minHoursPerInstructor) {
         if (grid.length === 0 || grid[0].length === 0) {
             return;
@@ -165,6 +173,7 @@ const gridFactory =  {
             }
         }
     },
+
     verifyMinHoursPerInstructor(grid, minHoursPerInstructor) {
         var success = true;
 
@@ -184,6 +193,7 @@ const gridFactory =  {
 
         return true;
     },
+
     addHose(grid) {
         var numHoses = 0;
 
@@ -209,6 +219,7 @@ const gridFactory =  {
 
         return numHoses < 3;
     },
+
     removeHose(grid) {
         for (var instructor = 0; instructor < grid.length; instructor++) {
             for (var slot = 1; slot < grid[0].length; slot++) {
@@ -218,6 +229,7 @@ const gridFactory =  {
             }
         }
     },
+
     condenseGrid(grid) {
         // First row is the HTML table header.
         for (var instructor = 1; instructor < grid.length; instructor++) {
@@ -236,7 +248,7 @@ const gridFactory =  {
 
 module.exports = {
     create(req, res) {
-        var result = gridFactory.generateGrid(req.body.data, req.body.duration, req.body.lessonTimes);
+        var result = gridFactory.generateGrid(req.body);
 
         res.status(200).send(result);
     }

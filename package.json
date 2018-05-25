@@ -4,10 +4,12 @@
     "description": "eggbeatr is a web application to schedule instructors with  lessons. It does the tedious work, leaving you with creative control.",
     "main": "index.js",
     "scripts": {
-        "install": "cd src/client; npm install; cd ../server; npm install",
+        "build": "cd src/client; npm run build; cd ../server; npm run build",
+        "clean:packages": "bash bin/clean",
+        "database": "cd $(pwd)/src/server/bin; bash initdb",
+        "install:packages": "npm install; cd src/client; npm install; cd ../server; npm install",
         "start": "osascript -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/client; npm run start\"' -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/server; npm run start\"'",
-        "database": "cd $(pwd)/src/server/bin; bash initdb.bash",
-        "build": "cd src/client; npm run build; cd ../server; npm run build"
+        "update:packages": "node_modules/npm-check-updates/bin/ncu -a; node_modules/npm-check-updates/bin/ncu --packageFile src/client/package.json --reject jspdf -a; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json -a"
     },
     "repository": {
         "type": "git",
@@ -20,5 +22,8 @@
         "url": "https://github.com/istreight/eggbeatr/issues"
     },
     "homepage": "https://github.com/istreight/eggbeatr#readme",
-    "dependencies": {}
+    "dependencies": {},
+    "devDependencies": {
+        "npm-check-updates": "^2.14.2"
+    }
 }

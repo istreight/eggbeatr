@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 
 class Connector extends React.Component {
@@ -23,15 +24,9 @@ class Connector extends React.Component {
         this.headerId = newId;
     }
 
-    getGridArrays(data, duration, lessonTimes) {
+    getGridArrays(payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
-
-        var payload = {
-            "data": data,
-            "duration": duration,
-            "lessonTimes": lessonTimes
-        };
 
         return fetch(this.props.serverURI + '/api/factory', {
             headers: headers,
@@ -285,11 +280,13 @@ class Connector extends React.Component {
             var newId = instructor.id;
             var newInstructor = instructor.instructor;
             var newDateOfHire = instructor.dateOfHire;
+            var newPrivateOnly = instructor.privateOnly;
             var newWsiExpiration = instructor.wsiExpiration;
 
             newObject[newInstructor] = {
                 "id": newId,
                 "dateOfHire": newDateOfHire,
+                "privateOnly": newPrivateOnly,
                 "wsiExpiration": newWsiExpiration
             };
         });
@@ -599,7 +596,7 @@ class Connector extends React.Component {
 }
 
 Connector.propTypes =  {
-    serverURI: React.PropTypes.string.isRequired
+    serverURI: PropTypes.string.isRequired
 }
 
 export default Connector;

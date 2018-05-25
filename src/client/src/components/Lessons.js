@@ -9,6 +9,8 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 class Lessons extends React.Component {
     constructor(props) {
@@ -297,7 +299,10 @@ class Lessons extends React.Component {
                                 <td></td>
                             </tr>
                             <tr className="table-odd">
-                                <td></td>
+                                <td>
+                                    Simple Set
+                                    <input type="text" placeholder="#" />
+                                </td>
                                 <td>
                                     Whale
                                     <input type="text" placeholder="#" />
@@ -310,7 +315,10 @@ class Lessons extends React.Component {
                                     Level 10
                                     <input type="text" placeholder="#" />
                                 </td>
-                                <td></td>
+                                <td>
+                                    Schoolboard
+                                    <input type="text" placeholder="#" />
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -331,10 +339,10 @@ class Lessons extends React.Component {
 }
 
 Lessons.propTypes =  {
-    callback: React.PropTypes.func.isRequired,
-    initData: React.PropTypes.object.isRequired,
-    connector: React.PropTypes.object.isRequired,
-    setChecklistQuantity: React.PropTypes.func.isRequired
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
+    connector: PropTypes.object.isRequired,
+    setChecklistQuantity: PropTypes.func.isRequired
 }
 
 export default Lessons;

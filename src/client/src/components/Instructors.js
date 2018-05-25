@@ -9,7 +9,9 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import InstructorPreferences from './InstructorPreferences';
+
 
 class Instructors extends React.Component {
     constructor(props) {
@@ -32,6 +34,7 @@ class Instructors extends React.Component {
         this.props.setChecklistQuantity("instructors", numValidInstructors);
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
+        $("#dynamicInstructors input[type='checkbox']").click(this.updatePrivateOnly.bind(this));
 
         // Link tutorital button to next section.
         $("#dynamicInstructors .pure-button-primary").click(() => {
@@ -62,8 +65,16 @@ class Instructors extends React.Component {
     inputifyRows() {
         $("#dynamicInstructors td").each((index, element) => {
             if ($(element).children().length === 0) {
-                var placeholder = $(element).text() || "...";
-                $(element).html("<input type='text' placeholder='" + placeholder + "'>");
+                var headerCells = $("#dynamicInstructors th");
+
+                if (index % headerCells.length === 3) {
+                    $(element).addClass("is-center");
+                    $(element).html("<input type='checkbox'>");
+                    $(element).children("input[type='checkbox']").prop("disabled", true);
+                } else {
+                    var placeholder = $(element).text() || "...";
+                    $(element).html("<input type='text' placeholder='" + placeholder + "'>");
+                }
             }
         });
     }
@@ -76,7 +87,7 @@ class Instructors extends React.Component {
         var numRows = instructorTable.find("tr").length - 1;
         var className = (numRows % 2 === 0) ? "table-odd" : "table-even";
 
-        instructorTable.append("<tr class='" + className + "'><td></td><td></td><td></td><td><a class='pure-button pure-button-disabled preferences'>...</a></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+        instructorTable.append("<tr class='" + className + "'><td></td><td></td><td></td><td></td><td class='is-center'><a class='pure-button pure-button-disabled preferences'>...</a></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
 
         // Bind 'add' buttons for new rows.
         instructorTable.find(".add").click(this.addRow.bind(this));
@@ -107,6 +118,8 @@ class Instructors extends React.Component {
         editInstructorsButton.unbind("click");
         editInstructorsButton.html("Finish Editing");
         editInstructorsButton.click(this.finishEditingInstructors.bind(this));
+
+        $("#dynamicInstructors input[type='checkbox']").prop("disabled", true);
 
         // Add 'Modify' column.
         $("#dynamicInstructors thead tr").append("<th class='is-center'>Modify</th>");
@@ -220,6 +233,11 @@ class Instructors extends React.Component {
 
                 // Embed ID in DOM.
                 $("#dynamicInstructors table tr").last().prev().attr("data-instructor-id", res[instructorName].id);
+
+                // Bind click to change 'privateOnly' field.
+                var checkedBoxes = $("#dynamicInstructors input[type='checkbox']").slice(0, -1);
+                checkedBoxes.prop("disabled", false);
+                checkedBoxes.click(this.updatePrivateOnly.bind(this));
             });
 
         // Put 'remove' in the last cell of the row.
@@ -250,6 +268,8 @@ class Instructors extends React.Component {
             if (cellElement.attr("placeholder") === "..." && removeInputRow) {
                 $(cell).closest("tr").remove();
 
+                return true;
+            } else if (cellElement.attr("type") === "checkbox") {
                 return true;
             }
 
@@ -337,13 +357,9 @@ class Instructors extends React.Component {
                             delete this.instructors[instructorName];
                         }
                     } else if (cellIndex === 1) {
-                        if (cellText !== instructor.dateOfHire) {
-                            instructor.dateOfHire = cellText;
-                        }
+                        instructor.dateOfHire = cellText;
                     } else if (cellIndex === 2) {
-                        if (cellText !== instructor.wsiExpiration) {
-                            instructor.wsiExpiration = cellText;
-                        }
+                        instructor.wsiExpiration = cellText;
                     }
                 }
             });
@@ -353,6 +369,8 @@ class Instructors extends React.Component {
         editInstructorsButton.unbind("click");
         editInstructorsButton.html("Edit Instructors");
         editInstructorsButton.click(this.editInstructors.bind(this));
+
+        $("#dynamicInstructors input[type='checkbox']").prop("disabled", false);
 
         numValidInstructors = this.getNumInstructors();
 
@@ -370,24 +388,25 @@ class Instructors extends React.Component {
 
         this.sortInstructors(this.instructors);
 
-        $("#dynamicInstructors tbody").empty();
-
         for (var instructorName in this.instructors) {
-            var wsiExpirationCell;
             var rowColour = isOdd ? "table-odd" : "table-even";
             var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
 
             var instructor = this.instructors[instructorName];
             var instructorId = instructor.id;
             var dateOfHire = instructor.dateOfHire;
+            var privateOnly = instructor.privateOnly;
             var wsiExpiration = instructor.wsiExpiration;
+
+            var isChecked = privateOnly ? "checked" : "";
+            var checkbox = "<input type='checkbox'" + isChecked + ">";
+
+            var wsiExpirationCell = "<td>" + wsiExpiration + "</td>";
 
             newTable += "<tr class='" + rowColour + "' data-instructor-id='" + instructorId + "'>";
 
             newTable += "<td>" + instructorName + "</td>";
             newTable += "<td>" + dateOfHire + "</td>";
-
-            wsiExpirationCell = "<td>" + wsiExpiration + "</td>";
 
             // Placing indicators if WSI is expiring or expired.
             if (reDate.test(wsiExpiration)) {
@@ -400,19 +419,36 @@ class Instructors extends React.Component {
             }
 
             newTable += wsiExpirationCell
+            newTable += "<td class='is-center'>" + checkbox + "</td>"
 
-            newTable += "<td><a class='pure-button preferences'>...</a></td>";
+            newTable += "<td class='is-center'><a class='pure-button preferences'>...</a></td>";
             newTable += "</tr>";
 
             isOdd = !isOdd;
         }
 
-        $("#dynamicInstructors tbody").append(newTable);
+        $("#dynamicInstructors tbody").html(newTable);
 
         this.colourTable();
         this.sizeTable();
     }
 
+    /**
+     * Update the 'privateOnly' field of an instructor.
+     */
+    updatePrivateOnly() {
+        var row = $(event.target).closest("tr");
+        var id = row.attr("data-instructor-id");
+        var checkedBoxes = row.find("input:checked");
+        var [instructor, instructorName] = this.findInstructorById(id);
+
+        instructor.privateOnly = checkedBoxes.length > 0;
+        this.props.callback(this.instructors, "instructors", true);
+    }
+
+    /**
+     * Check if the WSI certification date is expiring or expired.
+     */
     checkWSIExpiration(cell, expiryTime) {
         const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
@@ -523,6 +559,9 @@ class Instructors extends React.Component {
                                 WSI Expiration
                             </th>
                             <th className="is-center">
+                                Privates Only
+                            </th>
+                            <th className="is-center">
                                 Preferences
                             </th>
                         </tr>
@@ -547,13 +586,13 @@ class Instructors extends React.Component {
 }
 
 Instructors.propTypes =  {
-    callback: React.PropTypes.func.isRequired,
-    initData: React.PropTypes.object.isRequired,
-    connector: React.PropTypes.object.isRequired,
-    createComponent: React.PropTypes.func.isRequired,
-    removeComponent: React.PropTypes.func.isRequired,
-    instructorPreferences: React.PropTypes.object.isRequired,
-    setChecklistQuantity: React.PropTypes.func.isRequired
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
+    connector: PropTypes.object.isRequired,
+    createComponent: PropTypes.func.isRequired,
+    removeComponent: PropTypes.func.isRequired,
+    setChecklistQuantity: PropTypes.func.isRequired,
+    instructorPreferences: PropTypes.object.isRequired
 }
 
 export default Instructors;

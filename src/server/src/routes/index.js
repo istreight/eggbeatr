@@ -103,22 +103,6 @@ module.exports = (app) => {
         });
     });
 
-    // Instructors.Privates (single)
-    app.get('/api/instructors/:instructorId/privates', InstructorsController.retrievePrivates);
-    app.all('/api/instructors/:instructorId/privates', (req, res) => {
-        res.status(405).send({
-            message: 'Method Not Allowed',
-        });
-    });
-
-    // Instructors.InstructorPreferences (single)
-    app.get('/api/instructors/:instructorId/preferences', InstructorsController.retrievePreferences);
-    app.all('/api/instructors/:instructorId/preferences', (req, res) => {
-        res.status(405).send({
-            message: 'Method Not Allowed',
-        });
-    });
-
     // Preferences (all)
     app.get('/api/preferences', InstructorPreferencesController.list);
     app.post('/api/preferences', InstructorPreferencesController.create);

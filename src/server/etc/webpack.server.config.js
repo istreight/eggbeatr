@@ -5,6 +5,7 @@ const contentBase = '../src';
 
 module.exports = {
     target: 'node',
+    mode: 'development',
     context: path.resolve(__dirname, contentBase),
     entry: './app.server.js',
     output: {

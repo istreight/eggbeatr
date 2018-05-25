@@ -9,6 +9,8 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 class Header extends React.Component {
     constructor(props) {
@@ -364,10 +366,10 @@ class Header extends React.Component {
 }
 
 Header.propTypes =  {
-    callback: React.PropTypes.func.isRequired,
-    initData: React.PropTypes.object.isRequired,
-    createComponent: React.PropTypes.func.isRequired,
-    removeComponent: React.PropTypes.func.isRequired
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
+    createComponent: PropTypes.func.isRequired,
+    removeComponent: PropTypes.func.isRequired
 }
 
 export default Header;

@@ -10,6 +10,8 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 class InstructorPreferences extends React.Component {
     constructor(props) {
@@ -17,11 +19,11 @@ class InstructorPreferences extends React.Component {
 
         this.preferences = {};
         this.defaultPreferences = [
-            "Starfish", "Duck", "Sea Turtle",
+            "Starfish", "Duck", "Sea Turtle", "", "Simple Set",
             "Sea Otter", "Salamander", "Sunfish", "Crocodile", "Whale",
             "Level 1", "Level 2", "Level 3", "Level 4", "Level 5",
             "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
-            "Basics I", "Basics II", "Strokes"
+            "Basics I", "Basics II", "Strokes", "", "Schoolboard"
         ];
     }
 
@@ -40,6 +42,10 @@ class InstructorPreferences extends React.Component {
         });
     }
 
+    /**
+     * Disables the preferences button in the Instructors table.
+     * Called from the Instructors component.
+     */
     setPreferencesButtons(enable) {
         var preferenceButtons = $("#dynamicInstructors .preferences");
 
@@ -73,36 +79,40 @@ class InstructorPreferences extends React.Component {
      */
     levelPreferences(instructor) {
         var preferences;
+        var isOdd = true;
+        var newTable = "";
+        var instructorPreferences = this.preferences[instructor];
 
         if (instructor in this.preferences) {
-            preferences = this.preferences[instructor].lessons;
+            preferences = instructorPreferences.lessons;
         } else {
             preferences = JSON.parse(JSON.stringify(this.defaultPreferences));
         }
 
         // Create HTML table from the Preferences object.
-        var newTable = "";
         for (var row = 0; row < 5; row++) {
-            var rowClass = (row % 2 === 0) ? "table-odd" : "table-even";
+            var rowColour = isOdd ? "table-odd" : "table-even";
 
-            newTable += "<tr class='" + rowClass + "'>";
+            newTable += "<tr class='" + rowColour + "'>";
 
             for (var col = 0; col < 5; col++) {
-                var className = "is-left ";
-                var lessonIndex =
-                      3 * Math.min(1, col)
-                    + 5 * Math.max(0, (col - 1))
-                    + ((col === 0 && row > 2 ? -1 : row));
-                var lessonType = this.defaultPreferences[lessonIndex] || "";
+                var isSelected;
+                var cellClass = "is-left ";
+                var lessonType = this.defaultPreferences[5 * col + row];
 
-                if (!(preferences.includes(lessonType))) {
-                    className += (row % 2 === 0) ? "remove-preference-odd" : "remove-preference-even";
+                isSelected = preferences.includes(lessonType);
+
+                // Style non-selected cells.
+                if (!isSelected) {
+                    cellClass += isOdd ? "remove-preference-odd" : "remove-preference-even";
                 }
 
-                newTable += "<td class='" + className + "'>" + lessonType + "</td>";
+                newTable += "<td class='" + cellClass + "'>" + lessonType + "</td>";
             }
 
             newTable += "</tr>";
+
+            isOdd = !isOdd;
         }
 
         $("#dynamicInstructorPreferences .modal table tbody").html(newTable);
@@ -113,8 +123,10 @@ class InstructorPreferences extends React.Component {
      *  allow removal of cells.
      */
     editPreferences() {
-        var lessonCells = $("#dynamicInstructorPreferences .modal td").filter((cell) => {
-            return cell < 15 || (cell % 5 !== 0 && cell % 5 !== 4);
+        var lessonCells = $("#dynamicInstructorPreferences .modal td");
+
+        lessonCells = lessonCells.filter((index) => {
+            return lessonCells.eq(index).html() !== "";
         });
 
         // Place 'add-preference' or 'remove-preference' buttons in each table cell, depending on text.
@@ -163,11 +175,12 @@ class InstructorPreferences extends React.Component {
         $(event.target).remove();
 
         var lesson = cell.html();
-        var preferences = this.preferences[name].lessons;
-        var index = preferences.indexOf(lesson);
+        var preferences = this.preferences[name];
+        var prefenceLessons = preferences.lessons;
+        var index = prefenceLessons.indexOf(lesson);
         if (remove) {
             if (index > -1) {
-                preferences.splice(index, 1);
+                prefenceLessons.splice(index, 1);
             }
 
             cell.addClass(className);
@@ -179,7 +192,7 @@ class InstructorPreferences extends React.Component {
             });
         } else {
             if (index === -1) {
-                preferences.push(lesson);
+                prefenceLessons.push(lesson);
             }
 
             cell.removeClass(className);
@@ -252,9 +265,9 @@ class InstructorPreferences extends React.Component {
 }
 
 InstructorPreferences.propTypes =  {
-    callback: React.PropTypes.func.isRequired,
-    initData: React.PropTypes.object.isRequired,
-    connector: React.PropTypes.object.isRequired
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
+    connector: PropTypes.object.isRequired
 }
 
 export default InstructorPreferences;

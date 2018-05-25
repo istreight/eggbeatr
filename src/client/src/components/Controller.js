@@ -239,7 +239,8 @@ class Controller extends React.Component {
             "Level 2",
             "Level 3",
             "Level 4",
-            "Level 5"
+            "Level 5",
+            "Simple Set"
         ];
         var threeQuarterLessons = [
             "Level 6",
@@ -249,7 +250,8 @@ class Controller extends React.Component {
             "Level 10",
             "Basics I",
             "Basics II",
-            "Strokes"
+            "Strokes",
+            "Schoolboard"
         ];
 
         this.lessons.half = 0;
@@ -367,6 +369,7 @@ class Controller extends React.Component {
                 var body = {
                     "instructor": key,
                     "dateOfHire": instructor.dateOfHire,
+                    "privateOnly": instructor.privateOnly,
                     "wsiExpiration": instructor.wsiExpiration
                 };
 

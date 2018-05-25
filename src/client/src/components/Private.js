@@ -9,6 +9,8 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 class Private extends React.Component {
     constructor(props) {
@@ -19,6 +21,7 @@ class Private extends React.Component {
 
     componentDidMount() {
         this.sortPrivates([this.props.initData]);
+
         this.generatePrivate();
 
         this.props.callback(this.privateLessons, "privates", false);
@@ -646,12 +649,12 @@ class Private extends React.Component {
 }
 
 Private.propTypes =  {
-    callback: React.PropTypes.func.isRequired,
-    initData: React.PropTypes.object.isRequired,
-    connector: React.PropTypes.object.isRequired,
-    createComponent: React.PropTypes.func.isRequired,
-    removeComponent: React.PropTypes.func.isRequired,
-    setChecklistQuantity: React.PropTypes.func.isRequired
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
+    connector: PropTypes.object.isRequired,
+    createComponent: PropTypes.func.isRequired,
+    removeComponent: PropTypes.func.isRequired,
+    setChecklistQuantity: PropTypes.func.isRequired
 }
 
 export default Private;

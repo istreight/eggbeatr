@@ -34,7 +34,7 @@ eggbeatr also has dependencies within [Node.js](https://nodejs.org/en/), however
 
 The project requires [Node.js](https://nodejs.org/en/) and [PostgeSQL](https://www.postgresql.org/download/), which can be installed with the instructions on the linked pages.
 
-Installation of other dependencies is handled by the Node Packet Manager. These dependencies can be installed by running `npm run install` from the project root (**note**: running a script called "install").
+Installation of other dependencies is handled by the Node Packet Manager. These dependencies can be installed by running `npm run install:packages` from the project root.
 
 ### Run
 
