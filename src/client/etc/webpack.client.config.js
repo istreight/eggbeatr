@@ -2,7 +2,6 @@ const path = require('path');
 
 const contentBase = '../src';
 
-
 module.exports = {
     target: 'web',
     mode: 'development',
@@ -20,11 +19,11 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /defaults/],
                 use: {
                     loader:  'babel-loader',
                     options: {
-                        presets: ['env', 'react']
+                        presets: ['@babel/preset-env', '@babel/preset-react']
                     }
                 },
             },

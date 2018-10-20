@@ -37,7 +37,7 @@ module.exports = {
         });
     },
     retrieve(req, res) {
-        return Instructor.findById(req.params.instructorId, {
+        return Instructor.findByPk(req.params.instructorId, {
             include: [{
                     model: InstructorPreference,
                     as: 'instructorPreferences'
@@ -58,7 +58,7 @@ module.exports = {
         });
     },
     update(req, res) {
-        return Instructor.findById(req.params.instructorId, {
+        return Instructor.findByPk(req.params.instructorId, {
             include: [{
                     model: InstructorPreference,
                     as: 'instructorPreferences'
@@ -94,7 +94,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Instructor.findById(req.params.instructorId).then((instructor) => {
+        return Instructor.findByPk(req.params.instructorId).then((instructor) => {
             if (!instructor) {
                 return res.status(404).send({
                     message: 'Instructor Not Found.'

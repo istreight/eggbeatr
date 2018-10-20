@@ -19,14 +19,14 @@ module.exports = {
             headerId: req.query.headerId,
             quantity: req.body.quantity,
             title: req.body.title
-        }).then((instructor) => {
-            res.status(201).send(instructor);
+        }).then((lesson) => {
+            res.status(201).send(lesson);
         }).catch((error) => {
             res.status(400).send(error);
         });
     },
     retrieve(req, res) {
-        return Lesson.findById(req.params.lessonId).then((lesson) => {
+        return Lesson.findByPk(req.params.lessonId).then((lesson) => {
             if (!lesson) {
                 return res.status(404).send({
                     message: 'Lesson Not Found.'
@@ -39,7 +39,7 @@ module.exports = {
         });
     },
     update(req, res) {
-        return Lesson.findById(req.params.lessonId).then((lesson) => {
+        return Lesson.findByPk(req.params.lessonId).then((lesson) => {
             if (!lesson) {
                 return res.status(404).send({
                     message: 'Lesson Not Found.'
@@ -64,7 +64,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Lesson.findById(req.params.lessonId).then((lesson) => {
+        return Lesson.findByPk(req.params.lessonId).then((lesson) => {
             if (!lesson) {
                 return res.status(404).send({
                     message: 'Lesson Not Found.'

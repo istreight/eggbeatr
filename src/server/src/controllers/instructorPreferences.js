@@ -26,7 +26,7 @@ module.exports = {
         });
     },
     retrieve(req, res) {
-        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
+        return InstructorPreference.findByPk(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found.'
@@ -39,7 +39,7 @@ module.exports = {
         });
     },
     update(req, res) {
-        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
+        return InstructorPreference.findByPk(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found.',
@@ -60,7 +60,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return InstructorPreference.findById(req.params.preferenceId).then((instructorPreference) => {
+        return InstructorPreference.findByPk(req.params.preferenceId).then((instructorPreference) => {
             if (!instructorPreference) {
                 return res.status(404).send({
                     message: 'InstructorPreference Not Found.',
