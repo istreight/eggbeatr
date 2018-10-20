@@ -1,15 +1,18 @@
 {
     "name": "eggbeatr",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "eggbeatr is a web application to schedule instructors with  lessons. It does the tedious work, leaving you with creative control.",
     "main": "index.js",
     "scripts": {
-        "build": "cd src/client; npm run build; cd ../server; npm run build",
-        "clean:packages": "bash bin/clean",
-        "database": "cd $(pwd)/src/server/bin; bash initdb",
-        "install:packages": "npm install; cd src/client; npm install; cd ../server; npm install",
-        "start": "osascript -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/client; npm run start\"' -e 'tell application \"Terminal\" to do script \"cd '$(pwd)'/src/server; npm run start\"'",
-        "update:packages": "node_modules/npm-check-updates/bin/ncu -a; node_modules/npm-check-updates/bin/ncu --packageFile src/client/package.json --reject jspdf -a; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json -a"
+        "db:init": "cd $(pwd)/src/server/bin; bash dbinit",
+        "db:empty": "cd $(pwd)/src/server/bin; bash dbinit empty",
+        "db:setup": "cd $(pwd)/src/server/bin; bash dbsetup",
+        "install-app": "bash bin/install",
+        "packages:build": "cd src/client; npm run build; cd ../server; npm run build",
+        "packages:clean": "bash bin/clean",
+        "packages:install": "npm install; cd src/client; npm install; cd ../server; npm install",
+        "packages:update": "node_modules/npm-check-updates/bin/ncu -a; node_modules/npm-check-updates/bin/ncu --packageFile src/client/package.json -a; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json -a",
+        "start": "bash bin/start"
     },
     "repository": {
         "type": "git",
