@@ -25,7 +25,7 @@ module.exports = {
         });
     },
     update(req, res) {
-        return Grid.findById(req.params.gridId).then((grid) => {
+        return Grid.findByPk(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
                     message: 'Grid Not Found.'
@@ -45,7 +45,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Grid.findById(req.params.gridId).then((grid) => {
+        return Grid.findByPk(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
                     message: 'Grid Not Found.'

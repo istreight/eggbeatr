@@ -10,7 +10,7 @@ const InstructorPreferencesController = Controller.InstructorPreferences;
 
 module.exports = (app) => {
     app.options('/api/*', (req, res, next) => {
-        res.send(200);
+        res.sendStatus(200);
     });
 
     app.get('/api', (req, res) => res.status(200).send({

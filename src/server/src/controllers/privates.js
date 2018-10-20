@@ -27,7 +27,7 @@ module.exports = {
         });
     },
     retrieve(req, res) {
-        return Private.findById(req.params.privateId).then((_private) => {
+        return Private.findByPk(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(404).send({
                     message: 'Private Not Found.'
@@ -40,7 +40,7 @@ module.exports = {
         });
     },
     update(req, res) {
-        return Private.findById(req.params.privateId).then((_private) => {
+        return Private.findByPk(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(404).send({
                     message: 'Private Not Found.'
@@ -62,7 +62,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Private.findById(req.params.privateId).then((_private) => {
+        return Private.findByPk(req.params.privateId).then((_private) => {
             if (!_private) {
                 return res.status(400).send({
                     message: 'Private Not Found.',

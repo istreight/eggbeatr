@@ -20,7 +20,7 @@ module.exports = {
         });
     },
     retrieve(req, res) {
-        return Header.findById(req.params.headerId).then((header) => {
+        return Header.findByPk(req.params.headerId).then((header) => {
             if (!header) {
                 return res.status(404).send({
                     message: 'Header Not Found.'
@@ -33,7 +33,7 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Header.findById(req.params.headerId).then((header) => {
+        return Header.findByPk(req.params.headerId).then((header) => {
             if (!header) {
                 return res.status(404).send({
                     message: 'Header Not Found.'
