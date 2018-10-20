@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+
+# Create the user user for the application.
+createuser -d -e -R -S eggbeatr
+
+if [[ $? -eq 0 ]]
+then
+    echo 'SUCCESS: created database user.'
+else
+    echo 'ERROR: failed to create database user.'
+    exit 1
+fi
+
+# Create the database user for the application.
+createdb -e eggbeatr -O eggbeatr
+
+if [[ $? -eq 0 ]]
+then
+    echo 'SUCCESS: created database.'
+else
+    echo 'ERROR: failed to create database.'
+    exit 1
+fi
+
+# Initialize the database with the default values.
+bash initdb
+
+if [[ $? -eq 0 ]]
+then
+    echo 'SUCCESS: initalized database.'
+else
+    echo 'ERROR: failed to initalize database.'
+    exit 1
+fi

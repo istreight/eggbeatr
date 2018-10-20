@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+
+# Clean NPM packages.
+bash bin/clean
+
+# Reset database.
+dropdb -e -w --if-exists eggbeatr
+dropuser -e -w --if-exists eggbeatr
+
+# Install and update NPM packages.
+npm run packages:install
+npm run packages:update
+
+# Set-up and initalize the database.
+npm run db:setup
+
+# Run application.
+npm run start
