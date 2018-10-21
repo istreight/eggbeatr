@@ -11,10 +11,6 @@
 
 
 const gridFactory =  {
-    gridList: null,
-    lessonTimes: null,
-    hasBothTypes: null,
-
     /**
      * LESSON CODES
      *  Empty:              0
@@ -23,12 +19,9 @@ const gridFactory =  {
      *  1/4 hour activity:  3   (SINGLE)
      *  Private lesson:     4
      */
-    generateGrid(data) {
-        console.log(data);
-
+    createGrid(data) {
         this.gridList = [];
         this.lessonTimes = data.lessonTimes;
-        this.hasBothTypes = data.lessons.half > 0 && data.lessons.threequarter > 0;
 
         /**
          * Generate dynamic array.
@@ -96,6 +89,7 @@ const gridFactory =  {
 
                     // Number of slots private lesson will occupy.
                     var numSlots = Math.floor(duration / 15);
+        this.createGridArray(grid, 0, 0, data.numHalfLessons, data.numThreeQuarterLessons, data.minHoursPerInstructor);
 
                     // Allocate slot for private.
                     if (slot + numSlots < grid[instructor].length + 1) {
@@ -105,20 +99,18 @@ const gridFactory =  {
             }
         }
 
-        this.generateGridArray(grid, 0, 0, data.numHalfLessons, data.numThreeQuarterLessons, data.minHoursPerInstructor);
-
         console.log("Number of Grids:", this.gridList.length);
 
         return this.gridList;
     },
 
-    generateGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuarterHourLessons, minHoursPerInstructor) {
+    createGridArray(grid, nextSlotStart, nextInstructorStart, numHalfHourLessons, numThreeQuarterHourLessons, minHoursPerInstructor) {
         if (grid.length === 0 || grid[0].length === 0) {
             return;
         }
 
         if (numHalfHourLessons < 1 && numThreeQuarterHourLessons < 1) {
-            if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addHose(grid)) {
+            if (this.verifyMinHoursPerInstructor(grid, minHoursPerInstructor) && this.addWork(grid)) {
                 this.gridList.push(
                     this.condenseGrid(
                         [["Instructor"].concat(this.lessonTimes)].concat(JSON.parse(JSON.stringify(grid)))
@@ -126,7 +118,7 @@ const gridFactory =  {
                 );
             }
 
-            this.removeHose(grid);
+            this.removeWork(grid);
 
             return;
         }
@@ -138,7 +130,7 @@ const gridFactory =  {
             }
 
             for (var instructor = nextInstructorStart; instructor < grid.length; instructor++) {
-                if (numThreeQuarterHourLessons === -1 && this.hasBothTypes) {
+                if (numThreeQuarterHourLessons === -1 && numHalfHourLessons > 0) {
                     numThreeQuarterHourLessons--;
                     instructor = 0;
                 }
@@ -149,7 +141,7 @@ const gridFactory =  {
                         grid[instructor][slot + 1] = 2;
                         grid[instructor][slot + 2] = 2;
 
-                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 1 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons, numThreeQuarterHourLessons - 1, minHoursPerInstructor);
+                        this.createGridArray(grid, (instructor === grid.length - 1) ? slot + 1 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons, numThreeQuarterHourLessons - 1, minHoursPerInstructor);
 
                         grid[instructor][slot] = 0;
                         grid[instructor][slot + 1] = 0;
@@ -160,7 +152,7 @@ const gridFactory =  {
                         grid[instructor][slot] = 1;
                         grid[instructor][slot + 1] = 1;
 
-                        this.generateGridArray(grid, (instructor === grid.length - 1) ? slot + 2 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons - 1, numThreeQuarterHourLessons, minHoursPerInstructor);
+                        this.createGridArray(grid, (instructor === grid.length - 1) ? slot + 2 : slot, (instructor < grid.length - 1) ? instructor + 1 : 0, numHalfHourLessons - 1, numThreeQuarterHourLessons, minHoursPerInstructor);
 
                         grid[instructor][slot] = 0;
                         grid[instructor][slot + 1] = 0;
@@ -194,11 +186,11 @@ const gridFactory =  {
         return true;
     },
 
-    addHose(grid) {
-        var numHoses = 0;
+    addWork(grid) {
+        var numWork = 0;
 
         for (var instructor = 0; instructor < grid.length; instructor++) {
-            // If the first slot is a valid hose spot, reject grid.
+            // If the first slot is a valid work spot, reject grid.
             if (grid[instructor][1] === 0 && (grid[instructor][2] !== 0 && grid[instructor][2] !== 4)) {
                 return false;
             }
@@ -211,16 +203,16 @@ const gridFactory =  {
                         ((grid[instructor][slot - 1] !== 0 && grid[instructor][slot - 1] !== 4) && (grid[instructor][slot + 1] !== 0 && grid[instructor][slot + 1] !== 4))
                     ) {
                         grid[instructor][slot] = 3;
-                        numHoses++;
+                        numWork++;
                     }
                 }
             }
         }
 
-        return numHoses < 3;
+        return numWork < 3;
     },
 
-    removeHose(grid) {
+    removeWork(grid) {
         for (var instructor = 0; instructor < grid.length; instructor++) {
             for (var slot = 1; slot < grid[0].length; slot++) {
                 if (grid[instructor][slot] === 3) {
@@ -248,7 +240,7 @@ const gridFactory =  {
 
 module.exports = {
     create(req, res) {
-        var result = gridFactory.generateGrid(req.body);
+        var result = gridFactory.createGrid(req.body);
 
         res.status(200).send(result);
     }
