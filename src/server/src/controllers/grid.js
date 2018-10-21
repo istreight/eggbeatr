@@ -17,6 +17,7 @@ module.exports = {
     create(req, res) {
         return Grid.create({
             headerId: req.query.headerId,
+            duration: req.body.duration,
             lessonTimes: req.body.lessonTimes
         }).then((grid) => {
             res.status(201).send(grid);
@@ -34,6 +35,7 @@ module.exports = {
 
             return grid.update({
                 headerId: req.query.headerId || grid.headerId,
+                duration: req.body.duration || grid.duration,
                 lessonTimes: req.body.lessonTimes || grid.lessonTimes
             }).then((grid) => {
                 res.status(200).send(grid);

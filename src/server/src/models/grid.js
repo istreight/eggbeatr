@@ -2,6 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
     var Grid = sequelize.define('Grid', {
+        duration: DataTypes.INTEGER,
         lessonTimes: DataTypes.ARRAY(DataTypes.STRING)
     }, {});
 
