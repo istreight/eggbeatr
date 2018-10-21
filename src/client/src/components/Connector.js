@@ -461,11 +461,11 @@ class Connector extends React.Component {
                     var newInstructorId = instructor.id;
                     var instructorName = instructor.instructor;
 
-                    if (instructorName in newObject.data) {
+                    if (instructorName in newObject) {
                         return true;
                     }
 
-                    newObject.data[instructorName] = {
+                    newObject[instructorName] = {
                         "id": newInstructorId,
                         "instructorId": newInstructorId,
                         "lessons": newLessons
