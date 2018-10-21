@@ -416,10 +416,12 @@ class Connector extends React.Component {
 
         return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
             .then(res => res.json()).then((instructors) => {
-                var newObject = {};
                 var res;
                 var maxId = 0;
                 var newLessons = [];
+                var newObject = {
+                    "data": {}
+                };
 
                 if (instructors.length === 0) {
                     return newObject;
@@ -443,7 +445,7 @@ class Connector extends React.Component {
                     maxId = Math.max(newId, maxId);
                     newInstructor = newInstructorObject.instructor;
 
-                    newObject[newInstructor] = {
+                    newObject.data[newInstructor] = {
                         "id": newId,
                         "instructorId": newInstructorId,
                         "lessons": newLessons
@@ -461,11 +463,11 @@ class Connector extends React.Component {
                     var newInstructorId = instructor.id;
                     var instructorName = instructor.instructor;
 
-                    if (instructorName in newObject) {
+                    if (instructorName in newObject.data) {
                         return true;
                     }
 
-                    newObject[instructorName] = {
+                    newObject.data[instructorName] = {
                         "id": newInstructorId,
                         "instructorId": newInstructorId,
                         "lessons": newLessons
