@@ -150,8 +150,9 @@ class Controller extends React.Component {
                 "callback": componentCallback,
                 "connector": this.state.connector,
                 "createComponent": createComponent,
+                "deletePreference": this.state.componentObjects.instructorPreferences.deletePreference.bind(this.state.componentObjects.instructorPreferences),
+                "handlePreferencesClick": this.state.componentObjects.instructorPreferences.displayComponentState.bind(this.state.componentObjects.instructorPreferences),
                 "initData": this.state.components.instructors,
-                "instructorPreferences": this.state.componentObjects.instructorPreferences,
                 "removeComponent": removeComponent,
                 "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
             }, document.getElementById("dynamicInstructors"), function() {
@@ -230,7 +231,7 @@ class Controller extends React.Component {
 
             if (this.state.components[name] !== undefined) {
                 if (name === "instructorPreferences") {
-                    comp.preferences = this.state.components[name];
+                    comp.state = this.state.components[name];
                 } else if (name === "grid") {
                     comp.grid = this.state.components[name];
 

@@ -30,7 +30,6 @@ class Instructors extends React.Component {
         numValidInstructors = this.getNumInstructors();
 
         this.props.callback(this.instructors, "instructors", false);
-        this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.setChecklistQuantity("instructors", numValidInstructors);
 
         $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
@@ -130,7 +129,7 @@ class Instructors extends React.Component {
 
         $("#dynamicInstructors table .remove").click(this.removeRow.bind(this));
 
-        this.props.instructorPreferences.setPreferencesButtons(false);
+        this.setPreferencesButtons(false);
     }
 
     /**
@@ -150,6 +149,8 @@ class Instructors extends React.Component {
             var instructorId = this.instructors[instructorName].id;
 
             this.props.removeComponent(instructorId, "Instructor").then((res) => delete this.instructors[instructorName]);
+
+            this.props.deletePreference(instructorName);
         }
 
         removedRow.remove();
@@ -205,6 +206,8 @@ class Instructors extends React.Component {
         var instructorName;
         var body = {};
         var addedData = $(event.target).closest("tr").find("input");
+        var preferencesButton = $(event.target).closest("tr").find("a.preferences");
+
         addedData.each((index, element) => {
             var inputPlaceholder = $(element).attr("placeholder");
 
@@ -226,6 +229,8 @@ class Instructors extends React.Component {
                 body.wsiExpiration = inputPlaceholder;
             }
         });
+
+        preferencesButton.attr("data-instructor-name", instructorName);
 
         this.props.createComponent(body, "Instructor")
             .then((res) => {
@@ -373,8 +378,8 @@ class Instructors extends React.Component {
         $("#dynamicInstructors input[type='checkbox']").prop("disabled", false);
 
         numValidInstructors = this.getNumInstructors();
+        this.setPreferencesButtons(true);
 
-        this.props.instructorPreferences.setPreferencesButtons(true);
         this.props.callback(this.instructors, "instructors", true);
         this.props.setChecklistQuantity("instructors", numValidInstructors);
     }
@@ -444,6 +449,7 @@ class Instructors extends React.Component {
 
         instructor.privateOnly = checkedBoxes.length > 0;
         this.props.callback(this.instructors, "instructors", true);
+        this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
     }
 
     /**
@@ -529,6 +535,23 @@ class Instructors extends React.Component {
         });
     }
 
+
+    /**
+     * Disables the preferences button in the Instructors table.
+     */
+    setPreferencesButtons(enable) {
+        return;
+        var preferenceButtons = $("#dynamicInstructors .preferences");
+
+            if (enable) {
+            preferenceButtons.removeClass("pure-button-disabled");
+            preferenceButtons.click(this.props.handlePreferencesClick);
+            } else {
+            preferenceButtons.unbind("click");
+            preferenceButtons.addClass("pure-button-disabled");
+            }
+    }
+
     render() {
         return (
             <div className="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
@@ -585,14 +608,15 @@ class Instructors extends React.Component {
     }
 }
 
-Instructors.propTypes =  {
+Instructors.propTypes = {
     callback: PropTypes.func.isRequired,
-    initData: PropTypes.object.isRequired,
     connector: PropTypes.object.isRequired,
     createComponent: PropTypes.func.isRequired,
+    deletePreference: PropTypes.func.isRequired,
+    handlePreferencesClick: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
     removeComponent: PropTypes.func.isRequired,
-    setChecklistQuantity: PropTypes.func.isRequired,
-    instructorPreferences: PropTypes.object.isRequired
+    setChecklistQuantity: PropTypes.func.isRequired
 }
 
 export default Instructors;

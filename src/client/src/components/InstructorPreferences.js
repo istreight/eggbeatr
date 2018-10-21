@@ -6,7 +6,6 @@
  * This file contains the Intructors class for
  *  the collection of instructors for the lesson
  *  calendar web application.
- * The Instructors class is exported.
  */
 
 import React from 'react';
@@ -22,257 +21,219 @@ class InstructorPreferences extends React.Component {
     constructor(props) {
         super(props);
 
-        this.preferences = {};
+        this.state = null;
+        this.selectedInstructor = null;
         this.defaultPreferences = [
-            "Starfish", "Duck", "Sea Turtle", "", "Simple Set",
-            "Sea Otter", "Salamander", "Sunfish", "Crocodile", "Whale",
-            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5",
-            "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
-            "Basics I", "Basics II", "Strokes", "", "Schoolboard"
+            ["Starfish", "Sea Otter", "Level 1", "Level 6", "Basics I"],
+            ["Duck", "Salamander", "Level 2", "Level 7", "Basics II"],
+            ["Sea Turtle", "Sunfish", "Level 3", "Level 8", "Strokes"],
+            ["", "Crocodile", "Level 4", "Level 9", ""],
+            ["Simple Set", "Whale", "Level 5", "Level 10", "Schoolboard"]
         ];
     }
 
+    componentWillMount() {
+        this.setState(this.props.initData);
+        this.selectedInstructor = Object.keys(this.props.initData.data)[0];
+    }
+
     componentDidMount() {
-        this.preferences = this.props.initData;
-
-        $("#dynamicInstructorPreferences .modal-footer a").click(this.editPreferences.bind(this));
-
         // Hide modal on click outside of modal.
-        $(window).click(() => {
-            if (event.target === $("#dynamicInstructorPreferences div")[0]) {
-                $("#dynamicInstructorPreferences div").css({
-                    "display": "none"
+        window.addEventListener("click", (e) => {
+            if (e.target === ReactDOM.findDOMNode(this.modal)) {
+                this.modal.setState({
+                    "isDisplayed": false
                 });
             }
         });
     }
 
     /**
-     * Disables the preferences button in the Instructors table.
-     * Called from the Instructors component.
+     * Remove an instructor's preferences from the state.
      */
-    setPreferencesButtons(enable) {
-        var preferenceButtons = $("#dynamicInstructors .preferences");
-
-        if (enable) {
-            preferenceButtons.click(this.displayPreferenceModal.bind(this));
-            preferenceButtons.removeClass("pure-button-disabled");
-        } else {
-            preferenceButtons.unbind("click");
-            preferenceButtons.addClass("pure-button-disabled");
+    deletePreference(instructorName) {
+        if (instructorName in this.state.data) {
+            delete this.state.data[instructorName]
         }
+    }
+
+    /**
+     * Style the cell based on instructor preferences.
+     */
+    getCellStyle(data, index) {
+        var lesson = data[0];
+        var cellClass = "is-left ";
+        var lessonType = lesson.props.data;
+        var instructor = this.selectedInstructor;
+        var preference = this.state.data[instructor];
+        var isSelected = preference.lessons.includes(lessonType);
+
+        // Style non-selected cells.
+        if (!isSelected && this.editButton) {
+            if (this.editButton.state.mode === "edit") {
+                cellClass += "remove-preference-";
+            } else {
+                cellClass += "hide-preference-";
+            }
+
+            cellClass += index % 2 ? "even" : "odd";
+        }
+
+        return cellClass;
+    }
+
+    /**
+     * Update selection status of a preference cell and
+     *  update the state of the preferences.
+     */
+    updatePreferenceCell(e) {
+        var preferences;
+        var lessonIndex;
+        var newObj = {};
+        var lesson = e.target.innerHTML;
+        var instructor = this.selectedInstructor;
+
+        preferences = JSON.parse(
+            JSON.stringify(this.state.data[instructor])
+        );
+
+        lessonIndex = preferences.lessons.indexOf(lesson);
+        if (lessonIndex > -1) {
+            preferences.lessons.splice(lessonIndex, 1);
+        } else {
+            preferences.lessons.push(lesson);
+        }
+
+        Object.assign(this.state.data[instructor], preferences);
+        this.setState(this.state);
+    }
+
+    /**
+     * Edit the lesson preference cells.
+     */
+    getPreferenceData() {
+        var preferences = JSON.parse(JSON.stringify(this.defaultPreferences));
+
+        for (var rowIndex = 0; rowIndex < preferences.length; rowIndex++) {
+            var row = preferences[rowIndex];
+
+            for (var colIndex = 0; colIndex < row.length; colIndex++) {
+                var lessonType = row[colIndex];
+
+                preferences[rowIndex][colIndex] = [React.createElement(
+                    Anchor,
+                    {
+                        "callback": () => null,
+                        "data": lessonType,
+                        "handleClick": this.updatePreferenceCell.bind(this),
+                        "hyperlink": "javascript:void(0)",
+                        "key": "key-anchor-" + (rowIndex * preferences.length + colIndex),
+                        "styleClass": ""
+                    }
+                )];
+            }
+        }
+
+        return preferences;
     }
 
     /**
      * Displays preference modal.
      */
-    displayPreferenceModal() {
-        $("#dynamicInstructorPreferences div").css({
-            "display": "block"
-        });
+    displayComponentState(instructorName) {
+        this.selectedInstructor = instructorName;
 
-        var instructor = $(event.target).closest("tr").find("td").eq(0).html();
-        $("#dynamicInstructorPreferences .modal-header").html(instructor);
-        $("#dynamicInstructorPreferences .modal-body p").html("The following table outlines " + instructor + "'s level preferences.");
-
-        this.levelPreferences(instructor);
-    }
-
-    /**
-     * Generates the list of all lesson types in
-     *  the Preferences table.
-     */
-    levelPreferences(instructor) {
-        var preferences;
-        var isOdd = true;
-        var newTable = "";
-        var instructorPreferences = this.preferences[instructor];
-
-        if (instructor in this.preferences) {
-            preferences = instructorPreferences.lessons;
+        if (instructorName in this.state.data) {
+            this.setState(this.state, () => this.modal.setState({
+                "isDisplayed": true
+            }));
         } else {
-            preferences = JSON.parse(JSON.stringify(this.defaultPreferences));
+            // Fetch new data and set State for instructors without preferences.
+            this.props.connector.getPreferenceData()
+                .then((res) => {
+                    this.setState(res, () => this.modal.setState({
+                        "isDisplayed": true
+                    }));
+                });
         }
-
-        // Create HTML table from the Preferences object.
-        for (var row = 0; row < 5; row++) {
-            var rowColour = isOdd ? "table-odd" : "table-even";
-
-            newTable += "<tr class='" + rowColour + "'>";
-
-            for (var col = 0; col < 5; col++) {
-                var isSelected;
-                var cellClass = "is-left ";
-                var lessonType = this.defaultPreferences[5 * col + row];
-
-                isSelected = preferences.includes(lessonType);
-
-                // Style non-selected cells.
-                if (!isSelected) {
-                    cellClass += isOdd ? "remove-preference-odd" : "remove-preference-even";
-                }
-
-                newTable += "<td class='" + cellClass + "'>" + lessonType + "</td>";
-            }
-
-            newTable += "</tr>";
-
-            isOdd = !isOdd;
-        }
-
-        $("#dynamicInstructorPreferences .modal table tbody").html(newTable);
     }
 
     /**
      * Sets the state of the Preferences table to
      *  allow removal of cells.
      */
-    editPreferences() {
-        var lessonCells = $("#dynamicInstructorPreferences .modal td");
-
-        lessonCells = lessonCells.filter((index) => {
-            return lessonCells.eq(index).html() !== "";
-        });
-
-        // Place 'add-preference' or 'remove-preference' buttons in each table cell, depending on text.
-        lessonCells.each((index, element) => {
-            if ($(element).is(".remove-preference-odd") || $(element).is(".remove-preference-even")) {
-                $(element).append("<span class='add-preference'>&#10003;</span>");
-            } else {
-                $(element).append("<span class='remove-preference'>×</span>");
-
-            }
-        });
-
-        // Bind removal and re-adding buttons.
-        $("#dynamicInstructorPreferences .modal table .remove-preference").click(() => {
-            this.togglePreferenceCell(true);
-        });
-        $("#dynamicInstructorPreferences .modal table .add-preference").unbind("click").click(() => {
-            this.togglePreferenceCell(false);
-        });
-
-        var editButton = $("#dynamicInstructorPreferences .modal-footer a");
-        editButton.unbind("click");
-        editButton.html("Finish Editing");
-        editButton.click(this.finishEditingPreferences.bind(this));
-    }
-
-    /**
-     * Toggles contents to the cell in the Preferences
-     *  table and appends 'remove-preference' or
-     * 'add-preference' span.
-     */
-    togglePreferenceCell(remove) {
-        var className;
-        var name = $("#dynamicInstructorPreferences .modal-header").html();
-        var row = $(event.target).closest("tr");
-        var cell = $(event.target).closest("td");
-        var cellIndex = row.children().index(cell);
-        var rowIndex = $("#dynamicInstructorPreferences .modal-body tr").index(row) - 1;
-
-        if (row.hasClass("table-odd")) {
-            className = "remove-preference-odd";
-        } else if (row.hasClass("table-even")) {
-            className = "remove-preference-even";
-        }
-
-        $(event.target).remove();
-
-        var lesson = cell.html();
-        var preferences = this.preferences[name];
-        var prefenceLessons = preferences.lessons;
-        var index = prefenceLessons.indexOf(lesson);
-        if (remove) {
-            if (index > -1) {
-                prefenceLessons.splice(index, 1);
-            }
-
-            cell.addClass(className);
-            cell.append("<span class='add-preference'>&#10003;</span>");
-
-            // Rebind each 'add-preference' to their new cell.
-            $("#dynamicInstructorPreferences .modal .add-preference").unbind("click").click(() => {
-                this.togglePreferenceCell(false);
-            });
-        } else {
-            if (index === -1) {
-                prefenceLessons.push(lesson);
-            }
-
-            cell.removeClass(className);
-            cell.append("<span class='remove-preference'>×</span>");
-
-            // Rebind each 'remove-preference' to react to their new cell.
-            $("#dynamicInstructorPreferences .modal .remove-preference").unbind("click").click(() => {
-                this.togglePreferenceCell(true);
-            });
-        }
+    edit() {
+        this.editButton.setState({
+            "handleClick": this.finishEditing.bind(this),
+            "mode": "edit"
+        }, () => this.setState(this.state));
     }
 
     /**
      * Removes the 'remove-preference' and 'add-preference'
      *  spans from the Preferences table .
      */
-    finishEditingPreferences() {
-        // Key in preferences to add updated value.
-        var name = $("#dynamicInstructorPreferences .modal-header").html();
+    finishEditing() {
+        this.editButton.setState({
+            "handleClick": this.edit.bind(this),
+            "mode": "default"
+        }, () => this.setState(
+            this.state,
+            () => this.props.callback(this.state, "instructorPreferences", true)
+        ));
+    }
 
-        // Remove 'add-preference' or 'remove-preference' buttons.
-        $("#dynamicInstructorPreferences .modal span").remove();
-
-        var editButton = $("#dynamicInstructorPreferences .modal-footer a");
-        editButton.html("Edit");
-        editButton.unbind("click");
-        editButton.click(this.editPreferences.bind(this));
-
-        this.props.callback(this.preferences, "instructorPreferences", true);
+    /**
+     * Store a reference to the React object.
+     */
+    setComponentReference(name, reference) {
+        this[name] = reference
     }
 
     render() {
         return (
-                <div className="modal">
-                    <div className="modal-content">
-                        <div className="modal-header"></div>
-                        <div className="modal-body">
-                            <p></p>
-                            <table className="pure-table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            Parent & Tot
-                                        </th>
-                                        <th>
-                                            Pre-School
-                                        </th>
-                                        <th>
-                                            Swim Kids
-                                        </th>
-                                        <th>
-                                            Swim Kids
-                                        </th>
-                                        <th>
-                                            Teens & Adults
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <a className="pure-button">Edit</a>
-                        </div>
-                    </div>
-                </div>
+            <Modal
+                body={ [
+                    <p key="key-modal-p-0">
+                        The following table outlines  {
+                            this.selectedInstructor
+                        }&#39;s level preferences.
+                    </p>
+                ] }
+                callback={ (ref) => this.setComponentReference("modal", ref) }
+                footer={ [
+                    React.createElement(EditButton, {
+                        "callback": (ref) => this.setComponentReference("editButton", ref),
+                        "handleClick": this.edit.bind(this),
+                        "key": "key-preferences-footer-0",
+                        "mode": "default"
+                    })
+                ] }
+                header={ [this.selectedInstructor] }
+                isDisplayed={ false }
+                tableData={ {
+                    "dataBody": this.getPreferenceData.bind(this),
+                    "dataHeader": () => [[
+                        "Parent & Tot",
+                        "Pre-School",
+                        "Swim Kids",
+                        "Swim Kids",
+                        "Teens & Adults"
+                    ]],
+                    "styleCell": this.getCellStyle.bind(this),
+                    "styleHeader": () => null,
+                    "styleRow": (index) => index % 2 ? "table-even" : "table-odd",
+                    "styleTable": () => "pure-table"
+                } }
+            />
         );
     }
 }
 
-InstructorPreferences.propTypes =  {
+InstructorPreferences.propTypes = {
     callback: PropTypes.func.isRequired,
-    initData: PropTypes.object.isRequired,
-    connector: PropTypes.object.isRequired
+    connector: PropTypes.object.isRequired,
+    initData: PropTypes.object.isRequired
 }
 
 export default InstructorPreferences;
