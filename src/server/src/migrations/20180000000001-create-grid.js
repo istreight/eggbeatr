@@ -18,6 +18,10 @@ module.exports = {
                     as: 'headerId',
                 }
             },
+            duration: {
+                allowNull: false,
+                type: Sequelize.FLOAT
+            },
             lessonTimes: {
                 allowNull: false,
                 type: Sequelize.ARRAY(Sequelize.STRING)
