@@ -5,7 +5,6 @@
  *
  * This file contains the Header class for the header
  *  content of the lesson calendar web application.
- * The Header class is exported.
  */
 
 import React from 'react';
@@ -26,98 +25,84 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
 
-        this.header = {};
+        this.state = null;
     }
 
-    componentDidMount() {
-        this.sortSets(this.props.initData);
-        this.setTitles(false);
-
-        this.props.callback(this.header, "header", false);
-
-        // Scrolling header buttons.
-        $("#dynamicHeader .pure-menu-link").click(this.scrollToDiv);
-        $("#dynamicHeader .pure-menu-heading").click(this.scrollToDiv);
-    }
-
-    /**
-     * Show the stored set names.
-     */
-    setTitles(isEditing) {
-        var sets = this.header.sets;
-        var editButton = $("#dynamicHeader .pure-button");
-        var setList = $("#dynamicHeader .pure-menu-scrollable ul");
-        var setTitle = $("#dynamicHeader .pure-menu-scrollable .pure-menu-heading");
-
-        setList.empty();
-
-        for (var setIndex = 0; setIndex < sets.length; setIndex++) {
-            var set = sets[setIndex];
-            var setName = set.setTitle;
-
-            this.insertSet(setName);
-        }
-
-        if (isEditing) {
-            this.editHeader();
-        } else {
-            this.finishEditingHeader();
-        }
+    componentWillMount() {
+        this.setState(this.sortSets(this.props.initData), () => {
+            this.finishEditing();
+            this.props.callback(this.state, "header", false);
+        });
     }
 
     /**
      * Places the header in a state where the sets
      *  can be changed.
      */
-    editHeader() {
-        var editButton = $("#dynamicHeader .pure-button");
-        var listItems = $("#dynamicHeader .pure-menu-scrollable .pure-menu-disabled");
+    edit() {
+        var setList = ReactDOM.findDOMNode(this.setList);
+        var anchorClass = this.setInputAnchor.state.styleClass;
+        var reCellStyles = new RegExp(/(\serror-cell)|(\swarning-cell)/, "g");
 
-        editButton.unbind("click");
-        editButton.html("Finish Editing");
-        editButton.click(this.finishEditingHeader.bind(this));
+        this.editButton.setState({
+            "handleClick": this.finishEditing.bind(this),
+            "mode": "edit"
+        });
 
-        listItems.unbind("click");
-        listItems.addClass("removable-header");
-        listItems.click(this.removeSet.bind(this));
+        this.setInputAnchor.setState({
+            "styleClass": anchorClass.replace(reCellStyles, "")
+        });
 
-        $("#dynamicHeader input").css("visibility", "visible");
-        $("#dynamicHeader input").blur(this.addSet.bind(this));
-        $("#dynamicHeader .pure-menu-scrollable ul").css("width", "24%");
+        this.setInputField.setState({
+            "data": "",
+            "handleBlur": this.addSet.bind(this),
+            "styleClass": "is-visible"
+        });
+
+        this.setList.setState({
+            "handleClick": this.removeSet.bind(this),
+            "mode": "edit",
+        });
+
+        setList.style = "width:24%";
     }
 
     /**
      * Places the header in a state where the sets
      *  cannot be changed.
      */
-    finishEditingHeader() {
-        var editButton = $("#dynamicHeader .pure-button");
-        var listItems = $("#dynamicHeader .pure-menu-scrollable .pure-menu-disabled");
+    finishEditing() {
+        var setList = ReactDOM.findDOMNode(this.setList);
+        var anchorClass = this.setInputAnchor.state.styleClass;
+        var reCellStyles = new RegExp(/(\serror-cell)|(\swarning-cell)/, "g");
 
-        editButton.html("Edit");
-        editButton.unbind("click");
-        editButton.click(this.editHeader.bind(this));
+        this.editButton.setState({
+            "handleClick": this.edit.bind(this),
+            "mode": "default"
+        });
 
-        listItems.unbind("click");
-        listItems.removeClass("removable-header");
-        listItems.click(this.selectSet.bind(this));
+        this.setInputAnchor.setState({
+            "styleClass": anchorClass.replace(reCellStyles, "")
+        });
 
-        $("#dynamicHeader input").css("visibility", "hidden");
-        $("#dynamicHeader .pure-menu-scrollable ul").css("width", "28%");
+        this.setInputField.setState({
+            "handleBlur": () => null,
+            "styleClass": "is-invisible"
+        });
+
+        this.setList.setState({
+            "handleClick": this.selectSet.bind(this),
+            "mode": "default"
+        });
+
+        setList.style = "width:28%";
     }
 
     /**
-     * Store the selected set in the class object.
+     * Returns the title to the currently selected set.
      */
-    selectSet() {
-        var set = $(event.target);
-        var editButton = $("#dynamicHeader .pure-button");
-        var setButtons = $("#dynamicHeader .pure-menu-scrollable .pure-menu-link");
-
-        setButtons.addClass("pure-menu-disabled");
-        set.removeClass("pure-menu-disabled");
-
-        this.updateSet(set.html());
+    getSelectedSet() {
+        return this.state.data.selectedSet.setTitle;
     }
 
     /**
@@ -125,260 +110,294 @@ class Header extends React.Component {
      * If the set is not in component's object,
      *  add empty object.
      */
-    updateSet(setTitle) {
-        var headerSet;
-        var headerTitle;
-        var loadingIndicator = $("#dynamicHeader .create-indicator");
+    selectSet(setTitle) {
+        var sets = this.state.data.sets;
+        var selectedSet = sets.find((set) => set.setTitle === setTitle);
 
-        for (var i = 0; i < this.header.sets.length; i++) {
-            headerSet = this.header.sets[i];
-            headerTitle = headerSet.setTitle;
+        Object.assign(this.state.data, {
+            "selectedSet": selectedSet
+        });
+        this.setState(this.state, () => this.finishEditing());
 
-            if (headerTitle === setTitle) {
-                this.header.selectedSet = headerSet;
-
-                break;
-            }
-        }
-
-        $("#dynamicHeader .pure-menu-scrollable li a").each((index, element) => {
-            if ($(element).html() !== this.header.selectedSet.setTitle) {
-                $(element).addClass("pure-menu-disabled");
-                $(element).removeClass("pure-menu-selected");
-            } else {
-                $(element).addClass("pure-menu-selected");
-                $(element).removeClass("pure-menu-disabled");
-            }
+        var time = Date.parse(new Date());
+        this.waitIndicator.setState({
+            "indicatorStyleClass": "is-visible"
         });
 
-        // Go to each component and set Set class variable.
-        var time = Date.parse(new Date());
-        loadingIndicator.css("visibility", "visible");
-        this.props.callback(this.header, "header", true).then(() => {
+        this.props.callback(this.state, "header", true).then(() => {
             // Delay the loading indicator to improve readablility.
             setTimeout(
-                () => loadingIndicator.css("visibility", "hidden"),
-                Date.parse(new Date()) + 1000 - time
+                () => this.waitIndicator.setState({
+                    "indicatorStyleClass": "is-invisible"
+                }),
+                Date.now() - time + 1000
             );
         });
     }
 
     /**
-     * Place a new set in the list.
-     */
-    insertSet(newSetName) {
-        var newSetItem = $("<li class='pure-menu-item'></li>");
-        var newSetButton = $("<a class='pure-menu-link'>" + newSetName + "</a>");
-
-        if (newSetName !== this.header.selectedSet.setTitle) {
-            newSetButton.addClass("pure-menu-disabled");
-        }
-
-        newSetButton.click(this.selectSet.bind(this));
-
-        newSetItem.html(newSetButton);
-        $("#dynamicHeader .pure-menu-scrollable ul").append(newSetItem);
-    }
-
-    /**
-     * Add a new set to the list.
+     * Add a new Set to the list.
      */
     addSet() {
-        if (this.header.sets.length > 10) {
-            return;
-        }
-
         var body;
-        var listItems;
-        var inputCell;
-        var isIncluded;
-        var newSetName;
-        var inputField = $("#dynamicHeader input");
-        var reSetName = new RegExp(/^[A-Za-z0-9]+$/);
-        var addSetItem = $("#dynamicHeader .pure-menu-scrollable .pure-button").closest("li");
-
-        inputCell = inputField.closest("a");
-        newSetName = inputField.val();
+        var isValid;
+        var sets = this.state.data.sets;
+        var newSetName = this.setInputField.state.data;
 
         body = {
             "setTitle": newSetName
-        }
+        };
 
-        isIncluded = this.header.sets.find((header) => {
-            return header.setTitle === newSetName;
-        });
-
-        if (isIncluded || !reSetName.test(newSetName)) {
-            inputCell.hide().addClass("error-cell").fadeIn(800);
-
+        isValid = this.validateSet(newSetName);
+        if (!isValid) {
             return;
         }
 
-        inputField.val("");
-        inputCell.removeClass("error-cell");
+        this.setInputField.setState({
+            "data": ""
+        });
 
         this.props.createComponent(body, "Header")
             .then((res) => {
-                var scrollList = $('#dynamicHeader .pure-menu-scrollable ul');
+                var newSets = sets.concat(res.data.selectedSet);
 
-                this.header.sets.push(res.selectedSet);
-
-                this.insertSet(newSetName);
-
-                scrollList.animate({
-                    scrollLeft: scrollList.prop("scrollWidth")
-                }, 1000);
-
-                listItems = $("#dynamicHeader .pure-menu-scrollable .pure-menu-disabled");
-                listItems.addClass("removable-header");
-                listItems.unbind("click");
-                listItems.click(this.removeSet.bind(this));
+                this.updateSets(newSets, newSetName);
             });
     }
 
     /**
-     * Remove a set.
+     * Make sure the new Set name is valid.
      */
-    removeSet() {
-        var id;
-        var headerSet;
-        var headerTitle;
-        var setTitle = $(event.target).html();
+    validateSet(newSetName, sets) {
+        var isValid = true;
+        var sets = this.state.data.sets;
+        var reSetName = new RegExp(/^[A-Za-z0-9]+$/);
+        var anchorClass = this.setInputAnchor.state.styleClass;
+        var inputAnchor = ReactDOM.findDOMNode(this.setInputAnchor);
+        var isIncluded = sets.find((set) => set.setTitle === newSetName);
+        var reCellStyles = new RegExp(/(\serror-cell)|(\swarning-cell)/, "g");
 
-        for (var i = 0; i < this.header.sets.length; i++) {
-            headerSet = this.header.sets[i];
-            headerTitle = headerSet.setTitle;
+        anchorClass = anchorClass.replace(reCellStyles, "");
 
-            if (headerTitle === setTitle) {
-                id = headerSet.id;
+        if (sets.length > 8 || isIncluded || !reSetName.test(newSetName)) {
+            if (newSetName.length > 0) {
+                if (sets.length > 8) {
+                    anchorClass = anchorClass.concat(" warning-cell");
+                } else {
+                    anchorClass = anchorClass.concat(" error-cell");
+                }
 
-                break;
+                Animator.fadeIn(inputAnchor, 800);
             }
+
+            this.editButton.setState({
+                "handleClick": this.finishEditing.bind(this)
+            });
+
+            isValid = false;
         }
+
+        this.setInputAnchor.setState({
+            "styleClass": anchorClass
+        });
+
+        return isValid;
+    }
+
+    /**
+     * Remove a Set.
+     */
+    removeSet(setTitle) {
+        var id;
+        var sets = this.state.data.sets;
+        var deletedSet = sets.find((set) => set.setTitle === setTitle);
+
+        id = deletedSet.id;
 
         this.props.removeComponent(id, "Header")
             .then(() => {
-                var scrollList;
+                var removedIndex = sets.indexOf(deletedSet);
+                var newSets = sets.filter((set) => set !== deletedSet);
 
-                this.header.sets.splice(i, 1);
-
-                this.setTitles(true);
-
-                if (i === this.header.sets.length - 1) {
-                    scrollList = $("#dynamicHeader .pure-menu-scrollable ul");
-
-                    scrollList.animate({
-                        scrollLeft: scrollList.prop("scrollWidth") - i * 45
-                    }, 1000);
-                }
+                this.updateSets(newSets, deletedSet.setTitle);
             });
+    }
+
+    /**
+     * Update the list of Sets.
+     */
+    updateSets(newSets, selectedSet) {
+        // Scroll to end of list when adding list out of visible range.
+        this.fitSetList(selectedSet);
+
+        Object.assign(this.state.data, { "sets": newSets });
+        this.setState(this.state, () => {
+            this.edit();
+        });
+     }
+
+    /**
+     * Disable the click handler for the Edit button
+     *  to prevent clash with adding Sets.
+     */
+    disableEditButton(enable) {
+        this.editButton.setState({
+            "handleClick": () => null
+        });
+    }
+
+    /**
+     * Scroll the list of Sets to fit the unordered list in the display window.
+     */
+    fitSetList(setName) {
+        var initial;
+        var maxWidth;
+        var viewWidth;
+        var setList = ReactDOM.findDOMNode(this.setList);
+
+        initial = setList.scrollLeft;
+        maxWidth = setList.scrollWidth;
+        viewWidth = setList.clientWidth;
+
+        Animator.slide(800, (progress) => {
+            setList.scrollTo(initial + progress * (maxWidth - viewWidth + 16 * (setName.length + 1)), 0);
+        });
     }
 
     /**
      * Sort the header set objects by setTitle.
      */
-    sortSets(header) {
+    sortSets(newState) {
         var newSets = [];
-        var newSelectedSet = {};
+        var newSelectedSet = newState.data.selectedSet;
 
-        Object.keys(header.sets).sort().forEach((key) => {
-            newSets.push(header.sets[key]);
+        Object.keys(newState.data.sets).sort().forEach((key) => {
+            newSets.push(newState.data.sets[key]);
         });
 
-        newSelectedSet = header.selectedSet;
-
-        this.header = {
-            "selectedSet": newSelectedSet,
-            "sets": newSets
-        }
+        return {
+            "data": {
+                "selectedSet": newSelectedSet,
+                "sets": newSets
+            }
+        };
     }
 
     /**
-     * Scrolls page to div tag based on contents of clicked item.
+     * Set the reference to subcomponent references.
      */
-    scrollToDiv() {
-        var locationSelector = "#dynamic" + $(event.target).html();
-
-        if (locationSelector.includes("eggbeatr")) {
-            locationSelector = "#dynamicHeader";
-        }
-
-        // Don't scroll on Set buttons.
-        if ($(locationSelector).length === 0) {
-            return;
-        }
-
-        // Disable scrolling.
-        $("body").on("mousewheel DOMMouseScroll", false);
-
-        // Auto-scroll to desired section.
-        $("html, body").animate({
-            scrollTop: $(locationSelector).offset().top - 58
-        }, 2000, () => {
-            $("body").off("mousewheel DOMMouseScroll");
-        });
+    setComponentReference(name, reference) {
+        this[name] = reference;
     }
 
     render() {
         return (
             <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-                <a className="pure-menu-heading">
-                    eggbeatr &mdash; BETA
-                </a>
-                <a className="pure-menu-link pure-menu-heading">
-                    SET
-                </a>
-                <a className="pure-menu pure-menu-horizontal pure-menu-scrollable">
-                    <ul className="pure-menu-list"></ul>
-                </a>
-                <a className="header-input">
-                    <input type="text" placeholder="..."></input>
-                </a>
-                <div className="create-indicator">
-                    <div className="create-spinner">
-                        <span></span><span></span>
-                    </div>
-                    <div className="create-label">Loading...</div>
+                <ScrollingAnchor
+                    data={ "eggbeatr \u2014 BETA" }
+                    styleClass={ "pure-menu-heading" }
+                />
+                <Anchor
+                callback={ () => null }
+                    data={ "SET" }
+                    handleClick={ () => null }
+                    hyperlink={ "javascript:void(0)" }
+                    styleClass={ "pure-menu-heading" }
+                />
+                <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
+                    <SetList
+                        callback={ (ref) => this.setComponentReference("setList", ref) }
+                        data={ this.state.data || {} }
+                        handleClick={ () => null }
+                        mode={ "default" }
+                        styleClass={ "pure-menu-list" }
+                    />
                 </div>
-                <a className="pure-button">
-                    Edit
-                </a>
-                <ul className="pure-menu-list">
-                    <li className="pure-menu-item">
-                        <a className="pure-menu-link">
-                            About
-                        </a>
-                    </li>
-                    <li className="pure-menu-item">
-                        <a className="pure-menu-link">
-                            Instructors
-                        </a>
-                    </li>
-                    <li className="pure-menu-item">
-                        <a className="pure-menu-link">
-                            Lessons
-                        </a>
-                    </li>
-                    <li className="pure-menu-item">
-                        <a className="pure-menu-link">
-                            Private
-                        </a>
-                    </li>
-                    <li className="pure-menu-item">
-                        <a className="pure-menu-link">
-                            Grid
-                        </a>
-                    </li>
-                </ul>
+                <Anchor
+                    callback={ (ref) => this.setComponentReference("setInputAnchor", ref) }
+                    data={ [
+                        React.createElement(Input, {
+                            "callback": (ref) => this.setComponentReference("setInputField", ref),
+                            "data": "",
+                            "handleBlur": () => null,
+                            "handleFocus": this.disableEditButton.bind(this),
+                            "key": "key-header-input-0",
+                            "placeholder": "...",
+                            "type": "text",
+                            "styleClass": "is-invisible"
+                        })
+                    ] }
+                    handleClick={ () => null }
+                    hyperlink={ "javascript:void(0)" }
+                    styleClass={ "header-input" }
+                />
+                <WaitIndicator
+                    callback={ (ref) => this.setComponentReference("waitIndicator", ref) }
+                    data={ "Loading..." }
+                    indicatorStyleClass={ "is-invisible" }
+                    labelStyleClass={ "" }
+                    spinnerStyleClass={ "" }
+                />
+                <EditButton
+                    callback={ (ref) => this.setComponentReference("editButton", ref) }
+                    handleClick={ () => null }
+                    mode={ "default" }
+                />
+                <UnorderedList
+                    callback={ () => null }
+                    data={ [
+                        {
+                            "data": [React.createElement(ScrollingAnchor, {
+                                "data": "About",
+                                "key": "key-header-li-scroll-0",
+                                "styleClass": "pure-menu-link"
+                            })],
+                            "styleClass": "pure-menu-item"
+                        },
+                        {
+                            "data": [React.createElement(ScrollingAnchor, {
+                                "data": "Instructors",
+                                "key": "key-header-li-scroll-1",
+                                "styleClass": "pure-menu-link"
+                            })],
+                            "styleClass": "pure-menu-item"
+                        },
+                        {
+                            "data": [React.createElement(ScrollingAnchor, {
+                                "data": "Lessons",
+                                "key": "key-header-li-scroll-2",
+                                "styleClass": "pure-menu-link"
+                            })],
+                            "styleClass": "pure-menu-item"
+                        },
+                        {
+                            "data": [React.createElement(ScrollingAnchor, {
+                                "data": "Privates",
+                                "key": "key-header-li-scroll-3",
+                                "styleClass": "pure-menu-link"
+                            })],
+                            "styleClass": "pure-menu-item"
+                        },
+                        {
+                            "data": [React.createElement(ScrollingAnchor, {
+                                "data": "Grid",
+                                "key": "key-header-li-scroll-4",
+                                "styleClass": "pure-menu-link"
+                            })],
+                            "styleClass": "pure-menu-item"
+                        }
+                    ] }
+                    styleClass={ "pure-menu-list" }
+                />
             </div>
         );
     }
 }
 
-Header.propTypes =  {
+Header.propTypes = {
     callback: PropTypes.func.isRequired,
-    initData: PropTypes.object.isRequired,
     createComponent: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
     removeComponent: PropTypes.func.isRequired
 }
 
