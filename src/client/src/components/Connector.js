@@ -12,6 +12,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import DefaultData from 'root/etc/defaults/ComponentData';
 
 class Connector extends React.Component {
     constructor(props) {
@@ -40,14 +41,16 @@ class Connector extends React.Component {
 
     getGridData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "lessonTimes": [
-                "9:00", "9:30", "10:00", "10:30", "11:00"
-            ]
-        };
+        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Grids));
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatGridRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -56,7 +59,7 @@ class Connector extends React.Component {
                 .then(json => this.formatGridRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
@@ -120,25 +123,16 @@ class Connector extends React.Component {
 
     getHeaderData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "selectedSet": {
-                "id": 1,
-                "setTitle": "Saturday"
-            },
-            "sets": [
-                {
-                    "id": 1,
-                    "setTitle": "Saturday"
-                },
-                {
-                    "id": 2,
-                    "setTitle": "Sunday"
-                }
-            ]
-        };
+        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Headers));
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatHeaderRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -147,7 +141,7 @@ class Connector extends React.Component {
                 .then(json => this.formatHeaderRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
@@ -203,26 +197,16 @@ class Connector extends React.Component {
 
     getInstructorData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "Alfa": {
-                "id": 1,
-                "dateOfHire": "2011-02-01",
-                "wsiExpiration": "2021-04-03"
-            },
-            "Bravo": {
-                "id": 2,
-                "dateOfHire": "2012-06-05",
-                "wsiExpiration": "2022-08-07"
-            },
-            "Charlie": {
-                "id": 3,
-                "dateOfHire": "2013-10-09",
-                "wsiExpiration": "2023-12-11"
-            }
-        };
+        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Instructors));
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatInstructorRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -231,7 +215,7 @@ class Connector extends React.Component {
                 .then(json => this.formatInstructorRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
@@ -298,31 +282,16 @@ class Connector extends React.Component {
 
     getLessonData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "Starfish": {
-                "id": 1,
-                "quantity": 1
-            },
-            "Sea Otter": {
-                "id": 4,
-                "quantity": 1
-            },
-            "Level 1": {
-                "id": 9,
-                "quantity": 1
-            },
-            "Level 6": {
-                "id": 14,
-                "quantity": 1
-            },
-            "Basics I": {
-                "id": 19,
-                "quantity": 1
-            }
-        };
+        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Lessons));
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatLessonsRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -331,7 +300,7 @@ class Connector extends React.Component {
                 .then(json => this.formatLessonsRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
@@ -394,32 +363,18 @@ class Connector extends React.Component {
 
     getPreferenceData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "Alfa": {
-                "id": 1,
-                "instructorId": 1,
-                "lessons": [
-                    "Starfish", "Duck", "Sea Turtle"
-                ]
-            },
-            "Bravo": {
-                "id": 2,
-                "instructorId": 2,
-                "lessons": [
-                    "Level 1", "Level 2", "Level 3"
-                ]
-            },
-            "Charlie": {
-                "id": 3,
-                "instructorId": 3,
-                "lessons": [
-                    "Basics I", "Basics II", "Strokes"
-                ]
-            }
-        };
+        var defaultRes = JSON.parse(
+            JSON.stringify(DefaultData.InstructorPreferences)
+        );
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatPreferenceRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = defaultRes;
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -428,7 +383,7 @@ class Connector extends React.Component {
                 .then(json => this.formatPreferenceRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
@@ -451,6 +406,10 @@ class Connector extends React.Component {
     }
 
     formatPreferenceRes(preferenceRes) {
+        var defaultRes = JSON.parse(
+            JSON.stringify(DefaultData.InstructorPreferences)
+        );
+
         return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.headerId)
             .then(res => res.json()).then((instructors) => {
                 var newObject = {};
@@ -479,29 +438,16 @@ class Connector extends React.Component {
 
     getPrivatesData(populate) {
         var returnValue;
-        var defaultReturn = {
-            "Alfa": [{
-                "id": 1,
-                "instructorId": 1,
-                "duration": 30,
-                "time": "9:00:00"
-            }],
-            "Bravo": [{
-                "id": 2,
-                "instructorId": 2,
-                "duration": 30,
-                "time": "9:30:00"
-            }],
-            "Charlie": [{
-                "id": 3,
-                "instructorId": 3,
-                "duration": 30,
-                "time": "10:00:00"
-            }]
-        };
+        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Privates));
+
+        for (var i = 0; i < defaultRes.length; i++) {
+            Object.assign(defaultRes[i], { "id": i + 1 });
+        }
+
+        defaultRes = this.formatPrivatesRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultReturn));
+            returnValue = defaultRes;
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
@@ -510,7 +456,7 @@ class Connector extends React.Component {
                 .then(json => this.formatPrivatesRes(json))
                 .catch(error => {
                     console.error(error);
-                    return defaultReturn;
+                    return defaultRes;
                 }
             );
         }
