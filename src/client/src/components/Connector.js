@@ -105,11 +105,13 @@ class Connector extends React.Component {
 
         gridRes.forEach((grid, index) => {
             var newId = grid.id;
+            var newDuration = grid.duration;
             var newLessonTimes = grid.lessonTimes;
 
             newObject = {
-                "id": newId,
-                "lessonTimes": newLessonTimes
+                    "id": newId,
+                    "duration": newDuration,
+                    "lessonTimes": newLessonTimes
             };
         });
 

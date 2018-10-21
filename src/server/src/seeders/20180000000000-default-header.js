@@ -1,22 +1,16 @@
 'use strict';
 
-module.exports = {
-  up: (queryInterface, Sequelize) => {
-      return queryInterface.bulkInsert('Headers', [
-          {
-              setTitle: 'Saturday',
-              createdAt: new Date(),
-              updatedAt: new Date()
-          },
-          {
-              setTitle: 'Sunday',
-              createdAt: new Date(),
-              updatedAt: new Date()
-          }
-      ], {});
-  },
+const path = require('path');
+const defaultData = require(
+    path.resolve(process.env.INIT_CWD, 'etc/defaults/ComponentData.js')
+);
 
-  down: (queryInterface, Sequelize) => {
-      return queryInterface.bulkDelete('Headers', null, {});
-  }
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.bulkInsert('Headers', defaultData.Headers, {});
+    },
+
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.bulkDelete('Headers', null, {});
+    }
 };
