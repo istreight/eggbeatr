@@ -5,7 +5,6 @@
  *
  * This file contains the Landing class for the landing
  *  page content of the lesson calendar web application.
- * The Landing class is exported.
  */
 
 import React from 'react';
@@ -17,62 +16,28 @@ import FnScroll from 'functions/FnScroll';
 
 class Landing extends React.Component {
     componentDidMount() {
-        var name = $("#dynamicLanding h1 div");
-        var getStarted = $("#dynamicLanding a");
+        var node = ReactDOM.findDOMNode(this);
+        var title = node.querySelector("div h1 div");
+        var getStartedButton = node.querySelector("a");
 
-        getStarted.hide();
+        // Fade in WELCOME, then cycle through title styles.
+        Animator.fadeIn(title, 1200, 400, () => {
+            Animator.fadeOut(title, 800, 0, () => {
+                title.innerHTML = "eggbeatr";
+                Animator.fadeIn(getStartedButton, 1500);
 
-        // Fade in 'WELCOME', then cycle through 3 name styles.
-        name.hide().fadeIn(2000).delay(3000).fadeOut(1500, () => {
-            name.html("eggbeatr");
-
-            getStarted.delay(800).fadeIn(1500);
-            getStarted.click(this.getStarted);
-
-            this.cycle(1);
+                this.cycle(1, title);
+            });
         });
     }
 
     /**
-     * Starts a tutorial on how to run application.
-     */
-    getStarted() {
-        // Disable scrolling.
-        $("body").on("mousewheel DOMMouseScroll", false);
-
-        $("html, body").animate({
-            scrollTop: $("#dynamicInstructors").offset().top - 60
-        }, 3200, () => {
-            $("body").off("mousewheel DOMMouseScroll");
-        });
-
-        $("#dynamicInstructors .ribbon-section-footer").css({
-            "display": "block"
-        });
-
-        $("#dynamicLessons .content-section-footer").css({
-            "display": "none"
-        });
-
-        $("#dynamicPrivate .ribbon-section-footer").css({
-            "display": "none"
-        });
-
-        $("#dynamicGrid .content-section-footer").css({
-            "display": "none"
-        });
-
-        $("#grid-table .pure-menu-list").empty();
-    }
-
-    /**
-     * Rotates through 3 styles of the application name,
+     * Rotates through 3 styles of the application title,
      *  fading in and out.
      */
-    cycle(stage) {
+    cycle(stage, title) {
         var style = "";
         var weight = "";
-        var name = $("#dynamicLanding h1 div");
 
         if (stage === 1) {
             style = "italic";
@@ -80,12 +45,24 @@ class Landing extends React.Component {
             weight = "bold";
         }
 
-        name.fadeIn(800).delay(2000).fadeOut(600, () => {
-            name.css("font-style", style);
-            name.css("font-weight", weight);
+        Animator.fadeIn(title, 1200, 400, () => {
+            Animator.fadeOut(title, 800, 0, () => {
+                title.style.fontStyle = style;
+                title.style.fontWeight = weight;
 
-            this.cycle(++stage % 3);
+                this.cycle(++stage % 3, title);
+            });
         });
+    }
+
+    /**
+     * Starts a tutorial on how to run application.
+     */
+    getStarted() {
+        var range = document.createRange();
+        var nextLocation = document.getElementById("dynamicInstructors");
+
+        FnScroll.tutorialScroll(null, nextLocation);
     }
 
     render() {
@@ -100,9 +77,15 @@ class Landing extends React.Component {
                     a calendar application for organizing swim lessons<br />
                     doing the heavy lifting while leaving you with creative control
                 </p>
-                <a className="pure-button pure-button-primary">
-                    Get Started
-                </a>
+                <div>
+                    <Anchor
+                        callback={ () => null }
+                        data={ "Get Started" }
+                        handleClick={ this.getStarted }
+                        hyperlink={ "javascript:void(0)" }
+                        styleClass={ "pure-button pure-button-primary" }
+                    />
+                </div>
             </div>
         );
     }
