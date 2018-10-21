@@ -18,11 +18,15 @@ class Connector extends React.Component {
     constructor(props) {
         super(props);
 
-        this.headerId = 1;
+        this.state = {
+            "headerId": 1
+        };
     }
 
     setHeaderId(newId) {
-        this.headerId = newId;
+        this.state = {
+            "headerId": newId
+        };
     }
 
     getGridArrays(payload) {
@@ -54,7 +58,7 @@ class Connector extends React.Component {
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
-            returnValue = fetch(this.props.serverURI + '/api/grid?headerId=' + this.headerId)
+            returnValue = fetch(this.props.serverURI + '/api/grid?headerId=' + this.state.headerId)
                 .then(res => res.json())
                 .then(json => this.formatGridRes(json))
                 .catch(error => {
@@ -71,7 +75,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/grid?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/grid?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'POST',
                 body: JSON.stringify(payload)
@@ -85,7 +89,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/grid/' + gridId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/grid/' + gridId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
@@ -96,7 +100,7 @@ class Connector extends React.Component {
     }
 
     deleteGridData(gridId) {
-        return fetch(this.props.serverURI + '/api/grid/' + gridId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/grid/' + gridId + '?headerId=' + this.state.headerId, {
                 method: 'DELETE'
         })
             .then(res => res.json())
@@ -210,7 +214,7 @@ class Connector extends React.Component {
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
-            returnValue = fetch(this.props.serverURI + '/api/instructors?headerId=' + this.headerId)
+            returnValue = fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
                 .then(res => res.json())
                 .then(json => this.formatInstructorRes(json))
                 .catch(error => {
@@ -227,7 +231,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'POST',
                 body: JSON.stringify(payload)
@@ -241,7 +245,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/instructors/' + instructorId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/instructors/' + instructorId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
@@ -252,7 +256,7 @@ class Connector extends React.Component {
     }
 
     deleteInstructorData(instructorId) {
-        return fetch(this.props.serverURI + '/api/instructors/' + instructorId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/instructors/' + instructorId + '?headerId=' + this.state.headerId, {
                 method: 'DELETE'
         })
             .then(res => res.json())
@@ -262,7 +266,7 @@ class Connector extends React.Component {
     formatInstructorRes(instructorRes) {
         var newObject = {};
 
-        instructorRes.forEach((instructor) => {
+        instructorRes.forEach((instructor, index) => {
             var newId = instructor.id;
             var newInstructor = instructor.instructor;
             var newDateOfHire = instructor.dateOfHire;
@@ -295,7 +299,7 @@ class Connector extends React.Component {
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
-            returnValue = fetch(this.props.serverURI + '/api/lessons?headerId=' + this.headerId)
+            returnValue = fetch(this.props.serverURI + '/api/lessons?headerId=' + this.state.headerId)
                 .then(res => res.json())
                 .then(json => this.formatLessonsRes(json))
                 .catch(error => {
@@ -312,7 +316,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/lessons?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/lessons?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'POST',
                 body: JSON.stringify(payload)
@@ -326,7 +330,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/lessons/' + lessonId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/lessons/' + lessonId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
@@ -337,7 +341,7 @@ class Connector extends React.Component {
     }
 
     deleteLessonData(lessonId) {
-        return fetch(this.props.serverURI + '/api/lessons/' + lessonId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/lessons/' + lessonId + '?headerId=' + this.state.headerId, {
                 method: 'DELETE'
         })
             .then(res => res.json())
@@ -347,7 +351,7 @@ class Connector extends React.Component {
     formatLessonsRes(lessonsRes) {
         var newObject = {};
 
-        lessonsRes.forEach((lesson) => {
+        lessonsRes.forEach((lesson, index) => {
             var newId = lesson.id;
             var newLesson = lesson.title;
             var newQuantity = lesson.quantity;
@@ -378,7 +382,7 @@ class Connector extends React.Component {
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
-            returnValue = fetch(this.props.serverURI + '/api/preferences?headerId=' + this.headerId)
+            returnValue = fetch(this.props.serverURI + '/api/preferences?headerId=' + this.state.headerId)
                 .then(res => res.json())
                 .then(json => this.formatPreferenceRes(json))
                 .catch(error => {
@@ -395,7 +399,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/preferences/' + preferenceId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/preferences/' + preferenceId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
@@ -410,23 +414,59 @@ class Connector extends React.Component {
             JSON.stringify(DefaultData.InstructorPreferences)
         );
 
-        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.headerId)
+        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
             .then(res => res.json()).then((instructors) => {
                 var newObject = {};
+                var res;
+                var maxId = 0;
+                var newLessons = [];
+
+                if (instructors.length === 0) {
+                    return newObject;
+                }
 
                 preferenceRes.forEach((preference) => {
+                    var newInstructor;
+                    var newInstructorObject;
                     var newId = preference.id;
                     var newLessons = preference.lessons;
                     var newInstructorId = preference.instructorId;
 
-                    var newInstructorObject = instructors.find((instructor) => {
+                    newInstructorObject = instructors.find((instructor) => {
                         return instructor.id === newInstructorId;
                     });
 
-                    var newInstructor = newInstructorObject.instructor;
+                    if (!newInstructorObject) {
+                        return true;
+                    }
+
+                    maxId = Math.max(newId, maxId);
+                    newInstructor = newInstructorObject.instructor;
 
                     newObject[newInstructor] = {
                         "id": newId,
+                        "instructorId": newInstructorId,
+                        "lessons": newLessons
+                    };
+                });
+
+                for (var i = 0; i < defaultRes.length; i++) {
+                    res = defaultRes[i];
+                    newLessons = newLessons.concat(res.lessons);
+                }
+
+                // Give full preferences to instructors without preferences.
+                instructors.forEach((instructor) => {
+                    var newId = maxId++;
+                    var newInstructorId = instructor.id;
+                    var instructorName = instructor.instructor;
+
+                    if (instructorName in newObject.data) {
+                        return true;
+                    }
+
+                    newObject.data[instructorName] = {
+                        "id": newInstructorId,
                         "instructorId": newInstructorId,
                         "lessons": newLessons
                     };
@@ -451,7 +491,7 @@ class Connector extends React.Component {
         } else if (populate === "none") {
             returnValue = new Promise((resolve, reject) => resolve({}));
         } else {
-            returnValue = fetch(this.props.serverURI + '/api/privates?headerId=' + this.headerId)
+            returnValue = fetch(this.props.serverURI + '/api/privates?headerId=' + this.state.headerId)
                 .then(res => res.json())
                 .then(json => this.formatPrivatesRes(json))
                 .catch(error => {
@@ -468,7 +508,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/privates?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/privates?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'POST',
                 body: JSON.stringify(payload)
@@ -482,7 +522,7 @@ class Connector extends React.Component {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/privates/' + privateId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/privates/' + privateId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
@@ -493,7 +533,7 @@ class Connector extends React.Component {
     }
 
     deletePrivatesData(privatesId) {
-        return fetch(this.props.serverURI + '/api/privates/' + privatesId + '?headerId=' + this.headerId, {
+        return fetch(this.props.serverURI + '/api/privates/' + privatesId + '?headerId=' + this.state.headerId, {
                 method: 'DELETE'
         })
             .then(res => res.json())
@@ -501,11 +541,16 @@ class Connector extends React.Component {
     }
 
     formatPrivatesRes(privatesRes) {
-        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.headerId)
+        return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
             .then(res => res.json()).then((instructors) => {
                 var newObject = {};
 
+                if (instructors.length === 0) {
+                    return newObject;
+                }
+
                 privatesRes.forEach((privateLesson) => {
+                    var newInstructor;
                     var newId = privateLesson.id;
                     var newTime = privateLesson.time;
                     var newDuration = privateLesson.duration;
@@ -519,7 +564,11 @@ class Connector extends React.Component {
                         return instructor.id === newInstructorId;
                     });
 
-                    var newInstructor = newInstructorObject.instructor;
+                    if (!newInstructorObject) {
+                        return true;
+                    }
+
+                    newInstructor = newInstructorObject.instructor;
 
                     if (newInstructor in newObject) {
                         newObject[newInstructor].push({
@@ -543,7 +592,7 @@ class Connector extends React.Component {
     }
 }
 
-Connector.propTypes =  {
+Connector.propTypes = {
     serverURI: PropTypes.string.isRequired
 }
 
