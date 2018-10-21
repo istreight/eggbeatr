@@ -7,17 +7,12 @@
  */
 
 
-// Libs
-import React from 'react';
-import ReactDOM from 'react-dom';
 import PureCSS from 'pure-css';
 
-// CSS
-import './assets/css/pure.css';
-import './assets/css/style.css';
+import 'css/pure.css';
+import 'css/style.css';
+import Controller from 'components/Controller';
 
-// Components
-import Controller from './components/Controller';
 
 
 new Controller();

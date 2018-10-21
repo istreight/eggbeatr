@@ -9,19 +9,19 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
-import Grid from './Grid';
-import About from './About';
-import Header from './Header';
-import Footer from './Footer';
-import Landing from './Landing';
-import Lessons from './Lessons';
-import Private from './Private';
-import Connector from './Connector';
-import Instructors from './Instructors';
-import GridChecklist from './GridChecklist';
-import InstructorPreferences from './InstructorPreferences';
-
+import Grid from 'components/Grid';
+import About from 'components/About';
+import Header from 'components/Header';
+import Footer from 'components/Footer';
+import Landing from 'components/Landing';
+import Lessons from 'components/Lessons';
+import Privates from 'components/Privates';
+import Connector from 'components/Connector';
+import Instructors from 'components/Instructors';
+import GridChecklist from 'components/GridChecklist';
+import InstructorPreferences from 'components/InstructorPreferences';
 
 class Controller extends React.Component {
     constructor(props) {
