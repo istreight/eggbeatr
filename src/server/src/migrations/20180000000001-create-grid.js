@@ -28,10 +28,12 @@ module.exports = {
             },
             createdAt: {
                 allowNull: false,
+                defaultValue: Date.now(),
                 type: Sequelize.DATE
             },
             updatedAt: {
                 allowNull: false,
+                defaultValue: Date.now(),
                 type: Sequelize.DATE
             }
         });
