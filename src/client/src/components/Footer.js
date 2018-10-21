@@ -10,6 +10,10 @@
 
 import React from 'react';
 
+import Anchor from 'utils/Anchor';
+import UnorderedList from 'utils/UnorderedList';
+
+
 class Footer extends React.Component {
     render() {
         return (

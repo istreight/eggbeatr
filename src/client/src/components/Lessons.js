@@ -9,7 +9,14 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+
+import Table from 'utils/Table';
+import Input from 'utils/Input';
+import Animator from 'functions/Animator';
+import Tutorial from 'specializations/Tutorial';
+import SectionDescription from 'specializations/SectionDescription';
 
 
 class Lessons extends React.Component {

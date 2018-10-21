@@ -10,7 +10,12 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+
+import Modal from 'utils/Modal';
+import Anchor from 'utils/Anchor';
+import EditButton from 'specializations/EditButton';
 
 
 class InstructorPreferences extends React.Component {

@@ -17,7 +17,14 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'root': path.resolve(__dirname, '../../../')
+            'assets': path.resolve(__dirname, contentBase, 'assets'),
+            'components': path.resolve(__dirname, contentBase, 'components'),
+            'css': path.resolve(__dirname, contentBase, 'assets/css'),
+            'functions': path.resolve(__dirname, contentBase, 'assets/utils/functions'),
+            'root': path.resolve(__dirname, '../../../'),
+            'specializations': path.resolve(__dirname, contentBase, 'assets/specializations'),
+            'src': path.resolve(__dirname, contentBase),
+            'utils': path.resolve(__dirname, contentBase, 'assets/utils')
         },
         extensions: ['.js']
     },
