@@ -4,7 +4,7 @@
  * START DATE:  November 1st, 2016
  *
  * This file contains the About class, displaying a description of the lesson
- *  calendar web application. The About class is exported.
+ *  calendar web application.
  */
 
 import React from 'react';
@@ -15,6 +15,41 @@ import FeatureDescription from 'specializations/FeatureDescription';
 
 
 class About extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = null;
+    }
+
+    componentWillMount() {
+        var person = {
+            "imgSrc": "assets/img/person-icon.png",
+            "textDesc": "Schedule private lessons at a specific time and we'll make sure nothing conflicts."
+        };
+
+        var settings = {
+            "imgSrc": "assets/img/settings-icon.png",
+            "textDesc": "Our algorithm pairs your instructors with your lessons just like you would."
+        };
+
+        var stats = {
+            "imgSrc": "assets/img/stats-icon.png",
+            "textDesc": "We'll do the monotonous work so you can spend more time on what you enjoy."
+        };
+
+        var timer = {
+            "imgSrc": "assets/img/timer-icon.png",
+            "textDesc": "eggbeatr makes the most of your instructors by using their time between lessons."
+        };
+
+        this.setState({
+            "stats": stats,
+            "timer": timer,
+            "person": person,
+            "settings": settings
+        });
+    }
+
     render() {
         return (
             <div>
@@ -27,32 +62,44 @@ class About extends React.Component {
                         an application designed to build a calendar of swim lessons using customizable sets of instructors and lessons.
                     </div>
                 </div>
-                <ul>
-                    <li>
-                        <img src="./assets/img/settings-icon.png" />
-                        <p className="feature-description">
-                            Our algorithm pairs your instructors with your lessons just like you would.
-                        </p>
-                    </li>
-                    <li>
-                        <img src="./assets/img/person-icon.png" />
-                        <p className="feature-description">
-                            Schedule private lessons at a specific time and we&#039;ll make sure nothing conflicts.
-                        </p>
-                    </li>
-                    <li>
-                        <img src="./assets/img/timer-icon.png" />
-                        <p className="feature-description">
-                            eggbeatr makes the most of your instructors by using their time between lessons.
-                        </p>
-                    </li>
-                    <li>
-                        <img src="./assets/img/stats-icon.png" />
-                        <p className="feature-description">
-                            We&#039;ll do the monotonous work so you can spend more time on what you enjoy.
-                        </p>
-                    </li>
-                </ul>
+                <UnorderedList
+                    callback={ () => null }
+                    data={ [
+                        {
+                            "data": [React.createElement(FeatureDescription, {
+                                "imgSrc": this.state.person.imgSrc,
+                                "key": "key-featuredescription-0",
+                                "textDesc": this.state.person.textDesc
+                            })],
+                            "styleClass": ""
+                        },
+                        {
+                            "data": [React.createElement(FeatureDescription, {
+                                "imgSrc": this.state.settings.imgSrc,
+                                "key": "key-featuredescription-0",
+                                "textDesc": this.state.settings.textDesc
+                            })],
+                            "styleClass": ""
+                        },
+                        {
+                            "data": [React.createElement(FeatureDescription, {
+                                "imgSrc": this.state.stats.imgSrc,
+                                "key": "key-featuredescription-0",
+                                "textDesc": this.state.stats.textDesc
+                            })],
+                            "styleClass": ""
+                        },
+                        {
+                            "data": [React.createElement(FeatureDescription, {
+                                "imgSrc": this.state.timer.imgSrc,
+                                "key": "key-featuredescription-0",
+                                "textDesc": this.state.timer.textDesc
+                            })],
+                            "styleClass": ""
+                        }
+                    ] }
+                    styleClass={ "" }
+                />
             </div>
         );
     }
