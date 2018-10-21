@@ -207,7 +207,7 @@ class Controller extends React.Component {
         console.log("adding data from " + componentName + ".js to controllerData...");
 
         if (componentName === "header") {
-            this.state.connector.setHeaderId(component.selectedSet.id);
+            this.state.connector.setHeaderId(component.data.selectedSet.id);
             return this.init().then(() => this.updateComponents(updateDatabase));
         } else {
             return this.manipulateData(componentName, updateDatabase);

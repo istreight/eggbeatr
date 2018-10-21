@@ -7,7 +7,7 @@
  */
 
 
-/* "Creating Grids" & "Switch Sets" loading indicator */
+/* "Creating Grids" & "Switch Sets" indicators */
 @-webkit-keyframes scale {
     0% {
         opacity: 0;
@@ -222,6 +222,22 @@ tbody td:first-child {
     height: 64px;
 }
 
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.is-visible {
+    visibility: visible;
+}
+
+.is-invisible {
+    visibility: hidden;
+}
+
 .remove-preference {
     color: #aaa;
     float: right;
@@ -246,12 +262,14 @@ tbody td:first-child {
     color: rgb(28, 184, 65);
 }
 
+.wait-spinner,
 .create-spinner {
     position: relative;
     display: inline-block;
     vertical-align: middle;
 }
 
+.wait-spinner span,
 .create-spinner span {
     border-radius: 40px;
     position: absolute;
@@ -263,14 +281,17 @@ tbody td:first-child {
     -webkit-animation: scale 3s ease-out infinite;
 }
 
+.wait-spinner span:nth-child(2),
 .create-spinner span:nth-child(2) {
     -webkit-animation-delay: 2s;
 }
 
+.wait-spinner span:nth-child(3),
 .create-spinner span:nth-child(3) {
     -webkit-animation-delay: 1s;
 }
 
+.wait-label,
 .create-label {
     font-family: "Helvetica Neue";
     font-weight: 100;
@@ -303,7 +324,7 @@ tbody td:first-child {
 }
 
 #dynamicHeader input[type="text"] {
-    width: 132px;
+    width: 128px;
     height: 27px;
 }
 
@@ -311,41 +332,42 @@ tbody td:first-child {
     display: none;
 }
 
-#dynamicHeader .create-indicator {
+#dynamicHeader .wait-indicator {
     position: absolute;
-    visibility: hidden;
     top: 15px;
-    margin-left: 34%;
+    margin-left: 48%;
     color: #6FBEF3;
 }
 
-#dynamicGrid .create-label {
+#dynamicHeader .wait-label {
     font-size: 16px;
 }
 
-#dynamicHeader .create-spinner {
+#dynamicHeader .wait-spinner {
     height: 24px;
     width: 24px;
 }
 
-#dynamicHeader .create-spinner span {
+#dynamicHeader .wait-spinner span {
     border: 3px solid #6FBEF3;
 }
 
 #dynamicHeader .header-input {
-    padding: 8px 16px;
+    padding: 8px;
 
     display: inline;
-
-    visibility: hidden;
 }
 
 #dynamicHeader .pure-menu-heading {
     padding: 8px 16px;
 }
 
+#dynamicHeader .pure-menu-scrollable {
+    display: inline;
+}
+
 #dynamicHeader .pure-menu-scrollable ul {
-    width: 28%;
+    width: 24%;
 
     float: none;
 

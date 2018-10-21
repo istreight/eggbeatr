@@ -177,8 +177,10 @@ class Connector extends React.Component {
 
     formatHeaderRes(headerRes) {
         var newObject = {
-            "selectedSet": {},
-            "sets": []
+            "data": {
+                "selectedSet": {},
+                "sets": []
+            }
         };
 
         headerRes.forEach((header, index) => {
@@ -190,10 +192,10 @@ class Connector extends React.Component {
             };
 
             if (index === 0) {
-                newObject.selectedSet = newHeader;
+                newObject.data.selectedSet = newHeader;
             }
 
-            newObject.sets.push(newHeader);
+            newObject.data.sets.push(newHeader);
         });
 
         return newObject;
