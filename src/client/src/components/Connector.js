@@ -116,9 +116,11 @@ class Connector extends React.Component {
             var newLessonTimes = grid.lessonTimes;
 
             newObject = {
+                "data": {
                     "id": newId,
                     "duration": newDuration,
                     "lessonTimes": newLessonTimes
+                }
             };
         });
 

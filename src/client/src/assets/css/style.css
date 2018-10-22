@@ -262,15 +262,13 @@ tbody td:first-child {
     color: rgb(28, 184, 65);
 }
 
-.wait-spinner,
-.create-spinner {
+.wait-spinner {
     position: relative;
     display: inline-block;
     vertical-align: middle;
 }
 
-.wait-spinner span,
-.create-spinner span {
+.wait-spinner span {
     border-radius: 40px;
     position: absolute;
     top: 0;
@@ -281,18 +279,15 @@ tbody td:first-child {
     -webkit-animation: scale 3s ease-out infinite;
 }
 
-.wait-spinner span:nth-child(2),
-.create-spinner span:nth-child(2) {
+.wait-spinner span:nth-child(2) {
     -webkit-animation-delay: 2s;
 }
 
-.wait-spinner span:nth-child(3),
-.create-spinner span:nth-child(3) {
+.wait-spinner span:nth-child(3){
     -webkit-animation-delay: 1s;
 }
 
-.wait-label,
-.create-label {
+.wait-label {
     font-family: "Helvetica Neue";
     font-weight: 100;
     display: inline-block;
@@ -797,24 +792,23 @@ tbody td:first-child {
     margin-left: 40px;
 }
 
-#dynamicGrid .create-indicator {
+#dynamicGrid .wait-indicator {
     position: absolute;
-    visibility: hidden;
     margin-top: 80px;
     margin-left: 16%;
     color: #1f8dd6;
 }
 
-#dynamicGrid .create-label {
+#dynamicGrid .wait-label {
     font-size: 34px;
 }
 
-#dynamicGrid .create-spinner {
+#dynamicGrid .wait-spinner {
     height: 45px;
     width: 45px;
 }
 
-#dynamicGrid .create-spinner span {
+#dynamicGrid .wait-spinner span {
     border: 3px solid #1f8dd6;
 }
 
@@ -849,8 +843,6 @@ tbody td:first-child {
     margin: 0 0 5% 35%;
 
     bottom: 2%;
-
-    display: none;
 }
 
 #dynamicGrid .modal-header a {
@@ -906,6 +898,10 @@ tbody td:first-child {
     margin: 5% 0 0 17%;
 
     table-layout: fixed;
+}
+
+#dynamicGridChecklist th {
+    text-align: center;
 }
 
 #dynamicGridChecklist th, #dynamicGridChecklist td {

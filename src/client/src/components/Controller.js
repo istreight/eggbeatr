@@ -120,21 +120,22 @@ class Controller extends React.Component {
                 setComponentData("header", this, true);
         });
 
-        this.renderComponent(Grid, {
-                "callback": componentCallback,
-                "connector": this.state.connector,
-                "createComponent": createComponent,
-                "getGrids": this.state.connector.getGridArrays.bind(this),
-                "initData": this.state.components.grid,
-                "removeComponent": removeComponent,
-            }, document.getElementById("dynamicGrid"), function() {
-                setComponentData("grid", this, true);
-        });
-
         this.renderComponent(GridChecklist, {
-            "createGridHandler": this.state.componentObjects.grid.generateGrid.bind(this.state.componentObjects.grid)
         }, document.getElementById("dynamicGridChecklist"), function() {
             setComponentData("gridChecklist", this, true);
+        });
+
+        this.renderComponent(Grid, {
+                "callback": componentCallback,
+                "createComponent": createComponent,
+                "getGrids": this.state.connector.getGridArrays.bind(this),
+                "gridChecklistCallback": this.state.componentObjects.gridChecklist.setCreateGridComponents.bind(this.state.componentObjects.gridChecklist),
+                "initData": this.state.components.grid,
+                "getSetTitle": this.state.componentObjects.header.getSelectedSet.bind(this.state.componentObjects.header),
+                "removeComponent": removeComponent,
+                "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
+            }, document.getElementById("dynamicGrid"), function() {
+                setComponentData("grid", this, true);
         });
 
         this.renderComponent(InstructorPreferences, {
@@ -233,9 +234,10 @@ class Controller extends React.Component {
                 if (name === "instructorPreferences") {
                     comp.state = this.state.components[name];
                 } else if (name === "grid") {
-                    comp.grid = this.state.components[name];
+                    var gridComponent = comp;
+                    gridComponent.state = this.state.components[name];
 
-                    comp.setLessonTimes();
+                    gridComponent.init();
                 } else if (name === "instructors") {
                     comp.instructors = this.state.components[name];
 
