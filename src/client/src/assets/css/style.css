@@ -586,19 +586,17 @@ tbody td:first-child {
 }
 
 #dynamicLessons .content-section-description div {
+    opacity: 0;
+
     margin: 0.5% 40px 0 0;
 
     color: #1f8dd6;
-
-    display: none;
 }
 
 #dynamicLessons .content-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 55px;
-
-    display: none;
 }
 
 #dynamicLessons .content-section-footer a {

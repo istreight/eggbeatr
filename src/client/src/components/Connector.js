@@ -353,14 +353,16 @@ class Connector extends React.Component {
     }
 
     formatLessonsRes(lessonsRes) {
-        var newObject = {};
+        var newObject = {
+            "data": {}
+        };
 
         lessonsRes.forEach((lesson, index) => {
             var newId = lesson.id;
             var newLesson = lesson.title;
             var newQuantity = lesson.quantity;
 
-            newObject[newLesson] = {
+            newObject.data[newLesson] = {
                 "id": newId,
                 "quantity": newQuantity
             };
