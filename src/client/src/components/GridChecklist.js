@@ -17,116 +17,148 @@ class GridChecklist extends React.Component {
     constructor(props) {
         super(props);
 
-        this.checklistQuantities = {
-            "instructors": 0,
-            "lessons": 0,
-            "privates": 0
-        };
+        this.state = null;
+        this.componentRow = null;
     }
 
-    componentDidMount() {
-        // Unbind "Create Grid" button.
-        $("#dynamicGrid .content-section-description a").unbind("click");
-    }
-
-    setQuantity(key, value) {
-        this.checklistQuantities[key] = value;
-
-        this.checkComplete(key);
-    }
-
-    checkComplete(key) {
-        var isLessonsValid;
-        var isInstructorsValid;
-        var gridChecklist = $("#dynamicGridChecklist td");
-
-        gridChecklist.each((index, element) => {
-            var key = $(element).html().toLowerCase();
-
-            if (key in this.checklistQuantities) {
-                var isValid;
-                var valueCell = $(element).next();
-                var value = this.checklistQuantities[key];
-
-                if (key === "instructors") {
-                    isInstructorsValid = (value !== 0);
-                } else if (key === "lessons") {
-                    isLessonsValid = (value !== 0) || isLessonsValid;
-                } else if (key === "privates") {
-                    isLessonsValid = (value !== 0) || isLessonsValid;
+    componentWillMount() {
+        this.setState({
+            "data": {
+                "grid": {
+                    "quantity": false,
+                    "cell": ""
+                },
+                "instructors": {
+                    "quantity": 0,
+                    "cell": ""
+                },
+                "lessons": {
+                    "quantity": 0,
+                    "cell": ""
+                },
+                "privates":{
+                    "quantity": 0,
+                    "cell": ""
                 }
-
-                isValid = isLessonsValid && isInstructorsValid;
-
-                this.updateGridChecklist(key, value, valueCell, isValid);
             }
         });
     }
 
-    updateGridChecklist(key, value, valueCell, isValid) {
-        var createGridButton = $("#dynamicGrid .content-section-description a");
+    /**
+     * Store a reference to the button and the button's on click handler.
+     */
+    setCreateGridComponents(button, handler) {
+        this.createGridButton = button;
+        this.createGridHandler = handler;
+    }
 
-        createGridButton.unbind("click");
+    /**
+     * Set a new quantity for one of the components.
+     */
+    setQuantity(key, quantity) {
+        Object.assign(this.state.data[key], { "quantity": quantity });
 
-        valueCell.html(value);
+        this.checkComplete();
+        this.setState(this.state);
+    }
 
-        if (value !== 0) {
-            valueCell.removeClass("error-cell warning-table");
-        } else if (key !== "privates") {
-            valueCell.addClass("error-cell");
-        }
+    /**
+     * Check the quantities of the components to assess their validity.
+     */
+    checkComplete() {
+        var value;
+        var isValid;
+        var isGridValid;
+        var isLessonsValid;
+        var isInstructorsValid;
+        var disabledClass = " pure-button-disabled";
+        var reReplaceCriteria = new RegExp(disabledClass, "g");
+        var styleClass = this.createGridButton.state.styleClass;
 
-        // Place warning if quantity of lessons is 0 and quantity of privates is not 0.
-        if (key === "lessons" && value === 0) {
-            if (this.checklistQuantities.privates !== 0) {
-                valueCell.removeClass("error-cell").addClass("warning-table");
-            } else {
-                valueCell.removeClass("warning-table").addClass("error-cell");
+        styleClass = styleClass.replace(reReplaceCriteria, "");
+
+        for (var key in this.state.data) {
+            value = this.state.data[key];
+            isValid = (value.quantity > 0);
+
+            if (key === "instructors") {
+                Object.assign(value, { "cell": isValid ? null : "error-cell" });
+
+                isInstructorsValid = isValid;
+            } else if (key === "lessons") {
+                var privateQuantity = this.state.data.privates.quantity;
+                var errorClass = (privateQuantity > 0) ? "warning-cell" : "error-cell";
+
+                Object.assign(value, { "cell": isValid ? "" : errorClass });
+
+                isLessonsValid = isValid || privateQuantity > 0;
+            } else if (key === "grid") {
+                isGridValid = value.quantity;
             }
         }
 
         // Verify condition to enable/disable "Create Grid" button.
-        if (isValid) {
-            createGridButton.removeClass("pure-button-disabled");
-            createGridButton.click(this.props.createGridHandler);
+        if (isLessonsValid && isInstructorsValid && isGridValid) {
+            this.createGridButton.setState({
+                "handleClick": this.createGridHandler,
+                "styleClass": styleClass
+            });
         } else {
-            createGridButton.addClass("pure-button-disabled");
+            this.createGridButton.setState({
+                "handleClick": () => null,
+                "styleClass": styleClass.concat(disabledClass)
+            });
         }
+    }
+
+    /**
+     * Style the component's cell based on it's quantity.
+     */
+    getCellStyle(value) {
+        var isValid;
+        var cellClass = null;
+        var quantity = parseInt(value, 10);
+
+        if (isNaN(quantity)) {
+            this.componentRow = value;
+            return;
+        }
+
+        isValid = (quantity > 0);
+        if (this.componentRow === "Instructors") {
+            cellClass = isValid ? null : "error-cell";
+        } else if (this.componentRow === "Lessons") {
+            var errorClass = (this.state.data.privates.quantity > 0) ? "warning-cell" : "error-cell";
+
+            cellClass = isValid ? "" : errorClass;
+        }
+
+        return cellClass;
     }
 
     render() {
         return (
             <div>
                 <h3 className="content-head">Grid Checklist</h3>
-                <table className="pure-table">
-                    <thead>
-                        <tr>
-                            <th className="is-center">Requirements</th>
-                            <th className="is-center">Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="table-odd">
-                            <td>Instructors</td>
-                            <td>0</td>
-                        </tr>
-                        <tr className="table-even">
-                            <td>Lessons</td>
-                            <td>0</td>
-                        </tr>
-                        <tr className="table-odd">
-                            <td>Privates</td>
-                            <td>0</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <Table
+                    callback={ () => null }
+                    dataBody={ () => [
+                        ["Instructors", this.state.data.instructors.quantity.toString()],
+                        ["Lessons", this.state.data.lessons.quantity.toString()],
+                        ["Privates", this.state.data.privates.quantity.toString()]
+                    ] }
+                    dataHeader={ () => [[
+                        "Requirements",
+                        "Quantity"
+                    ]] }
+                    styleCell={ this.getCellStyle.bind(this) }
+                    styleHeader={ () => null }
+                    styleRow={ (index) => index % 2 ? "table-even" : "table-odd" }
+                    styleTable={ () => "pure-table" }
+                />
             </div>
         );
     }
-}
-
-GridChecklist.propTypes =  {
-    createGridHandler: PropTypes.func.isRequired
 }
 
 export default GridChecklist;

@@ -5,10 +5,9 @@
  *
  * This file contains the Grid class for the schedule
  *  content of the lesson calendar web application.
- * The Grid class is exported.
  *
  * The content is displayed here as a table, but
- *  the values will be generated in another component.
+ *  the values will be created in another component.
  */
 
 import React from 'react';
@@ -33,152 +32,211 @@ class Grid extends React.Component {
     constructor(props) {
         super(props);
 
-        this.grid = {};
-        this.duration = 1.5;
-        this.controllerData = {};
-        this.lessonQueue = [[], [], ["Hose", "Swim"]];
-        this.lessonCodes = {
-            "02": "<div class='line line-left'></div>",
-            "04": "<div class='line line-left'></div><div class='private-right'></div>",
-            "20": "<div class='line line-right'></div>",
-            "22": "<div class='line line-right'></div>",
-            "23": "<div class='line line-right'><p>" + this.lessonQueue[2][0] + "</p></div>",
-            "24": "<div class='line line-left'></div><div class='private-right'></div>",
-            "32": "<div class='line line-left'><p>" + this.lessonQueue[2][0] + "</p></div>",
-            "40": "<div class='line line-right'></div><div class='private-left'></div>",
-            "42": "<div class='line line-right'></div><div class='private-left'></div>"
-        };
+        this.state = null;
+        this.controllerData = null;
+        this.durationContainer = null;
+    }
+
+    componentWillMount() {
+        this.durationContainer = [];
+        this.setState(this.props.initData, this.init);
     }
 
     componentDidMount() {
-        this.grid = this.props.initData;
-        this.controllerData = this.props.callback(this.grid, "grid", false);
-
-        var lessonTimes = this.grid.lessonTimes;
-        if (!(lessonTimes && lessonTimes[0])) {
-            $("#dynamicGrid input").attr("placeholder", "");
-        } else {
-            $("#dynamicGrid input").attr("placeholder", lessonTimes[0]);
-        }
-
-        $("#dynamicGrid .content-section-description a").click(this.generateGrid.bind(this));
-
-        $("#dynamicGrid input").blur(this.setLessonTimes.bind(this));
-
-        $("#dynamicGrid .duration-button").eq(0).addClass("pure-menu-selected");
-        $("#dynamicGrid .duration-button").click(this.updateDuration.bind(this));
-
-        $(window).click(this.hideModal);
+        window.addEventListener("click", this.hideModal.bind(this));
     }
 
     /**
-     * Update the object duration value and display the
+     * Initialize the class members.
+     */
+    init() {
+        // Select the button based on the state duration value.
+        var duration;
+        if (this.state.data) {
+            duration = this.state.data.duration;
+        }
+
+        this.props.gridChecklistCallback(
+            this.createGridButton,
+            this.displayComponentState.bind(this)
+        );
+
+        this.setDuration(duration);
+        this.setLessonTimes(false);
+
+        this.controllerData = this.props.callback(this.state, "grid", false);
+    }
+
+    /**
+     * Update the duration button value and display the
      *  correct button as selected.
      */
-    updateDuration() {
-        var duration;
-        var durationIndex;
-        var durationContainer = $("#dynamicGrid .pure-menu-horizontal:not(.pure-menu-scrollable)");
+    setDuration(newDuration) {
+        var isDurationSet = false;
+        var errorClass = " error-cell";
+        var reReplaceCriteria = new RegExp(errorClass, "g");
+        var titleStyleClass = this.durationContainer[0].props.styleClass;
 
-        // Set the lesson times based on duration.
-        this.setLessonTimes();
+        // Update duration field of the state data (passed by reference).
+        if (!(newDuration)) {
+            // Create new Grid, lesson times.
+            this.setLessonTimes(true);
+        } else {
+            Object.assign(this.state.data, {
+                "duration": newDuration
+            });
+
+            var gridData = this.gridList.state.data;
+            this.setState(this.state, () => {
+                // If a grid exists, create a new one with the new duration.
+                if (gridData.length > 0) {
+                    this.displayComponentState();
+                }
+
+                this.props.callback(this.state, "grid", true);
+            });
+        }
 
         // Find previously selected duration and remove "selected" class.
-        $(event.target).closest("ul").find(".pure-menu-selected").removeClass("pure-menu-selected");
+        for (var i = 1; i < this.durationContainer.length; i++) {
+            var button = this.durationContainer[i];
+            var styleClass = button.state.styleClass;
+            var duration = button.refDuration.current;
+            var selectedClass = " pure-menu-selected";
+            var reReplaceCriteria = new RegExp(selectedClass, "g");
 
-        $(event.target).addClass("pure-menu-selected");
-
-        durationIndex = durationContainer.find("li a").index(event.target);
-        this.duration = (durationIndex / 2.0) + 1;
-
-        // If a grid exists, generate a new one with the new duration.
-        if ($("#dynamicGrid .pure-menu-scrollable ul li").length > 0) {
-            this.generateGrid();
+            if (newDuration === duration) {
+                isDurationSet = true;
+                button.setState({
+                    "styleClass": styleClass.concat(selectedClass)
+                });
+            } else {
+                button.setState({
+                    "styleClass": styleClass.replace(reReplaceCriteria, "")
+                });
+            }
         }
+
+        if (!isDurationSet) {
+            this.durationContainer[0].setState({
+                "styleClass": titleStyleClass.concat(errorClass)
+            });
+        } else {
+            this.durationContainer[0].setState({
+                "styleClass": titleStyleClass.replace(reReplaceCriteria, "")
+            });
+        }
+
+        this.props.setChecklistQuantity("grid", this.verifyData());
     }
 
     /**
      * Validate the 'Start Time' input.
      */
     validateStartTime(startTime) {
-        var target = $("#dynamicGrid input");
         var reHour = new RegExp(/^([1-9]|1[0-2])$/);
         var reMinute = new RegExp(/^([0-5][05]|60)$/);
-
         var [hour, minute] = startTime.split(":");
 
-        var isValid = reHour.test(hour) && reMinute.test(minute);
+        return reHour.test(hour) && reMinute.test(minute);
+    }
 
-        if (isValid) {
-            $(target).attr("placeholder", startTime);
-            $(target).parent().removeClass("error-cell");
-        } else {
-            $(target).parent().addClass("error-cell");
-        }
+    /**
+     * Check that the duration and lessonTimes fields are set in the state.
+     */
+    verifyData() {
+        var lessonTimes = this.state.data.lessonTimes;
+        var reDuration = new RegExp(/^([1-9](\.5)?|0\.5)$/);
+        var validDuration = reDuration.test(this.state.data.duration);
+        var validLessonTimes = lessonTimes.reduce(
+            (result, current) => result && this.validateStartTime(current),
+            true
+        );
 
-        return isValid;
+        return validDuration && validLessonTimes && lessonTimes.length > 0;
     }
 
     /**
      * Sets all 5 possible lesson start times.
      */
-    setLessonTimes() {
+    setLessonTimes(e) {
+        var isValid;
         var startTime;
+        var newLessonTimes;
+        var startTimeClassList;
+        var startTimeNode = ReactDOM.findDOMNode(this.startTimeInputField);
 
-        $("#dynamicGrid input").attr("placeholder", "");
-
-        if (event && $(event.target).is("input")) {
-            startTime = $(event.target).val();
+        if (e && e.target && e.target.nodeName === "INPUT") {
+            startTime = e.target.value || e.target.placeholder;
         } else {
-            if (!this.grid.lessonTimes) {
-                return;
+            if (this.state.data && this.state.data.lessonTimes) {
+                startTime = this.state.data.lessonTimes[0];
+            } else {
+                startTime = "...";
             }
-
-            startTime = this.grid.lessonTimes[0];
         }
 
-        if (!this.validateStartTime(startTime)) {
-            return;
+        // Set initial time.
+        newLessonTimes = [startTime];
+        isValid = this.validateStartTime(startTime);
+        startTimeClassList = startTimeNode.parentElement.classList;
+        if (isValid) {
+            startTimeClassList.remove("error-cell");
+
+            var [hour, minute] = startTime.split(":");
+            hour = parseInt(hour, 10);
+            minute = parseInt(minute, 10);
+
+            // Maximum amount of slots is 5.
+            for (var slot = 0; slot < 4; slot++) {
+                var newTime;
+
+                minute = (minute + 30) % 60;
+
+                if (minute < 30) {
+                    hour = hour % 12 + 1;
+                }
+
+                if (minute < 10) {
+                    minute = "0" + minute;
+                }
+
+                newTime = [hour, minute].join(":");
+
+                newLessonTimes.push(newTime);
+            }
+        } else {
+            startTimeClassList.add("error-cell");
         }
 
-        var [hour, minute] = startTime.split(":");
-
-        hour = parseInt(hour, 10);
-        minute = parseInt(minute, 10);
-
-        // Maximum amount of slots is 5.
-        this.grid.lessonTimes = [startTime];
-        for (var slot = 0; slot < 4; slot++) {
-            var newTime;
-
-            minute = (minute + 30) % 60;
-
-            if (minute < 30) {
-                hour = hour % 12 + 1;
-            }
-
-            if (minute < 10) {
-                minute = "0" + minute;
-            }
-
-            newTime = [hour, minute].join(":");
-
-            this.grid.lessonTimes.push(newTime);
-        }
-
-        $("#dynamicGrid input").val("");
-        $("#dynamicGrid input").attr("placeholder", this.grid.lessonTimes[0]);
-
-        if (!this.grid.id) {
-            var body = this.grid;
-
-            this.props.createComponent(body, "Grid")
-                .then((res) => {
-                    this.grid = res;
+        if (e) {
+            if (this.state && this.state.data && this.state.data.id) {
+                Object.assign(this.state.data, {
+                    "lessonTimes": newLessonTimes
                 });
-        } else {
-            this.props.callback(this.grid, "grid", true);
+
+                this.setState(this.state, () => {
+                    this.props.callback(this.state, "grid", true);
+                });
+            } else {
+                this.setState({
+                    "data": {
+                        "duration": 0,
+                        "lessonTimes": newLessonTimes
+                    }
+                });
+
+                this.props.createComponent(this.state.data, "Grid")
+                    .then((res) => this.setState(res));
+            }
         }
+
+        this.startTimeInputField.setState({
+            "data": "",
+            "placeholder": startTime
+        });
+
+        this.props.setChecklistQuantity("grid", this.verifyData());
     }
 
     /**
@@ -187,14 +245,14 @@ class Grid extends React.Component {
      *  Grid, given duration and lesson quantities are constant.
      */
     noGridsNotification(duration, numInstructors, numHalfLessons, numThreeQuarterLessons) {
-        var noGridsString = "No Grids were created<br />Add 0 Instructor";
+        var noGridsString = "Add 0 Instructor";
 
         var instructorTime = duration * numInstructors;
         var lessonTime = 0.5 * numHalfLessons + 0.75 * numThreeQuarterLessons;
 
-        var numAddInstructors = Math.ceil((lessonTime - instructorTime) / duration);
+        var numAddInstructors = Math.floor((lessonTime - instructorTime) / duration) + 1;
 
-        if (isNaN(numAddInstructors)) {
+        if (isNaN(numAddInstructors) || numAddInstructors < 1) {
             this.handleGridError();
             return;
         }
@@ -205,28 +263,93 @@ class Grid extends React.Component {
             notification = notification + "s";
         }
 
-        $("#dynamicGrid p").empty().hide();
-        $("#dynamicGrid p").fadeIn(800);
-        $("#dynamicGrid p").append(notification);
+        var data = this.emptyGridsNotification.state.data;
+        var styleClass = this.emptyGridsNotification.state.styleClass;
+        this.emptyGridsNotification.setState({
+            "data": [
+                data[0],
+                Object.assign(data[1], {
+                    "data": [notification]
+                })
+            ],
+            "styleClass": styleClass.replace("is-invisible", "is-visible")
+        });
 
-        $("#dynamicGrid .create-indicator").css("visibility", "hidden");
+        this.waitIndicator.setState({
+            "indicatorStyleClass": "is-invisible",
+            "spinnerStyleClass": "is-invisible"
+        });
     }
 
     /**
      * Returns an HTML to style a table cell based on
      *  code for split cell.
      */
-    getSplitCell(code) {
-        return this.lessonCodes[code];
+    getSplitCell(code, reactKey) {
+        var privateLeft;
+        var privateRight;
+        var child = null;
+        var childClassName = null;
+
+        if (code.includes("3")) {
+            child = React.createElement("p", {
+                "className": childClassName,
+                "key": reactKey + "-work"
+            }, "Work");
+        } else if (code.includes("4")) {
+            privateLeft = React.createElement("div", {
+                "className": "private-left",
+                "key": reactKey + "-private"
+            });
+
+            privateRight = React.createElement("div", {
+                "className": "private-right",
+                "key": reactKey + "-private"
+            });
+        }
+
+        var lineLeft = React.createElement("div", {
+            "className": "line line-left",
+            "key": reactKey + "-line"
+        }, child);
+        var lineRight = React.createElement("div", {
+            "className": "line line-right",
+            "key": reactKey + "-line"
+        }, child);
+
+        var block;
+        switch (code) {
+            case "02":
+            case "32":
+                block = [lineLeft];
+                break;
+            case "20":
+            case "22":
+            case "23":
+                block = [lineRight];
+                break;
+            case "04":
+            case "24":
+                block = [lineLeft, privateRight];
+                break;
+            case "40":
+            case "42":
+                block = [lineRight, privateLeft];
+                break;
+            default:
+                block = [];
+        };
+
+        return block;
     }
 
     /**
      * Creates an array of lessons, divided to two arrays:
      *  1/2 hour & 3/4 hour.
      */
-    generateLessonQueue() {
-        var lessonQueue = [[], [], ["Hose", "Swim"]];
-
+    createLessonQueue() {
+        var newQueue = [[], [], ["Work"]];
+        var data = this.controllerData.lessons.data;
         var threeQuarterLessons = [
             "Level 6",
             "Level 7",
@@ -239,29 +362,25 @@ class Grid extends React.Component {
             "Schoolboard"
         ];
 
-        for (var key in this.controllerData.lessons) {
-            if (key === "half" || key === "threequarter") {
-                continue;
-            }
-
-            var value = this.controllerData.lessons[key];
+        for (var key in data) {
+            var value = data[key];
             var keyArray = Array(value.quantity).fill(key);
 
             if (threeQuarterLessons.includes(key)) {
-                lessonQueue[1] = lessonQueue[1].concat(keyArray);
+                newQueue[1] = newQueue[1].concat(keyArray);
             } else {
-                lessonQueue[0] = lessonQueue[0].concat(keyArray);
+                newQueue[0] = newQueue[0].concat(keyArray);
             }
         }
 
-        this.lessonQueue = lessonQueue;
+        return newQueue;
     }
 
     /**
      * Sums the number of preferred lessons.
      */
     getPreferenceLength(newInstructor) {
-        var instructor = this.controllerData.instructorPreferences[newInstructor];
+        var instructor = this.controllerData.instructorPreferences.data[newInstructor];
 
         return instructor.lessons.length;
     }
@@ -297,7 +416,7 @@ class Grid extends React.Component {
         var newInstructorOrder = [];
         var instructorPreferenceLengths = [];
 
-        for (var instructorName in this.controllerData.instructorPreferences) {
+        for (var instructorName in this.controllerData.instructorPreferences.data) {
             var preferenceSize = this.getPreferenceLength(instructorName);
 
             instructorPreferenceLengths.push({
@@ -336,21 +455,22 @@ class Grid extends React.Component {
      * Return a list of the names of instructors that teach group lessons.
      */
     getGroupInstructors(instructors) {
-        return instructors.filter((value) => {
-            return !this.getPrivateOnlyInstructors().includes(value);
+        return this.controllerData.instructorsArray.filter((value, index) => {
+            var instructor = this.controllerData.instructors[value];
+            return !instructor.privateOnly;
         });
     }
 
     /**
      * Assigns lessons to slots based on the instructors' preferences
      */
-    assignLessons(instructor, index, q) {
+    assignLessons(instructor, index, q, reactKey) {
         var lessonCode = instructor[index];
         var prefs = this.controllerData.instructorPreferences;
 
         // If the slot locarion is a code (string), it isn't a lesson.
         if (typeof lessonCode === "string") {
-            instructor[index] = this.getSplitCell(lessonCode);
+            instructor[index] = this.getSplitCell(lessonCode, reactKey);
 
             return q;
         }
@@ -392,44 +512,41 @@ class Grid extends React.Component {
         }
 
         instructor[index] = lessonCode;
-        q[lessonCode - 1] = typedLessons;
-
-        return q;
     }
 
     /**
-     * Gets an array generated by the GridFactory, server-side.
+     * Gets an array created by the GridFactory, server-side.
      */
-    generateGridArrays() {
-        return this.props.connector.getGridArrays(
+    getGridArrays(lessonQueue) {
+        return this.props.getGrids(
             Object.assign(this.controllerData, {
-                "duration": this.duration,
-                "lessonTimes": this.grid.lessonTimes,
+                "duration": this.state.data.duration,
+                "lessonTimes": this.state.data.lessonTimes,
                 "privateOnlyInstructors": this.getPrivateOnlyInstructors()
             })
         )
-            .then(newGrids => this.modifyGridArrays(newGrids))
-            .catch(error => console.error(error));
+            .then((newGrids) => this.modifyGridArrays(newGrids, lessonQueue))
+            .catch((error) => console.error(error));
     }
 
     /**
-     * Modifies the array to map to Red Cross levels.
+     * Modifies the array to map to swim levels.
      */
-    modifyGridArrays(newGrids) {
+    modifyGridArrays(newGrids, lessonQueue) {
         var instructorOrder = this.orderInstructorsByPreferencesSize();
         var privateOnlyInstructors = this.getPrivateOnlyInstructors();
 
-        instructorOrder = this.getGroupInstructors(instructorOrder);
-
         // Set allocated lessons slots to swim & private lessons.
         for (var grid = 0; grid < newGrids.length; grid++) {
-            var queue = jQuery.extend(true, [], this.lessonQueue);
+            var queue = JSON.parse(JSON.stringify(lessonQueue));
 
-            for (var slot = 1; slot < newGrids[grid][1].length; slot++) {
-                for (var instructor = 1; instructor < newGrids[grid].length; instructor++) {
-                    for (var instructorRow = 1; instructorRow < newGrids[grid].length; instructorRow++) {
-                        if (newGrids[grid][instructorRow][0] === instructorOrder[instructor - 1]) {
-                            this.assignLessons(newGrids[grid][instructorRow], slot, queue);
+            for (var name = 0; name < instructorOrder.length; name++) {
+                for (var slot = 1; slot < newGrids[grid][0].length; slot++) {
+                    for (var instructor = 1; instructor < newGrids[grid].length; instructor++) {
+                        var reactKey = "key-grid-" + name + instructor + slot;
+
+                        if (newGrids[grid][instructor][0] === instructorOrder[name]) {
+                            this.assignLessons(newGrids[grid][instructor], slot, queue, reactKey);
                             break;
                         }
                     }
@@ -440,172 +557,254 @@ class Grid extends React.Component {
         return newGrids;
     }
 
+    /**
+     * Display notification if error occurs while creating grids.
+     */
     handleGridError() {
-        var createLabel = $("#dynamicGrid .create-label");
-        var gridErrorMessasge = "ERROR<br /><p>An error occured creating grids.<br />Please contact administrator.</p>";
-
-        $("#dynamicGrid .create-spinner").hide();
-
-        createLabel.html(gridErrorMessasge);
-        createLabel.addClass("create-error");
+        this.waitIndicator.setState({
+            "data": [
+                "ERROR",
+                <p key="key-grid-indicator-0">An error occured creating grids.<br />Please contact administrator.</p>
+            ],
+            "indicatorStyleClass": "is-visible",
+            "labelStyleClass": "create-error",
+            "spinnerStyleClass": "is-invisible"
+        });
     }
 
-    generateGrid() {
-        var createIndicatorMessage = "creating...";
-        var createLabel = $("#dynamicGrid .create-label");
+    /**
+     * Display the grids.
+     */
+    displayComponentState() {
+        var lessonQueue = this.createLessonQueue();
+        var wrapperClass = this.tutorial.state.wrapperClass;
 
-        // Empty list of Grids.
-        $("#dynamicGrid .pure-menu-scrollable ul").empty();
+        this.gridList.setState({
+            "data": []
+        });
 
-        // Show loading indicator.
-        createLabel.removeClass("create-error");
-        createLabel.html(createIndicatorMessage);
-        $("#dynamicGrid .create-spinner").show();
-        $("#dynamicGrid .create-indicator").css("visibility", "visible");
-
-        // Create the queue of lessons.
-        this.generateLessonQueue();
+        this.waitIndicator.setState({
+            "data": "creating...",
+            "indicatorStyleClass": "is-visible",
+            "labelStyleClass": "",
+            "spinnerStyleClass": "is-visible"
+        });
 
         // Update controllerData with components' data.
-        this.controllerData = this.props.callback(this.grid, "grid", false);
+        this.controllerData = this.props.callback(this.state, "grid", false);
 
         // Get base array to represent grid.
-        this.generateGridArrays()
-            .then(gridArrays => this.displayGrid(gridArrays))
+        this.getGridArrays(lessonQueue)
+            .then(gridArrays => this.displayGrid(gridArrays, lessonQueue))
             .catch((error) => {
                 console.error(error);
-
                 this.handleGridError();
             });
+
+        this.tutorial.setState({
+            "wrapperClass": wrapperClass.concat(" hide")
+        });
     }
 
     /**
      * Transforms an array to a PureCSS table.
      * The first row of the array is considered as the Header of the table.
      */
-    displayGrid(gridArrays) {
-        var newTables = "";
+    displayGrid(gridArrays, lessonQueue) {
+        var duration = this.state.data.duration;
+        var gridList = ReactDOM.findDOMNode(this.gridList);
+        var emptyStyleClass = this.emptyGridsNotification.state.styleClass;
 
         if (gridArrays.length === 0) {
-            var privateOnlyInstructors = this.getPrivateOnlyInstructors();
-            var instructors = Object.keys(this.controllerData.instructors);
-
-            instructors = this.getGroupInstructors(instructors);
+            var instructors = this.getGroupInstructors(
+                Object.keys(this.controllerData.instructors)
+            );
 
             this.noGridsNotification(
-                this.duration,
+                duration,
                 instructors.length,
                 this.controllerData.lessons.half,
                 this.controllerData.lessons.threequarter
             );
 
             return;
-        } else {
-            $("#dynamicGrid p").hide();
         }
+
+        this.emptyGridsNotification.setState({
+            "styleClass": emptyStyleClass.replace("is-visible", "is-invisible")
+        });
 
         // Hide tutorial message, error notification, & current grids.
-        $("#dynamicGrid .content-section-footer").css({
-            "display": "none"
+        this.tutorial.setState({
+            "wrapperClass": "content-section-footer hide"
         });
 
-        // Transform array to HTML table with PureCSS styling
-        for (var gridIndex = 0; gridIndex < gridArrays.length; gridIndex++) {
-            var newTable = "<li class='pure-menu-item'><a class='pure-menu-link'><table class='pure-table'><thead>";
-
-            for (var instructor = 0; instructor < gridArrays[gridIndex].length; instructor++) {
-                if (instructor === 0) {
-                    newTable += "<tr>";
-                } else {
-                    newTable += "<tr" + ((instructor % 2 === 0) ? " class='table-even'" : " class='table-odd'") + ">";
-                }
-
-                for (var slot = 0; slot < 2 * this.duration + 1; slot++) {
-                    // Add the header, stored in the first row of the array.
-                    if (instructor === 0) {
-                        newTable += "<th>" + gridArrays[gridIndex][instructor][slot] + "</th>";
-                    } else {
-                        if (slot > 0 &&
-                            (
-                                (gridArrays[gridIndex][instructor][slot][0] === "<" && this.lessonQueue[1].includes(gridArrays[gridIndex][instructor][slot - 1]))
-                                ||
-                                (gridArrays[gridIndex][instructor][slot - 1][0] === "<" && this.lessonQueue[1].includes(gridArrays[gridIndex][instructor][slot]))
-                            )
-                        ) {
-                            /**
-                             * If it's a divisor cell and the previous is a
-                             *  3/4 hour lesson; or,
-                             *  if it's a 3/4 hour lesson and the previous
-                             *  is a divisor cell.
-                            */
-                            if (gridArrays[gridIndex][instructor][slot].includes("private-right")) {
-                                // If the it is a right-private divisor cell next to a threequarter lesson cell.
-                                var cellContents = gridArrays[gridIndex][instructor][slot];
-
-                                if (gridArrays[gridIndex][instructor][slot + 1].includes("private-left")) {
-                                    cellContents = cellContents.replace("right'></", "right'>Pri</");
-                                }
-
-                                newTable += "<td class='no-border private-right'>" + cellContents + "</td>";
-                            } else {
-                                newTable += "<td class='no-border is-left'>" + gridArrays[gridIndex][instructor][slot] + "</td>";
-                            }
-                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-left")) {
-                            // It is to the right of a private lesson.
-                            var cellContents = gridArrays[gridIndex][instructor][slot];
-
-                            if (gridArrays[gridIndex][instructor][slot - 1].includes("private-right")) {
-                                cellContents = cellContents.replace("left'></", "left'>vate</");
-                            }
-
-                            newTable += "<td class='no-border private-left'>" + cellContents + "</td>";
-                        } else if (gridArrays[gridIndex][instructor][slot].includes("private-right")) {
-                            // It is to the left of a private lesson.
-                            var cellContents = gridArrays[gridIndex][instructor][slot];
-
-                            if (gridArrays[gridIndex][instructor][slot + 1].includes("private-left")) {
-                                cellContents = cellContents.replace("right'></", "right'>Pri</");
-                            }
-
-                            newTable += "<td class='private-right'>" + cellContents + "</td>";
-                        } else if (gridArrays[gridIndex][instructor][slot] === "Private") {
-                            // It is a private lesson.
-                            newTable += "<td class='private-lesson-cell" + ((gridArrays[gridIndex][instructor][slot - 1].includes("private-right")) ? " no-border is-left" : "") + "'>Private</td>";
-                        } else {
-                            newTable += "<td" + ((slot === 0) ? " class='first-column'" : "") + ">" + gridArrays[gridIndex][instructor][slot] + "</td>";
-                        }
-                    }
-                }
-
-                newTable += "</tr>";
-
-                if (instructor === 0) {
-                    newTable += "</thead><tbody>";
-                }
-            }
-
-            newTables += newTable + "</tbody></table></a></li>";
-        }
+        this.createGridList(duration, gridArrays, lessonQueue);
 
         // Fit viewing window to the Grids' size.
-        $("#dynamicGrid .pure-menu-scrollable").css({
-            "width": (122.5 * (2 * this.duration + 1.5)) + "px"
-        });
+        var newWidth = 128 * (2 * duration + 1.25);
+        var gridContainer = gridList.parentElement;
+        gridContainer.style = "width:" + newWidth + "px";
 
         // Eliminate space conflict with the GridChecklist.
-        if (this.controllerData.instructors.length > 3) {
-             $("#dynamicGrid").css({
-                 "height": ($("#dynamicGrid").innerHeight() + (40 * (this.controllerData.instructors.length - 3))) + "px"
-             });
+        var instructors = Object.keys(this.controllerData.instructors);
+        var cHeight = document.getElementById("dynamicGrid").clientHeight;
+        var newHeight = cHeight + (40 * (instructors.length - 3));
+
+        if (instructors.length > 3) {
+            dynamicGrid.style.height = newHeight + "px";
         }
 
         // Hide loading indicator.
-        $("#dynamicGrid .create-indicator").css("visibility", "hidden");
+        this.waitIndicator.setState({
+            "indicatorStyleClass": "is-invisible",
+            "spinnerStyleClass": "is-invisible"
+        });
+    }
 
-        $("#dynamicGrid .pure-menu-scrollable ul").append(newTables);
+    createTable(duration, gridArrays, gridIndex, lessonQueue) {
+        var styleCell;
+        var dataBody = [];
+        var dataHeader = [];
+        var styleBody = {};
 
-        // Click to make modal of list element.
-        $("#dynamicGrid .pure-menu-scrollable a").click(this.showModal.bind(this));
+        for (var instructor = 0; instructor < gridArrays[gridIndex].length; instructor++) {
+            var newData = [];
+            var instructorRow = gridArrays[gridIndex][instructor];
+
+            for (var slot = 0; slot < 2 * duration + 1; slot++) {
+                var key;
+                var style;
+                var className = "";
+                var cellContents = instructorRow[slot];
+                var prevContents = instructorRow[slot - 1];
+                var nextContents = instructorRow[slot + 1];
+                var reactKey = "key-grid-" + gridIndex + instructor + slot;
+
+                if (Array.isArray(cellContents)) {
+                    style = cellContents[cellContents.length - 1].props.className;
+                    key = cellContents[0].key;
+                } else {
+                    style = null;
+                    key = cellContents;
+                }
+
+                if (slot === 0) {
+                    className = "first-column";
+                } else if (style && style.includes("private-right")) {
+                    var nextStyle;
+
+                    if (Array.isArray(nextContents)) {
+                        nextStyle = nextContents[nextContents.length - 1].props.className;
+
+                        if (nextStyle.includes("private-left")) {
+                            cellContents[1] = React.cloneElement(
+                                cellContents[1],
+                                {},
+                                "Pri"
+                            );
+                        }
+                    }
+
+                    className = "private-right";
+                } else if (style && style.includes("private-left")) {
+                    var prevStyle;
+
+                    if (Array.isArray(prevContents)) {
+                        prevStyle = prevContents[prevContents.length - 1].props.className;
+
+                        if (prevStyle.includes("private-right")) {
+                            cellContents[1] = React.cloneElement(
+                                cellContents[1],
+                                {},
+                                "vate"
+                            );
+                        }
+                    }
+
+                    className = "private-left no-border";
+                } else if (cellContents === "Private") {
+                    className = "private-lesson-cell";
+
+                    if (prevStyle && prevStyle.includes("private-right")) {
+                        className += " no-border";
+                    }
+                }
+
+                if (prevContents && Array.isArray(prevContents)) {
+                    if (lessonQueue[1].includes(cellContents) || cellContents.includes("Private")) {
+                        className += " no-border is-left";
+                    }
+                } else if (cellContents && Array.isArray(cellContents)) {
+                    if (lessonQueue[1].includes(prevContents)) {
+                        className += " no-border";
+                    }
+                }
+
+                if (Array.isArray(cellContents)) {
+                    newData.push(cellContents);
+                } else {
+                    newData.push([cellContents]);
+                }
+
+                styleBody[key] = className.replace(/^\s+|\s+$/g, "");
+            }
+
+            if (instructor === 0) {
+                dataHeader.push(newData);
+            } else {
+                dataBody.push(newData);
+            }
+        }
+
+        styleCell = (contents) => {
+            var className = null;
+            var data = contents[0];
+
+            if (typeof data === "string" && data in styleBody) {
+                className = styleBody[data];
+            } else if (typeof data === "object") {
+                var k = data.key;
+                if (k in styleBody) {
+                    className = styleBody[k];
+                }
+            }
+
+            return className;
+        };
+
+        return React.createElement(Table, {
+            "callback": () => null,
+            "dataBody": () => dataBody,
+            "dataHeader": () => dataHeader,
+            "key": "key-grid-table-" + gridIndex,
+            "styleCell": styleCell,
+            "styleHeader": () => null,
+            "styleRow": (index) => index % 2 ? "table-even" : "table-odd",
+            "styleTable": () => "pure-table"
+        });
+    }
+
+    createGridList(duration, gridArrays, lessonQueue) {
+        for (var gridIndex = 0; gridIndex < gridArrays.length; gridIndex++) {
+            var newTable = this.createTable(duration, gridArrays, gridIndex, lessonQueue);
+
+            var newTableAnchor = React.createElement(Anchor, {
+                "callback": () => null,
+                "data": [newTable],
+                "handleClick": this.showModal.bind(this),
+                "hyperlink": "javascript:void(0)",
+                "key": "key-grid-anchor-" + gridIndex,
+                "styleClass": "pure-menu-link"
+            });
+
+            this.gridList.setState({
+                "data": this.gridList.state.data.concat({
+                    "data": [newTableAnchor],
+                    "styleClass": "pure-menu-item"
+                })
+            });
+        }
     }
 
     /**
@@ -615,307 +814,106 @@ class Grid extends React.Component {
         var prev;
         var next;
         var index;
-        var header;
         var modalTable;
-        var reHashNumber;
+        var reHashNumber = new RegExp(/#[0-9]+/);
+        var disabledClass = " pure-button-disabled";
+        var header = this.gridModal.state.header[0];
+        var prevStyle = this.prevButton.state.styleClass;
+        var nextStyle = this.nextButton.state.styleClass;
+        var reReplaceCriteria = new RegExp(disabledClass, "g");
+        var childCollection = Array.from(tableListElement.parentNode.children);
 
-        var modalHeader = $("#dynamicGrid .modal-header");
-        var prevButton = $("#dynamicGrid .modal-footer a.float-left");
-        var nextButton = $("#dynamicGrid .modal-footer a.float-right");
+        index = childCollection.findIndex((c) => c === tableListElement);
 
         // Update modal header with Grid number.
-        header = modalHeader.html();
-        index = tableListElement.index() + 1;
-        reHashNumber = new RegExp(/#[0-9]+/);
-        header = header.replace(reHashNumber, "#" + index);
-        modalHeader.html(header);
+        header = header.replace(reHashNumber, "#" + (index + 1));
+
+        Object.assign(this.gridModal.state.header, [
+            header,
+            this.gridModal.state.header[1]
+        ]);
+        this.gridModal.setState(this.gridModal.state);
 
         // Rebind 'previous' button.
-        prev = tableListElement.prev();
-        if (prev.length > 0) {
-            prevButton.removeClass("pure-button-disabled");
-            prevButton.click(() => {
-                this.addModalContent(prev);
+        if (index > 0) {
+            prev = childCollection[index - 1];
+            this.prevButton.setState({
+                "handleClick": () => {
+                    this.addModalContent(prev);
+                },
+                "styleClass": prevStyle.replace(reReplaceCriteria, "")
             });
         } else {
-            prevButton.addClass("pure-button-disabled");
-            prevButton.unbind("click");
+            this.prevButton.setState({
+                "handleClick": () => null,
+                "styleClass": prevStyle.concat(disabledClass)
+            });
         }
 
         // Rebind 'next' button.
-        next = tableListElement.next();
-        if (next.length > 0) {
-            nextButton.removeClass("pure-button-disabled");
-            nextButton.click(() => {
-                this.addModalContent(next);
+        if (index < childCollection.length - 1) {
+            next = childCollection[index + 1];
+            this.nextButton.setState({
+                "handleClick": () => {
+                    this.addModalContent(next);
+                },
+                "styleClass": nextStyle.replace(reReplaceCriteria, "")
             });
         } else {
-            nextButton.addClass("pure-button-disabled");
-            nextButton.unbind("click");
+            this.nextButton.setState({
+                "handleClick": () => null,
+                "styleClass": nextStyle.concat(disabledClass)
+            });
         }
 
-        $("#dynamicGrid .modal-header a").click(this.exportToPDF.bind(this));
-
-        modalTable = $(tableListElement).children("a").clone();
-        $("#dynamicGrid .modal-body").html(modalTable);
+        Object.assign(this.gridModal.state, {
+            "body": this.gridList.state.data[index].data
+        });
+        this.gridModal.setState(this.gridModal.state);
     }
 
     /**
      * Add and show the modal contents.
      */
-    showModal() {
-        var tableListElement = $(event.target).closest("li");
+    showModal(e) {
+        this.addModalContent(e.target.closest("li"));
 
-        this.addModalContent(tableListElement);
-
-        $("#dynamicGrid .modal").css({
-            "display": "block"
+        this.gridModal.setState({
+            "isDisplayed": true
         });
     }
 
     /**
      * Remove and hide the modal contents.
      */
-    hideModal() {
-        if (event.target === $("#dynamicGrid .modal")[0]) {
-            $("#dynamicGrid .modal").css({
-                "display": "none"
+    hideModal(e) {
+        var modal = ReactDOM.findDOMNode(this.gridModal);
+        if (e.target === modal) {
+            this.gridModal.setState({
+                "isDisplayed": false
             });
 
-            $("#dynamicGrid .modal-body").empty();
+            Object.assign(this.gridModal.state, {
+                "body": []
+            });
+            this.gridModal.setState(this.gridModal.state);
         }
     }
 
     /**
-     * Export a Grid to a PDF document.
+     * Generate a PDF of the Grid.
      */
     exportToPDF() {
-        var columns;
-        var prevCell;
-        var numColumns;
-        var dateCreated;
-        var tableCoordinates;
-
-        var rows = [];
-        var isRowOdd = false;
-        var instructors = [];
-        var tableBorders = [];
-        var lineCoordinates = [];
-        var newDate = new Date();
-        var splitCellIndices = [];
-        var doc = new jsPDF("l", "pt");
-        var tableCells = $("#dynamicGrid .modal td");
-        var tableRows = $("#dynamicGrid .modal tbody tr");
-        var quarterActivities = [
-            "",
-            "Hose",
-            "Swim"
-        ];
-        var threeQuarterLessons = [
-            "Level 6",
-            "Level 7",
-            "Level 8",
-            "Level 9",
-            "Level 10",
-            "Basics I",
-            "Basics II",
-            "Strokes",
-            "Schoolboard"
-        ];
-
-        dateCreated = [
-            newDate.getFullYear(),
-            newDate.getMonth() + 1,
-            newDate.getDate()
-        ].join("-");
-
-        columns = [
-            { dataKey: "id", title: "Instructor" },
-            { dataKey: "start", title: this.grid.lessonTimes[0] },
-            { dataKey: "startPlusHalf", title: this.grid.lessonTimes[1] },
-            { dataKey: "startPlusOne", title: this.grid.lessonTimes[2]  },
-            { dataKey: "startPlusOneAndHalf", title: this.grid.lessonTimes[3] },
-            { dataKey: "startPlusTwo", title: this.grid.lessonTimes[4] }
-        ];
-
-        numColumns = tableCells.length / tableRows.length;
-        columns = columns.slice(0, numColumns);
-
-        tableRows.each((rowIndex, element) => {
-            var rowsKey;
-            var newCell = {};
-
-            $(element).find("td").each((cellIndex, element) => {
-                var cellText = $(element).text();
-                var reName = new RegExp(/[A-Za-z\s]+/);
-
-                if (cellIndex === 0 && reName.test(cellText)) {
-                    instructors.push(cellText);
-                }
-
-                rowsKey = columns[cellIndex].dataKey;
-
-                if (threeQuarterLessons.includes(cellText)) {
-                    var index = (rowIndex * numColumns) + cellIndex;
-
-                    if ($(element).prev().children().length > 0) {
-                        splitCellIndices.push(index - 1);
-                    }
-
-                    splitCellIndices.push(index);
-
-                    if ($(element).next().children().length > 0) {
-                        splitCellIndices.push(index + 1);
-                    }
-                }
-
-                newCell[rowsKey] = cellText;
-            });
-
-            rows.push(newCell);
-        });
-
-        // jsPDF Auto-Table: github.com/simonbengtsson/jsPDF-AutoTable
-        doc.autoTable(columns, rows, {
-            bodyStyles: {
-                fillColor: [45, 62, 80],
-                textColor: [255, 255, 255]
-            },
-            headerStyles: {
-                fillColor: 224,
-                textColor: 0
-            },
-            styles: {
-                fontSize: 24,
-                lineColor: 200,
-                lineWidth: 0.5
-            },
-            startY: 60,
-            addPageContent: (data) => {
-                tableCoordinates = this.addPageContent(doc, data, dateCreated);
-            },
-            createdCell: (cell, data) => {
-                if (instructors.includes(cell.text[0])) {
-                    isRowOdd = !isRowOdd;
-                }
-
-                cell = this.createdCell(cell,
-                    data,
-                    isRowOdd,
-                    numColumns,
-                    splitCellIndices
-                );
-            },
-            drawCell: (cell, data) => {
-                lineCoordinates = this.drawCell(
-                    cell,
-                    data,
-                    prevCell,
-                    numColumns,
-                    lineCoordinates,
-                    splitCellIndices,
-                    quarterActivities,
-                    threeQuarterLessons
-                );
-
-                prevCell = cell;
-            }
-        });
-
-        doc.setDrawColor(200);
-        doc.setLineWidth(0.5);
-
-        this.drawLines(doc, lineCoordinates, tableCoordinates);
-
-        doc.save("grid-" + dateCreated + ".egbtr.pdf");
+        var header = this.props.getSetTitle();
+        var exporter = new ExportToPDF();
+        exporter.pdf(header, this.state.data.lessonTimes);
     }
 
     /**
-     * Opertions performed as page is created.
+     * Set the reference to subcomponent references.
      */
-     addPageContent(doc, data, dateCreated) {
-         doc.text("Grid - " + dateCreated, 40, 30);
-
-         return [
-             data.table.pageStartX,
-             data.table.pageStartY,
-             data.table.width  + data.table.pageStartX,
-             data.table.height + data.table.pageStartY
-         ];
-     }
-
-    /**
-     * Operations performed on the cell as it is created.
-     */
-     createdCell(cell, data, isRowOdd, numColumns, splitCellIndices) {
-         var cellIndex = (data.row.index * numColumns) + data.column.index;
-
-         if (splitCellIndices.includes(cellIndex)) {
-             cell.styles.lineColor = cell.styles.fillColor;
-             cell.styles.lineWidth = 0.001;
-         }
-
-         if (isRowOdd) {
-             cell.styles.fillColor = [255, 255, 255];
-             cell.styles.textColor = [45, 62, 80];
-         }
-
-         if (cell.text[0] === "Private") {
-             cell.styles.fillColor = [118, 118, 118];
-             cell.styles.textColor = [255, 255, 255];
-         }
-
-         return cell;
-     }
-
-    /**
-     * Draws the individual table cells in the PDF document.
-     */
-     drawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
-         var cellIndex = (data.row.index * numColumns) + data.column.index;
-
-         if (splitCellIndices.includes(cellIndex) && prevCell) {
-             if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
-                 // Place Hose/Swim on the right side of cell divider.
-                 cell.textPos.x += cell.width / 2;
-
-                 lineCoordinates.push([
-                     cell.x + (cell.width / 2),
-                     cell.y,
-                     cell.x + (cell.width / 2),
-                     cell.y + cell.height
-                 ]);
-             } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
-                 lineCoordinates.push([
-                     prevCell.x + (prevCell.width / 2),
-                     prevCell.y,
-                     prevCell.x + (prevCell.width / 2),
-                     prevCell.y + prevCell.height
-                 ]);
-             }
-         }
-
-         return lineCoordinates;
-     }
-
-    /**
-     * Draws cell splitting lines and table borders in PDF document.
-     */
-    drawLines(doc, lineCoordinates, tableCoordinates) {
-        var [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
-
-        // Draw table border lines (to compensate for removing cell borders on edge of table).
-        doc.line(tableX1, tableY1, tableX1, tableY2);
-        doc.line(tableX2, tableY1, tableX2, tableY2);
-        doc.line(tableX1, tableY1, tableX2, tableY1);
-        doc.line(tableX1, tableY2, tableX2, tableY2);
-
-        // Draw split cell lines.
-        for (var line = 0; line < lineCoordinates.length; line++) {
-            var [x1, y1, x2, y2] = lineCoordinates[line];
-
-            doc.line(x1, y1, x2, y2);
-        }
+    setComponentReference(name, reference) {
+        this[name] = reference;
     }
 
     render() {
@@ -924,85 +922,197 @@ class Grid extends React.Component {
                 <h2 className="content-head is-right">
                     The Grid
                 </h2>
-                <div className="content-section-description is-right float-right">
-                    Generate a lesson calendar.
-                    <ul className="content-section-explanation">
-                        <li>Select the duration</li>
-                        <li>Cycle through the possible grids</li>
-                        <li>Inspect each grid</li>
-                    </ul>
-                    <a className="pure-button right-button">
-                        Create Grid
-                    </a>
-                    <p className="right-button"></p>
-                </div>
+                <SectionDescription
+                    additionalData={ [
+                        React.createElement(UnorderedList, {
+                            "callback": (ref) => this.setComponentReference("emptyGridsNotification", ref),
+                            "data": [
+                                {
+                                    "data": ["No Grids were created"],
+                                    "styleClass": "pure-menu-item pure-menu-selected"
+                                },
+                                {
+                                    "data": ["Add 0 Instructor"],
+                                    "styleClass": "pure-menu-item pure-menu-selected"
+                                }
+                            ],
+                            "handleClick": () => null,
+                            "hyperlink": "javascript:void(0)",
+                            "key": "key-grid-description-0",
+                            "styleClass": "pure-menu-list right-button is-invisible"
+                        })
+                    ] }
+                    anchorCallback={ (ref) => this.setComponentReference("createGridButton", ref) }
+                    anchorHandleClick={ () => null }
+                    buttonText={ "Create Grid" }
+                    data={ [
+                        "Select the duration",
+                        "Cycle through the possible grids",
+                        "Inspect each grid"
+                    ] }
+                    title={ "Create a lesson calendar" }
+                    type={ "content" }
+                />
                 <div className="pure-menu-heading">
                     Start Time:
-                    <input type="text"></input>
+                    <Input
+                        callback={ (ref) => this.setComponentReference("startTimeInputField", ref) }
+                        data={ "" }
+                        handleBlur={ this.setLessonTimes.bind(this) }
+                        handleFocus={ () => null }
+                        placeholder={ "..." }
+                        styleClass={ "" }
+                        type={ "text" }
+                    />
                 </div>
                 <div className="pure-menu pure-menu-horizontal">
-                    <ul className="pure-menu-list">
-                        <li className="pure-menu-item">
-                            <a className="pure-menu-heading">
-                                Duration
-                            </a>
-                        </li>
-                        <li className="pure-menu-item">
-                            <a className="duration-button pure-menu-link">
-                                1&frac12; hours
-                            </a>
-                        </li>
-                        <li className="pure-menu-item">
-                            <a className="duration-button pure-menu-link">
-                                2 hours
-                            </a>
-                        </li>
-                        <li className="pure-menu-item">
-                            <a className="duration-button pure-menu-link">
-                                2&frac12; hours
-                            </a>
-                        </li>
-                    </ul>
+                    <UnorderedList
+                        callback={ (ref) => null }
+                        data={ [
+                            {
+                                "data": [
+                                    React.createElement(Anchor, {
+                                        "callback": (ref) => this.setComponentReference(
+                                            "durationContainer",
+                                            this.durationContainer.concat(ref)
+                                        ),
+                                        "data": "Duration",
+                                        "handleClick": () => null,
+                                        "hyperlink": "javascript:void(0)",
+                                        "key": "key-grid-anchor-0",
+                                        "styleClass": "pure-menu-heading"
+                                    })
+                                ],
+                                "styleClass": "pure-menu-item"
+                            },
+                            {
+                                "data": [
+                                    React.createElement(DurationButton, {
+                                        "callback": (ref) => this.setComponentReference(
+                                            "durationContainer",
+                                            this.durationContainer.concat(ref)
+                                        ),
+                                        "data": "1\u00BD hours",
+                                        "handleClick": this.setDuration.bind(this),
+                                        "key": "key-grid-anchor-1",
+                                        "styleClass": "pure-menu-link"
+                                    })
+                                ],
+                                "styleClass": "pure-menu-item"
+                            },
+                            {
+                                "data": [
+                                    React.createElement(DurationButton, {
+                                        "callback": (ref) => this.setComponentReference(
+                                            "durationContainer",
+                                            this.durationContainer.concat(ref)
+                                        ),
+                                        "data": "2 hours",
+                                        "handleClick": this.setDuration.bind(this),
+                                        "key": "key-grid-anchor-2",
+                                        "styleClass": "pure-menu-link"
+                                    })
+                                ],
+                                "styleClass": "pure-menu-item"
+                            },
+                            {
+                                "data": [
+                                    React.createElement(DurationButton, {
+                                        "callback": (ref) => this.setComponentReference(
+                                            "durationContainer",
+                                            this.durationContainer.concat(ref)
+                                        ),
+                                        "data": "2\u00BD hours",
+                                        "handleClick": this.setDuration.bind(this),
+                                        "key": "key-grid-anchor-3",
+                                        "styleClass": "pure-menu-link"
+                                    })
+                                ],
+                                "styleClass": "pure-menu-item"
+                            }
+                        ] }
+                        styleClass={ "pure-menu-list" }
+                    />
                 </div>
-                <div className="create-indicator">
-                    <div className="create-spinner">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <div className="create-label">Creating...</div>
-                </div>
+                <WaitIndicator
+                    callback={ (ref) => this.setComponentReference("waitIndicator", ref) }
+                    data={ "Creating..." }
+                    indicatorStyleClass={ "is-invisible" }
+                    labelStyleClass={ "" }
+                    spinnerStyleClass={ "" }
+                />
                 <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
-                    <ul className="pure-menu-list"></ul>
+                    <UnorderedList
+                        callback={ ((ref) => this.setComponentReference("gridList", ref)) }
+                        data={ [] }
+                        styleClass={ "pure-menu-list" }
+                    />
                 </div>
-                <div className="modal">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            The Grid #0
-                            <a className="pure-button">Export to PDF</a>
-                        </div>
-                        <div className="modal-body"></div>
-                        <div className="modal-footer">
-                            <a className="pure-button float-left">Previous</a>
-                            <a className="pure-button float-right">Next</a>
-                        </div>
-                    </div>
-                </div>
-                <div className="content-section-footer">
-                    <h2 className="content-head">
-                        Step #4:
-                    </h2>
-                    <p>
-                        Create a grid, and I&#039;ll  get cooking.
-                    </p>
-                </div>
+                <Modal
+                    body={ [] }
+                    callback={ (ref) => this.setComponentReference("gridModal", ref) }
+                    footer={ [
+                        React.createElement(Anchor, {
+                            "callback": (ref) => this.setComponentReference("prevButton", ref),
+                            "data": "Previous",
+                            "handleClick": () => null,
+                            "hyperlink": "javascript:void(0)",
+                            "key": "key-grid-anchor-4",
+                            "styleClass": "pure-button float-left"
+                        }),
+                        React.createElement(Anchor, {
+                            "callback": (ref) => this.setComponentReference("nextButton", ref),
+                            "data": "Next",
+                            "handleClick": () => null,
+                            "hyperlink": "javascript:void(0)",
+                            "key": "key-grid-anchor-5",
+                            "styleClass": "pure-button float-right"
+                        })
+                    ] }
+                    header={ [
+                        "Grid #0",
+                        React.createElement(Anchor, {
+                            "callback": () => null,
+                            "data": "Export to PDF",
+                            "handleClick": this.exportToPDF.bind(this),
+                            "hyperlink": "javascript:void(0)",
+                            "key": "key-grid-anchor-5",
+                            "styleClass": "pure-button"
+                        })
+                    ] }
+                    isDisplayed={ false }
+                    tableData={ {
+                        "dataBody": () => [],
+                        "dataHeader": () => [],
+                        "styleCell": () => null,
+                        "styleHeader": () => null,
+                        "styleRow": () => null,
+                        "styleTable": () => "pure-table"
+                    } }
+                />
+                <Tutorial
+                    buttonClass={ "" }
+                    callback={ (ref) => this.setComponentReference("tutorial", ref) }
+                    data={ "Create a grid, and I'll  get cooking." }
+                    headingClass={ "content-head" }
+                    nextName={ "" }
+                    step={ 4 }
+                    wrapperClass={ "content-section-footer hide" }
+                />
             </div>
         );
     }
 }
 
-Grid.propTypes =  {
+Grid.propTypes = {
     callback: PropTypes.func.isRequired,
+    createComponent: PropTypes.func.isRequired,
+    getGrids: PropTypes.func.isRequired,
+    gridChecklistCallback: PropTypes.func.isRequired,
+    getSetTitle: PropTypes.func.isRequired,
     initData: PropTypes.object.isRequired,
-    connector: PropTypes.object.isRequired
+    removeComponent: PropTypes.func.isRequired,
+    setChecklistQuantity: PropTypes.func.isRequired
 }
 
 export default Grid;
