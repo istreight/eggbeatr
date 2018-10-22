@@ -5,7 +5,6 @@
  *
  * This file contains the Intructors class for the
  *  collection of instructors for the web application.
- * The Instructors class is exported.
  */
 
 import React from 'react';
@@ -23,163 +22,173 @@ class Lessons extends React.Component {
     constructor(props) {
         super(props);
 
-        // Object containing number of each lesson type.
-        this.lessonSet = {};
+        this.state = null;
+        this.lessonInputs = null;
     }
 
-    componentDidMount() {
-        this.lessonSet = this.props.initData;
+    componentWillMount() {
+        this.lessonInputs = [];
 
-        this.setLessonValues();
+        this.setState(this.props.initData, this.init);
+    }
 
-        this.props.callback(this.lessonSet, "lessons", false);
-        this.props.setChecklistQuantity("lessons", this.getNumLessons());
+    /**
+     * Initialize the class members.
+     */
+    init() {
+        this.displayComponentState();
 
-        // Save on button click or on input deselect ('blur').
-        $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
-        $("#dynamicLessons input").blur(this.storeLessonValues.bind(this));
-
-        // Link tutorital button to next section.
-        $("#dynamicLessons .content-section-footer a").click(() => {
-            // Disable scrolling.
-            $("body").on("mousewheel DOMMouseScroll", false);
-
-            $("#dynamicPrivate .ribbon-section-footer").css({
-                "display": "block"
-            });
-
-            $("html, body").animate({
-                scrollTop: $("#dynamicPrivate").offset().top - 60
-            }, 1600, () => {
-                $("body").off("mousewheel DOMMouseScroll");
-
-                $("#dynamicLessons .content-section-footer").css({
-                    "display": "none"
-                });
-            });
-        });
+        this.props.callback(this.state, "lessons", false);
+        this.props.setChecklistQuantity("lessons", this.getComponentQuantity());
     }
 
     /**
      * Get number of stored lessons.
      */
-    getNumLessons() {
+    getComponentQuantity() {
         var numLessons = 0;
+        var data = this.state.data;
 
-        for (var lesson in this.lessonSet) {
-            if (lesson === "half" || lesson === "threequarter") {
-                continue;
-            }
-
-            numLessons += this.lessonSet[lesson].quantity;;
+        for (var lesson in data) {
+            numLessons += data[lesson].quantity;
         }
 
         return numLessons;
     }
 
     /**
-     * Finds values in the input field to store in lessonSet.
+     * Finds values in the input field to store in the state.
      */
     storeLessonValues() {
-        // Disable 'Save Lessons' button.
-        $("#dynamicLessons .content-section-description a").unbind("click");
+        var finalPromise;
+        var data = this.state.data;
+        var savedNotification = ReactDOM.findDOMNode(this).querySelector('div.content-section-description div')
 
-        // Display 'Saved!' notification.
-        $("#dynamicLessons .content-section-description div").fadeIn(800).delay(800).fadeOut(800);
-
-        // Store text field values.
-        $("#dynamicLessons td").each((index, element) => {
-            var lessonInput = $(element).find("input");
-            var lessonType = $(element).find("span").text();
-
-            if (lessonInput.length > 0 && lessonType.length > 0) {
-                var lessonValue = lessonInput.val();
-                var reSingleDigit = new RegExp(/^[0-9]$/);
-                var lessonQuantity = parseInt(lessonValue, 10);
-
-                if (lessonValue === "") {
-                    lessonQuantity = 0;
-                }
-
-                if (reSingleDigit.test(lessonQuantity)) {
-                    $(element).removeClass("error-cell");
-                    if (this.lessonSet[lessonType]) {
-                        this.lessonSet[lessonType].quantity = lessonQuantity;
-                    } else {
-                        this.lessonSet[lessonType] = {
-                            "quantity": lessonQuantity
-                        };
-                    }
-                } else {
-                    $(element).hide().addClass("error-cell").fadeIn(800);
-
-                    this.lessonSet[lessonType].quantity = 0;
-                }
-            }
+        Animator.fadeIn(savedNotification, 400, 2000, () => {
+            Animator.fadeOut(savedNotification, 400);
         });
 
-        // Re-enable "Save Lessons" button.
-        $("#dynamicLessons .content-section-description a").click(this.storeLessonValues.bind(this));
+        this.setLessonValue(data);
 
-        var missingId = Object.keys(this.lessonSet).filter((value, index) => this.lessonSet[value].id === undefined);
+        var missingId = Object.keys(data).filter((value, index) => data[value].id === undefined);
 
-        // Ignore half and threequarter lesson quantities.
-        if (missingId.length > 2) {
-            var promise;
-            var promiseArray = [];
-
-            for (var i = 0; i < missingId.length; i++) {
-                var lessonTitle = missingId[i];
-                var body = {
-                    quantity: 0,
-                    title: lessonTitle,
-                },
-
-                promise = this.props.createComponent(body, "Lesson");
-
-                promiseArray.push(promise);
-            }
-
-            Promise.all(promiseArray).then((res) => {
-                for (var i = 0; i < res.length; i++) {
-                    var data = res[i];
-                    var lessonTitle = Object.keys(data)[0];
-                    this.lessonSet[lessonTitle] = data[lessonTitle];
-                }
-            }).catch(error => console.error(error));
+        if (missingId.length > 0) {
+            finalPromise = this.createDatabaseEntry(missingId);
         } else {
-            this.props.callback(this.lessonSet, "lessons", true);
-            this.props.setChecklistQuantity("lessons", this.getNumLessons());
+            finalPromise = new Promise((resolve, reject) => resolve());
         }
 
+        finalPromise.then(() => {
+            this.props.callback(this.state, "lessons", true);
+            this.props.setChecklistQuantity("lessons", this.getComponentQuantity());
+        });
+    }
+
+    /**
+     * Store the values from the input fields.
+     */
+    setLessonValue(data) {
+        this.lessonInputs.forEach((lessonInput, index) => {
+            var newLesson = {};
+            var lessonId = undefined;
+            var lessonType = lessonInput.state.name;
+            var lessonValue = +lessonInput.state.data;
+            var reSingleDigit = new RegExp(/^[0-9]$/);
+            var lessonData = this.state.data[lessonType];
+            var inputNode = ReactDOM.findDOMNode(lessonInput);
+            var cellClassList = inputNode.parentElement.classList;
+
+            if (reSingleDigit.test(lessonValue)) {
+                cellClassList.remove("error-cell");
+            } else {
+                lessonValue = 0;
+
+                cellClassList.add("error-cell");
+                Animator.fadeIn(inputNode.parentElement, 400);
+            }
+
+            if (lessonType in data) {
+                lessonId = lessonData.id;
+            }
+
+            newLesson[lessonType] = {
+                "id": lessonId,
+                "quantity": lessonValue
+            };
+
+            Object.assign(this.state.data, newLesson);
+        });
+
+        this.setState(this.state);
+    }
+
+     /**
+      * Create a database entry for a new collection of lessons.
+      */
+    createDatabaseEntry(missingId) {
+        var promiseArray = [];
+
+        for (var i = 0; i < missingId.length; i++) {
+            var lessonTitle = missingId[i];
+            var body = {
+                quantity: 0,
+                title: lessonTitle,
+            };
+
+            promiseArray.push(this.props.createComponent(body, "Lesson"));
+        }
+
+        return Promise.all(promiseArray).then((res) => {
+            res.forEach((r, index)=> {
+                var lessonData;
+                var lesson = r.data;
+                var lessonTitle = Object.keys(lesson)[0];
+
+                lessonData = lesson[lessonTitle];
+                Object.assign(this.state.data[lessonTitle], {
+                    "id": lessonData.id
+                });
+                this.setState(this.state);
+            });
+        }).catch(error => console.error(error));
     }
 
     /**
      * Place the values in the Lessons object as values
      *  in the related inputs.
      */
-    setLessonValues() {
-        $("#dynamicLessons td").each((index, element) => {
-            var lessonInput = $(element).find("input");
+    displayComponentState() {
+        this.lessonInputs.forEach((lessonInput, index) => {
+            var lessonType = lessonInput.state.name;
 
-            if (lessonInput.length > 0) {
+            if (lessonType.length > 0) {
                 var lessonQuantity;
-                var lessonType = $(element).find("span").text();
-                var lesson = this.lessonSet[lessonType];
+                var lesson = this.state.data[lessonType];
 
-                if (lesson === undefined) {
-                    lessonQuantity = 0;
-                } else {
+                if (lesson) {
                     lessonQuantity = lesson.quantity;
+                } else {
+                    lessonQuantity = 0;
                 }
 
                 if (lessonQuantity > 0) {
-                    lessonInput.val(lessonQuantity);
+                    lessonInput.setState({
+                        "data": lessonQuantity
+                    });
                 } else {
-                    lessonInput.val("");
+                    lessonInput.setState({
+                        "data": ""
+                    });
                 }
             }
         });
+    }
+
+    /**
+     * Set the reference to subcomponent references.
+     */
+    setComponentReference(name, reference) {
+        this[name] = reference;
     }
 
     render() {
@@ -188,167 +197,371 @@ class Lessons extends React.Component {
                     <h2 className="content-head is-right">
                         Lessons
                     </h2>
-                    <div className="content-section-description is-right float-right">
-                        Describe the lessons of the set.
-                        <ul className="content-section-explanation">
-                            <li>Quantify each lesson type of the set</li>
-                            <li>Use any numeric quantity</li>
-                            <li>Automatically store lesson quantities</li>
-                        </ul>
-                        <a className="pure-button right-button">
-                            Save Lessons
-                        </a>
-                        <div>
-                            Saved!
-                        </div>
-                    </div>
-                    <table className="pure-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Parent & Tot
-                                </th>
-                                <th>
-                                    Pre-School
-                                </th>
-                                <th>
-                                    Swim Kids
-                                </th>
-                                <th>
-                                    Swim Kids
-                                </th>
-                                <th>
-                                    Teens & Adults
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className="table-odd">
-                                <td>
-                                    Starfish
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Sea Otter
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 1
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 6
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Basics I
-                                    <input type="text" placeholder="#" />
-                                </td>
-                            </tr>
-                            <tr className="table-even">
-                                <td>
-                                    Duck
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Salamander
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 2
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 7
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Basics II
-                                    <input type="text" placeholder="#" />
-                                </td>
-                            </tr>
-                            <tr className="table-odd">
-                                <td>
-                                    Sea Turtle
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Sunfish
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 3
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 8
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Strokes
-                                    <input type="text" placeholder="#" />
-                                </td>
-                            </tr>
-                            <tr className="table-even">
-                                <td></td>
-                                <td>
-                                    Crocodile
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 4
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 9
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr className="table-odd">
-                                <td>
-                                    Simple Set
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Whale
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 5
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Level 10
-                                    <input type="text" placeholder="#" />
-                                </td>
-                                <td>
-                                    Schoolboard
-                                    <input type="text" placeholder="#" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div className="content-section-footer">
-                        <h2 className="content-head">
-                            Step #2:
-                        </h2>
-                        <p>
-                            Input the quantity of each lesson type, using numerical digits.
-                        </p>
-                        <a className="content-next-button pure-button">
-                            &rarr;
-                        </a>
-                    </div>
+                    <SectionDescription
+                        additionalData={ [
+                            <div key="key-lessons-sectiondescription-0">
+                                Saved!
+                            </div>
+                        ] }
+                        anchorCallback={ (ref) => this.setComponentReference("saveButton", ref) }
+                        anchorHandleClick={ this.storeLessonValues.bind(this) }
+                        buttonText={ "Save Lessons" }
+                        data={ [
+                            "Quantify each lesson type of the set",
+                            "Use numeric quantities",
+                            "Automatically store lesson quantities"
+                        ] }
+                        title={ "Describe the lessons of the set" }
+                        type={ "content" }
+                    />
+                    <Table
+                        callback={ (ref) => this.setComponentReference("lessonTable", ref) }
+                        dataBody={ () => [
+                            [
+                                [
+                                    "Starfish",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-0",
+                                        "name": "Starfish",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Sea Otter",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-1",
+                                        "name": "Sea Otter",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 1",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-2",
+                                        "name": "Level 1",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 6",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-3",
+                                        "name": "Level 6",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Basics I",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-4",
+                                        "name": "Basics I",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ]
+                            ],
+                            [
+                                [
+                                    "Duck",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-5",
+                                        "name": "Duck",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Salamander",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-6",
+                                        "name": "Salamander",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 2",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-7",
+                                        "name": "Level 2",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 7",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-8",
+                                        "name": "Level 7",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Basics II",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-9",
+                                        "name": "Basics II",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ]
+                            ],
+                            [
+                                [
+                                    "Sea Turtle",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-10",
+                                        "name": "Sea Turtle",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Sunfish",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-11",
+                                        "name": "Sunfish",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 3",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-12",
+                                        "name": "Level 3",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 8",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-13",
+                                        "name": "Level 8",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Strokes",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-14",
+                                        "name": "Strokes",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ]
+                            ],
+                            [
+                                [""],
+                                [
+                                    "Crocodile",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-15",
+                                        "name": "Crocodile",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 4",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-16",
+                                        "name": "Level 4",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 9",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-17",
+                                        "name": "Level 9",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [""]
+                            ],
+                            [
+                                [
+                                    "Simple Set",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-18",
+                                        "name": "Simple Set",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Whale",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-19",
+                                        "name": "Whale",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 5",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-20",
+                                        "name": "Level 5",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Level 10",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-21",
+                                        "name": "Level 10",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ],
+                                [
+                                    "Schoolboard",
+                                    React.createElement(Input, {
+                                        "callback": (ref) => this.setComponentReference("lessonInputs", this.lessonInputs.concat(ref)),
+                                        "data": "",
+                                        "handleBlur": this.storeLessonValues.bind(this),
+                                        "key": "key-lessons-input-22",
+                                        "name": "Schoolboard",
+                                        "placeholder": "#",
+                                        "styleClass": "",
+                                        "type": "text"
+                                    })
+                                ]
+                            ]
+                        ] }
+                        dataHeader={ () => [
+                            [
+                                ["Parent & Tot"],
+                                ["Pre-School"],
+                                ["Swim Kids"],
+                                ["Swim Kids"],
+                                ["Teens & Adults"]
+                            ]
+                        ] }
+                        styleCell={ () => null }
+                        styleHeader={ () => null }
+                        styleRow={ (index) => index % 2 ? "table-even" : "table-odd" }
+                        styleTable={ () => "pure-table" }
+                    />
+                    <Tutorial
+                        buttonClass={ "pure-button content-next-button" }
+                        callback={ () => null }
+                        data={ "Input the quantity of each lesson type, using digits from 1 to 9." }
+                        headingClass={ "content-head" }
+                        nextName={ "dynamicPrivates" }
+                        step={ 2 }
+                        wrapperClass={ "content-section-footer hide" }
+                    />
                 </div>
         );
     }
 }
 
-Lessons.propTypes =  {
+Lessons.propTypes = {
     callback: PropTypes.func.isRequired,
-    initData: PropTypes.object.isRequired,
     connector: PropTypes.object.isRequired,
+    createComponent: PropTypes.func.isRequired,
+    initData: PropTypes.object.isRequired,
     setChecklistQuantity: PropTypes.func.isRequired
 }
 

@@ -248,14 +248,15 @@ class Controller extends React.Component {
 
                     comp.generateInstructorTable();
                 } else if (name === "lessons") {
-                    comp.lessonSet = this.state.components[name];
+                    var lessonsComponent = comp;
+                    lessonsComponent.state = this.state.components[name];
 
                     this.state.componentObjects.gridChecklist.setQuantity(
                         "lessons",
-                        comp.getNumLessons()
+                        lessonsComponent.getComponentQuantity()
                     );
 
-                    comp.setLessonValues();
+                    lessonsComponent.displayComponentState();
                 } else if (name === "privates") {
                     comp.privateLessons = this.state.components[name];
 
@@ -384,9 +385,12 @@ class Controller extends React.Component {
         console.log("minimizing controllerData...");
 
         // Remove keys in lessons paired with the empty string.
-        for (var value in this.state.components.lessons) {
-            if (this.state.components.lessons[value] === 0) {
-                delete this.state.components.lessons[value];
+        var lessonData = this.state.components.lessons.data;
+        for (var key in lessonData) {
+            var lesson = lessonData[key];
+
+            if (lesson.quantity === 0) {
+                delete this.state.components.lessons.data[key];
             }
         }
 
@@ -434,13 +438,10 @@ class Controller extends React.Component {
             });
         } else if (database === "lessons") {
             var lessonsUpdates = [];
+            var lessonData = this.state.components.lessons.data;
 
-            for (var key in this.state.components.lessons.data) {
-                if (key === "half" || key === "threequarter") {
-                    continue;
-                }
-
-                var lesson = this.state.components.lessons.data[key];
+            for (var key in lessonData) {
+                var lesson = lessonData[key];
                 var id = lesson.id;
                 var body = {
                     "quantity": lesson.quantity
@@ -504,7 +505,13 @@ class Controller extends React.Component {
         var obj = {};
 
         for (var i = 0; i < res.length; i++) {
+            var isData = false;
             var keys = Object.keys(res[i]);
+
+            if (keys.length === 1 && keys[0] === "data") {
+                isData = true;
+                keys = Object.keys(res[i].data);
+            }
 
             if (keys.length !== 1) {
                 continue;
@@ -512,13 +519,25 @@ class Controller extends React.Component {
 
             var key = keys[0];
             if (Array.isArray(obj[key])) {
-                obj[key] = obj[key].concat(res[i][key]);
+                if (isData) {
+                    obj[key] = obj[key].concat(res[i].data[key]);
+                } else {
+                    obj[key] = obj[key].concat(res[i][key]);
+                }
             } else {
-                Object.assign(obj, res[i]);
+                if (isData) {
+                    Object.assign(obj, res[i].data);
+                } else {
+                    Object.assign(obj, res[i]);
+                }
             }
         }
 
-        return obj;
+        if (isData) {
+            return { "data": obj };
+        } else {
+            return obj;
+        }
     }
 
     /**
