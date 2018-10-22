@@ -388,17 +388,20 @@ tbody td:first-child {
 
 /* LANDING */
 
-.splash-subhead {
-    line-height: 24px;
-}
-
-/* Styles of rotating text */
 .lowercase {
     text-transform: lowercase;
 }
 
+.splash-subhead {
+    line-height: 24px;
+}
+
+#dynamicLanding .splash > div {
+    margin-top: 7%;
+}
+
 #dynamicLanding a {
-    margin: 5% 0 0 0;
+    opacity: 0;
 }
 
 
@@ -472,14 +475,6 @@ tbody td:first-child {
     background-color: rgb(202, 60, 60);
 }
 
-.remove-preference-even {
-    color: lightgrey;
-}
-
-.remove-preference-odd {
-    color: grey;
-}
-
 #dynamicInstructors {
     padding: 45px;
 }
@@ -516,6 +511,28 @@ tbody td:first-child {
 
 /* INSTRUCTOR PREFERENCES */
 
+.remove-preference-odd {
+    color: grey;
+}
+
+.remove-preference-even {
+    color: lightgrey;
+}
+
+.hide-preference-odd {
+    color: transparent;
+}
+
+.hide-preference-even {
+    color: transparent;
+}
+
+#dynamicInstructorPreferences a {
+    color: inherit;
+    cursor: inherit;
+    text-decoration: none;
+}
+
 #dynamicInstructorPreferences table {
     width: 80%;
 
@@ -538,7 +555,7 @@ tbody td:first-child {
 
 /* LESSONS */
 
-.warning-table {
+.warning-cell {
     color: white;
     background-color: rgb(223, 117, 20) !important;
 }
@@ -911,16 +928,16 @@ tbody td:first-child {
 
 /* FOOTER */
 
+.footer-links {
+    text-decoration: none;
+    color: white;
+}
+
 #dynamicFooter div {
     height: 40px;
 
     font-size: 14px;
     line-height: 23px;
-}
-
-#dynamicFooter a {
-    text-decoration: none;
-    color: white;
 }
 
 #dynamicFooter p {
