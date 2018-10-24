@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 
+# Drop user and database.
+dropdb -e --if-exists eggbeatr
+dropuser -e --if-exists eggbeatr
+
 # Create the user user for the application.
 createuser -d -e -R -S eggbeatr
 
@@ -24,7 +28,7 @@ else
 fi
 
 # Initialize the database with the default values.
-bash initdb
+bash dbinit
 
 if [[ $? -eq 0 ]]
 then

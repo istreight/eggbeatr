@@ -15,6 +15,12 @@ module.exports = {
     devServer: {
         contentBase: path.resolve(__dirname, contentBase)
     },
+    resolve: {
+        alias: {
+            'root': path.resolve(__dirname, '../../../')
+        },
+        extensions: ['.js']
+    },
     module: {
         rules: [
             {

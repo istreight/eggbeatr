@@ -58,11 +58,11 @@ Installation of other dependencies is handled by the [Node Packet Manager](https
 
 ##### Database Set-Up
 
-To set up the database, run `npm run db:setup`. This will create the user and database required by the application. Additionally, this will populate the database with the default data.
+To set up the database, run `npm run db:setup`. This will create the user and database required by the application. The application requires a user named `eggbeatr` and a database named `eggbeatr`. Additionally, this will populate the database with the default data.
 
 ##### Database Initialization
 
-To initialize the database (without creating a new user), there are two NPM scripts: `npm run db:init` & `npm run db:empty`. Both will drop the current database and create a new, fresh database. The difference between the two is that the `db:empty` script will not populate the application with any data.
+To initialize the database (without creating a new user), there are two NPM scripts: `npm run db:init` & `npm run db:empty`. Both will drop the current database, removing any data, and create a new, fresh database. The difference between the two is that the `db:init` script will populate the database with default data whereas the `db:empty` script will not populate the database with any data.
 
 ### Run
 
