@@ -3,15 +3,6 @@
 
 cd $(pwd)/../etc
 
-if [[ "$1" == "empty" ]]
-then
-    # To seed without the default data, use db:lessons.
-    # Lessons are required to be initalized since they are not being created or deleted, only modified.
-    DEFAULTVALUE=0 ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000001-default-lessons.js
-
-    exit $?
-fi
-
 # Drop database and current set of data.
 ../node_modules/.bin/sequelize db:drop
 
@@ -21,5 +12,15 @@ fi
 # Creates relations in the database based on the src/models.
 ../node_modules/.bin/sequelize db:migrate
 
-# Seed database with default data.
-../node_modules/.bin/sequelize db:seed:all
+if [[ "$1" == "empty" ]]
+then
+    export EGGBEATR_DEFAULTVALUE=0
+
+    # To seed without the default data, use db:lessons.
+    # Lessons are required to be initalized since they are not being created or deleted, only modified.
+    ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000000-default-header.js
+    ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000001-default-lessons.js
+else
+    # Seed database with default data.
+    ../node_modules/.bin/sequelize db:seed:all
+fi

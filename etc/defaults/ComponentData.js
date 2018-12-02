@@ -1,4 +1,20 @@
+let headers;
 const defaultValue = process.env.EGGBEATR_DEFAULTVALUE || 1;
+
+if (defaultValue == 0) {
+    headers = [{
+        "setTitle": "Default"
+    }];
+} else {
+    headers = [
+        {
+          "setTitle": "Saturday"
+        },
+        {
+          "setTitle": "Sunday"
+        }
+    ];
+}
 
 module.exports = {
     "Grids": [{
@@ -6,14 +22,7 @@ module.exports = {
         "duration": 1.5,
         "lessonTimes": ["9:00", "9:30", "10:00", "10:30", "11:00"]
     }],
-    "Headers": [
-        {
-          "setTitle": "Saturday"
-        },
-        {
-          "setTitle": "Sunday"
-        }
-    ],
+    "Headers": headers,
     "InstructorPreferences": [
         {
             "headerId": 1,
