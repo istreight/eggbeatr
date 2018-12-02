@@ -9,7 +9,7 @@ for i in "${dir[@]}"
 do
     cd $root/$i
 
-    echo "Cleaning /$i..."
+    echo "Cleaning $i..."
 
     # Remove files ingored by Git.
     cat $root/.gitignore | while read line
