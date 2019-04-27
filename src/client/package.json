@@ -4,26 +4,26 @@
     "description": "",
     "main": "app.client.js",
     "dependencies": {
-        "jquery": "^3.3.1",
-        "jspdf": "^1.4.1",
-        "jspdf-autotable": "^2.3.5",
-        "n": "^2.1.12",
-        "npm": "^6.4.1",
-        "react": "^16.6.0",
-        "react-dom": "^16.6.0"
+        "jquery": "^3.4.0",
+        "jspdf": "^1.5.3",
+        "jspdf-autotable": "^3.1.1",
+        "n": "^3.0.2",
+        "npm": "^6.9.0",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6"
     },
     "devDependencies": {
-        "@babel/core": "^7.1.2",
-        "@babel/preset-env": "^7.1.0",
+        "@babel/core": "^7.4.4",
+        "@babel/preset-env": "^7.4.4",
         "@babel/preset-react": "^7.0.0",
-        "babel-loader": "^8.0.4",
-        "css-loader": "^1.0.0",
+        "babel-loader": "^8.0.5",
+        "css-loader": "^2.1.1",
         "pure-css": "^1.0.4",
-        "react-hot-loader": "^4.3.11",
+        "react-hot-loader": "^4.8.4",
         "style-loader": "^0.23.1",
-        "webpack": "^4.22.0",
-        "webpack-cli": "^3.1.2",
-        "webpack-dev-server": "^3.1.10"
+        "webpack": "^4.30.0",
+        "webpack-cli": "^3.3.1",
+        "webpack-dev-server": "^3.3.1"
     },
     "scripts": {
         "start": "webpack-dev-server --hot --inline --progress --config etc/webpack.client.config.js",
