@@ -75,7 +75,6 @@ class SectionDescription extends React.Component {
                     callback={ this.state.anchorCallback }
                     data={ this.state.buttonText }
                     handleClick={ this.state.anchorHandleClick }
-                    hyperlink={ "javascript:void(0)" }
                     styleClass={ this.getAnchorStyle() }
                     updateProps={ false }
                 />

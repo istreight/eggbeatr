@@ -65,7 +65,7 @@ class SetList extends React.Component {
                     "callback": () => null,
                     "data": setTitle,
                     "handleClick": () => this.handleClick(setTitle),
-                    "hyperlink": "javascript:void(0)",
+                    "hyperlink": "#",
                     "key": "key-setlist-anchor-" + index,
                     "styleClass": styleClass
                 });

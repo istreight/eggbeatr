@@ -41,7 +41,6 @@ class ScrollingAnchor extends React.Component {
                 callback={ () => null }
                 data={ this.state.data }
                 handleClick={ this.handleClick }
-                hyperlink={ "javascript:void(0)" }
                 styleClass={ this.state.styleClass }
             />
         );

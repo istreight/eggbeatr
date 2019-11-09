@@ -34,7 +34,6 @@ class RemoveButton extends React.Component {
                 callback={ this.state.callback.bind(this) }
                 data={ "Remove" }
                 handleClick={ this.state.handleClick.bind(this) }
-                hyperlink={ "javascript:void(0)" }
                 styleClass={ "pure-button remove" }
             />
         );

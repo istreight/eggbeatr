@@ -120,17 +120,19 @@ class InstructorPreferences extends React.Component {
             for (var colIndex = 0; colIndex < row.length; colIndex++) {
                 var lessonType = row[colIndex];
 
-                preferences[rowIndex][colIndex] = [React.createElement(
-                    Anchor,
-                    {
-                        "callback": () => null,
-                        "data": lessonType,
-                        "handleClick": this.updatePreferenceCell.bind(this),
-                        "hyperlink": "javascript:void(0)",
-                        "key": "key-anchor-" + (rowIndex * preferences.length + colIndex),
-                        "styleClass": ""
-                    }
-                )];
+                preferences[rowIndex][colIndex] = [
+                    React.createElement(
+                        Anchor,
+                        {
+                            "callback": () => null,
+                            "data": lessonType,
+                            "handleClick": this.updatePreferenceCell.bind(this),
+                            "hyperlink": "#",
+                            "key": "key-anchor-" + (rowIndex * preferences.length + colIndex),
+                            "styleClass": ""
+                        }
+                    )
+                ];
             }
         }
 
