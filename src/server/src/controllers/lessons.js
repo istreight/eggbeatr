@@ -46,7 +46,7 @@ module.exports = {
                 });
             }
 
-            var q = req.body.quantity || lesson.quantity;
+            var q = req.body.quantity || lesson.dataValues.quantity;
             if (req.body.quantity === 0) {
                 q = 0;
             }

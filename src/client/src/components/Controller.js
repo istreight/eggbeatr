@@ -353,7 +353,8 @@ class Controller extends React.Component {
         console.log("manipulating controllerData...");
 
         if (updateDatabase) {
-            this.minimizeData(componentName);
+            //this.minimizeData(componentName);
+            this.updateDatabase(componentName);
         }
 
         // Add instructors to controllerData.
@@ -406,6 +407,7 @@ class Controller extends React.Component {
         console.log("minimizing controllerData...");
 
         // Remove keys in lessons paired with the empty string.
+        // This breaks updating lessons with a value of 0.
         var lessonData = this.state.components.lessons.data;
         for (var key in lessonData) {
             var lesson = lessonData[key];
@@ -416,6 +418,7 @@ class Controller extends React.Component {
         }
 
         // Remove instructors in Privates without private lessons.
+        // Do this in the Privates component.
         for (var instructor in this.state.components.privates) {
             var _private = this.state.components.privates[instructor];
 
