@@ -43,7 +43,6 @@ class EditButton extends React.Component {
                 callback={ this.state.callback.bind(this) }
                 data={ this.getData() }
                 handleClick={ this.state.handleClick.bind(this) }
-                hyperlink={ "javascript:void(0)" }
                 styleClass={ "pure-button" }
             />
         );

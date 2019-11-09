@@ -34,7 +34,6 @@ class AddButton extends React.Component {
                 callback={ this.state.callback.bind(this) }
                 data={ "Add" }
                 handleClick={ this.state.handleClick.bind(this) }
-                hyperlink={ "javascript:void(0)" }
                 styleClass={ "pure-button add" }
             />
         );

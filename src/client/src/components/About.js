@@ -66,35 +66,43 @@ class About extends React.Component {
                     callback={ () => null }
                     data={ [
                         {
-                            "data": [React.createElement(FeatureDescription, {
-                                "imgSrc": this.state.person.imgSrc,
-                                "key": "key-featuredescription-0",
-                                "textDesc": this.state.person.textDesc
-                            })],
+                            "data": [
+                                React.createElement(FeatureDescription, {
+                                    "imgSrc": this.state.person.imgSrc,
+                                    "key": "key-featuredescription-0",
+                                    "textDesc": this.state.person.textDesc
+                                })
+                            ],
                             "styleClass": ""
                         },
                         {
-                            "data": [React.createElement(FeatureDescription, {
-                                "imgSrc": this.state.settings.imgSrc,
-                                "key": "key-featuredescription-0",
-                                "textDesc": this.state.settings.textDesc
-                            })],
+                            "data": [
+                                React.createElement(FeatureDescription, {
+                                    "imgSrc": this.state.settings.imgSrc,
+                                    "key": "key-featuredescription-0",
+                                    "textDesc": this.state.settings.textDesc
+                                })
+                            ],
                             "styleClass": ""
                         },
                         {
-                            "data": [React.createElement(FeatureDescription, {
-                                "imgSrc": this.state.stats.imgSrc,
-                                "key": "key-featuredescription-0",
-                                "textDesc": this.state.stats.textDesc
-                            })],
+                            "data": [
+                                React.createElement(FeatureDescription, {
+                                    "imgSrc": this.state.stats.imgSrc,
+                                    "key": "key-featuredescription-0",
+                                    "textDesc": this.state.stats.textDesc
+                                })
+                            ],
                             "styleClass": ""
                         },
                         {
-                            "data": [React.createElement(FeatureDescription, {
-                                "imgSrc": this.state.timer.imgSrc,
-                                "key": "key-featuredescription-0",
-                                "textDesc": this.state.timer.textDesc
-                            })],
+                            "data": [
+                                React.createElement(FeatureDescription, {
+                                    "imgSrc": this.state.timer.imgSrc,
+                                    "key": "key-featuredescription-0",
+                                    "textDesc": this.state.timer.textDesc
+                                })
+                            ],
                             "styleClass": ""
                         }
                     ] }

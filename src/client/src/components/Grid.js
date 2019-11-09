@@ -644,9 +644,13 @@ class Grid extends React.Component {
         gridContainer.style = "width:" + newWidth + "px";
 
         // Eliminate space conflict with the GridChecklist.
+        var cHeight;
+        var newHeight;
+        var dynamicGrid = document.getElementById("dynamicGrid");
         var instructors = Object.keys(this.controllerData.instructors);
-        var cHeight = document.getElementById("dynamicGrid").clientHeight;
-        var newHeight = cHeight + (40 * (instructors.length - 3));
+
+        cHeight = dynamicGrid.clientHeight;
+        newHeight = cHeight + (40 * (instructors.length - 3));
 
         if (instructors.length > 3) {
             dynamicGrid.style.height = newHeight + "px";
@@ -790,7 +794,7 @@ class Grid extends React.Component {
                 "callback": () => null,
                 "data": [newTable],
                 "handleClick": this.showModal.bind(this),
-                "hyperlink": "javascript:void(0)",
+                "hyperlink": "#",
                 "key": "key-grid-anchor-" + gridIndex,
                 "styleClass": "pure-menu-link"
             });
@@ -934,7 +938,7 @@ class Grid extends React.Component {
                                 }
                             ],
                             "handleClick": () => null,
-                            "hyperlink": "javascript:void(0)",
+                            "hyperlink": "#",
                             "key": "key-grid-description-0",
                             "styleClass": "pure-menu-list right-button is-invisible"
                         })
@@ -975,7 +979,7 @@ class Grid extends React.Component {
                                         ),
                                         "data": "Duration",
                                         "handleClick": () => null,
-                                        "hyperlink": "javascript:void(0)",
+                                        "hyperlink": "#",
                                         "key": "key-grid-anchor-0",
                                         "styleClass": "pure-menu-heading"
                                     })
@@ -1053,7 +1057,7 @@ class Grid extends React.Component {
                             "callback": (ref) => this.setComponentReference("prevButton", ref),
                             "data": "Previous",
                             "handleClick": () => null,
-                            "hyperlink": "javascript:void(0)",
+                            "hyperlink": "#",
                             "key": "key-grid-anchor-4",
                             "styleClass": "pure-button float-left"
                         }),
@@ -1061,7 +1065,7 @@ class Grid extends React.Component {
                             "callback": (ref) => this.setComponentReference("nextButton", ref),
                             "data": "Next",
                             "handleClick": () => null,
-                            "hyperlink": "javascript:void(0)",
+                            "hyperlink": "#",
                             "key": "key-grid-anchor-5",
                             "styleClass": "pure-button float-right"
                         })
@@ -1072,7 +1076,7 @@ class Grid extends React.Component {
                             "callback": () => null,
                             "data": "Export to PDF",
                             "handleClick": this.exportToPDF.bind(this),
-                            "hyperlink": "javascript:void(0)",
+                            "hyperlink": "#",
                             "key": "key-grid-anchor-5",
                             "styleClass": "pure-button"
                         })

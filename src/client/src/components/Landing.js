@@ -82,7 +82,6 @@ class Landing extends React.Component {
                         callback={ () => null }
                         data={ "Get Started" }
                         handleClick={ this.getStarted }
-                        hyperlink={ "javascript:void(0)" }
                         styleClass={ "pure-button pure-button-primary" }
                     />
                 </div>

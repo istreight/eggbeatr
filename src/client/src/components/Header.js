@@ -301,7 +301,6 @@ class Header extends React.Component {
                 callback={ () => null }
                     data={ "SET" }
                     handleClick={ () => null }
-                    hyperlink={ "javascript:void(0)" }
                     styleClass={ "pure-menu-heading" }
                 />
                 <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
@@ -328,7 +327,6 @@ class Header extends React.Component {
                         })
                     ] }
                     handleClick={ () => null }
-                    hyperlink={ "javascript:void(0)" }
                     styleClass={ "header-input" }
                 />
                 <WaitIndicator
@@ -347,43 +345,53 @@ class Header extends React.Component {
                     callback={ () => null }
                     data={ [
                         {
-                            "data": [React.createElement(ScrollingAnchor, {
-                                "data": "About",
-                                "key": "key-header-li-scroll-0",
-                                "styleClass": "pure-menu-link"
-                            })],
+                            "data": [
+                                React.createElement(ScrollingAnchor, {
+                                    "data": "About",
+                                    "key": "key-header-li-scroll-0",
+                                    "styleClass": "pure-menu-link"
+                                })
+                            ],
                             "styleClass": "pure-menu-item"
                         },
                         {
-                            "data": [React.createElement(ScrollingAnchor, {
-                                "data": "Instructors",
-                                "key": "key-header-li-scroll-1",
-                                "styleClass": "pure-menu-link"
-                            })],
+                            "data": [
+                                React.createElement(ScrollingAnchor, {
+                                    "data": "Instructors",
+                                    "key": "key-header-li-scroll-1",
+                                    "styleClass": "pure-menu-link"
+                                })
+                            ],
                             "styleClass": "pure-menu-item"
                         },
                         {
-                            "data": [React.createElement(ScrollingAnchor, {
-                                "data": "Lessons",
-                                "key": "key-header-li-scroll-2",
-                                "styleClass": "pure-menu-link"
-                            })],
+                            "data": [
+                                React.createElement(ScrollingAnchor, {
+                                    "data": "Lessons",
+                                    "key": "key-header-li-scroll-2",
+                                    "styleClass": "pure-menu-link"
+                                })
+                            ],
                             "styleClass": "pure-menu-item"
                         },
                         {
-                            "data": [React.createElement(ScrollingAnchor, {
-                                "data": "Privates",
-                                "key": "key-header-li-scroll-3",
-                                "styleClass": "pure-menu-link"
-                            })],
+                            "data": [
+                                React.createElement(ScrollingAnchor, {
+                                    "data": "Privates",
+                                    "key": "key-header-li-scroll-3",
+                                    "styleClass": "pure-menu-link"
+                                })
+                            ],
                             "styleClass": "pure-menu-item"
                         },
                         {
-                            "data": [React.createElement(ScrollingAnchor, {
-                                "data": "Grid",
-                                "key": "key-header-li-scroll-4",
-                                "styleClass": "pure-menu-link"
-                            })],
+                            "data": [
+                                React.createElement(ScrollingAnchor, {
+                                    "data": "Grid",
+                                    "key": "key-header-li-scroll-4",
+                                    "styleClass": "pure-menu-link"
+                                })
+                            ],
                             "styleClass": "pure-menu-item"
                         }
                     ] }

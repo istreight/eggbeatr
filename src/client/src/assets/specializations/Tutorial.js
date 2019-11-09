@@ -48,7 +48,7 @@ class Tutorial extends React.Component {
                     callback: () => null,
                     "data": "\u2192",
                     "handleClick": this.handleClick.bind(this),
-                    "hyperlink": "javascript:void(0)",
+                    "hyperlink": "#",
                     "styleClass": this.state.buttonClass
                 }) : null }
             </div>
