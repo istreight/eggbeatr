@@ -54,7 +54,7 @@ Anchor.propTypes = {
         PropTypes.string
     ]),
     handleClick: PropTypes.func.isRequired,
-    hyperlink: PropTypes.string.isRequired,
+    hyperlink: PropTypes.string,
     styleClass: PropTypes.string.isRequired,
     updateProps: PropTypes.bool
 }

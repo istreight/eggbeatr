@@ -173,6 +173,10 @@ tbody td:first-child {
     width: 100px;
 }
 
+.pure-table tr {
+    border: 1px solid #cbcbcb;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
@@ -499,8 +503,6 @@ tbody td:first-child {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 64px;
-
-    display: none;
 }
 
 #dynamicInstructors .pure-button-primary {

@@ -27,9 +27,9 @@ class Input extends React.Component {
         this.props.callback(this);
     }
 
-    handleChange(event) {
+    handleChange(e) {
         this.setState({
-            "data": event.target.value
+            "value": e.target.value
         });
     }
 
@@ -43,7 +43,7 @@ class Input extends React.Component {
                 onChange={ this.handleChange.bind(this) }
                 placeholder={ this.state.placeholder }
                 type={ this.state.type }
-                value={ this.state.data }
+                value={ this.state.value }
             />
         );
     }
@@ -56,12 +56,12 @@ Input.defaultProps = {
 Input.propTypes = {
     callback: PropTypes.func.isRequired,
     checked: PropTypes.bool,
-    data: PropTypes.string.isRequired,
     handleBlur: PropTypes.func.isRequired,
     name: PropTypes.string,
     placeholder: PropTypes.string.isRequired,
     styleClass: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired
 }
 
 export default Input;

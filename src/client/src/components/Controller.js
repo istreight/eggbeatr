@@ -231,22 +231,29 @@ class Controller extends React.Component {
             }
 
             if (this.state.components[name] !== undefined) {
+                /*
+                 * Updated InstructorPreferences to store class members in state and use utility and specialized components.
+                 * Eliminated jQuery from InstructorPreferences.
+                 * Update Controller and Connector to reflect changes in InstructorPreferences.
+                 */
                 if (name === "instructorPreferences") {
-                    comp.state = this.state.components[name];
+                    var instructorPreferencesComponent = comp;
+                    instructorPreferencesComponent.state = this.state.components[name];
                 } else if (name === "grid") {
                     var gridComponent = comp;
                     gridComponent.state = this.state.components[name];
 
                     gridComponent.init();
                 } else if (name === "instructors") {
-                    comp.instructors = this.state.components[name];
+                    var instructorsComponent = comp;
+                    instructorsComponent.state = this.state.components[name];
 
                     this.state.componentObjects.gridChecklist.setQuantity(
                         "instructors",
-                        comp.getNumInstructors()
+                        instructorsComponent.getComponentQuantity()
                     );
 
-                    comp.generateInstructorTable();
+                    instructorsComponent.displayComponentState();
                 } else if (name === "lessons") {
                     var lessonsComponent = comp;
                     lessonsComponent.state = this.state.components[name];
@@ -266,6 +273,17 @@ class Controller extends React.Component {
                     );
 
                     comp.generatePrivate();
+                    /*
+                    var privatesComponent = comp;
+                    privatesComponent.privateLessons = this.state.components[name];
+
+                    this.state.componentObjects.gridChecklist.setQuantity(
+                        "privates",
+                        privatesComponent.getComponentQuantity()
+                    );
+
+                    privatesComponent.displayComponentState();
+                     */
                 }
             }
         }
@@ -349,9 +367,12 @@ class Controller extends React.Component {
         );
 
         // Array of valid instructors.
-        var instructorsArray = Object.keys(this.state.controllerData.instructors);
+        var instructorsArray;
+        var instructors = this.state.controllerData.instructors.data;
+
+        instructorsArray = Object.keys(instructors);
         instructorsArray = instructorsArray.filter((instructorName) => {
-            var instructor = this.state.controllerData.instructors[instructorName];
+            var instructor = instructors[instructorName];
 
             return this.checkWSIExpiration(instructor.wsiExpiration);
         });
@@ -418,8 +439,10 @@ class Controller extends React.Component {
                 .then(gridRes => console.log("Updated Grid:", gridRes));
         } else if (database === "instructors") {
             var instructorUpdates = [];
-            for (var key in this.state.components.instructors) {
-                var instructor = this.state.components.instructors[key];
+            var instructorsData = this.state.components.instructors.data;
+
+            for (var key in instructorsData) {
+                var instructor = instructorsData[key];
                 var id = instructor.id;
                 var body = {
                     "instructor": key,
@@ -457,8 +480,10 @@ class Controller extends React.Component {
             });
         } else if (database === "instructorPreferences") {
             var preferenceUpdates = [];
-            for (var key in this.state.components.instructorPreferences.data) {
-                var preference = this.state.components.instructorPreferences.data[key];
+            var preferenceData = this.state.components.instructorPreferences.data;
+
+            for (var key in preferenceData) {
+                var preference = preferenceData[key];
                 var id = preference.id;
                 var body = {
                     "instructorId": preference.instructorId,
@@ -502,10 +527,11 @@ class Controller extends React.Component {
     }
 
     assignUpdates(res) {
+        var isData;
         var obj = {};
 
         for (var i = 0; i < res.length; i++) {
-            var isData = false;
+            isData = false;
             var keys = Object.keys(res[i]);
 
             if (keys.length === 1 && keys[0] === "data") {
