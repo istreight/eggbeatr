@@ -268,7 +268,9 @@ class Connector extends React.Component {
     }
 
     formatInstructorRes(instructorRes) {
-        var newObject = {};
+        var newObject = {
+            "data": {}
+        };
 
         instructorRes.forEach((instructor, index) => {
             var newId = instructor.id;
@@ -277,7 +279,7 @@ class Connector extends React.Component {
             var newPrivateOnly = instructor.privateOnly;
             var newWsiExpiration = instructor.wsiExpiration;
 
-            newObject[newInstructor] = {
+            newObject.data[newInstructor] = {
                 "id": newId,
                 "dateOfHire": newDateOfHire,
                 "privateOnly": newPrivateOnly,

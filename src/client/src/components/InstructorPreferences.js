@@ -212,8 +212,8 @@ class InstructorPreferences extends React.Component {
                 header={ [this.selectedInstructor] }
                 isDisplayed={ false }
                 tableData={ {
-                    "dataBody": this.getPreferenceData.bind(this),
-                    "dataHeader": () => [[
+                    "dataBody": this.getPreferenceData(),
+                    "dataHeader": [[
                         "Parent & Tot",
                         "Pre-School",
                         "Swim Kids",

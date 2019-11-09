@@ -33,7 +33,7 @@ class Table extends React.Component {
     }
 
     getBodyRows() {
-        var data = this.state.dataBody();
+        var data = this.state.dataBody;
 
         return data.map((dataRow, index) =>
             React.createElement(TableRow, {
@@ -48,7 +48,7 @@ class Table extends React.Component {
     }
 
     getHeaderRows() {
-        var data = this.state.dataHeader();
+        var data = this.state.dataHeader;
 
         return data.map((dataRow, index) =>
             React.createElement(TableRow, {
@@ -78,8 +78,8 @@ class Table extends React.Component {
 
 Table.propTypes = {
     callback: PropTypes.func.isRequired,
-    dataBody: PropTypes.func.isRequired,
-    dataHeader: PropTypes.func.isRequired,
+    dataBody: PropTypes.array.isRequired,
+    dataHeader: PropTypes.array.isRequired,
     styleCell: PropTypes.func.isRequired,
     styleHeader: PropTypes.func.isRequired,
     styleRow: PropTypes.func.isRequired,

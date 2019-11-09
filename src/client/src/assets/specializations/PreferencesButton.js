@@ -22,7 +22,9 @@ class PreferencesButton extends React.Component {
     }
 
     componentWillMount() {
-        this.setState(this.props);
+        this.setState(Object.assign({
+            "styleClass": "pure-button preferences"
+        }, this.props));
     }
 
     componentDidMount() {
@@ -33,14 +35,34 @@ class PreferencesButton extends React.Component {
         this.state.handleClick(this.state.instructorName);
     }
 
+    toggleState(enable) {
+        var handleClick;
+        var styleClass = this.state.styleClass;
+
+        if (styleClass.includes("pure-button-disabled")) {
+            styleClass = styleClass.replace(" pure-button-disabled", "");
+        }
+
+        if (enable) {
+            handleClick = () => null;
+            styleClass =  styleClass.concat(" pure-button-disabled");
+        } else {
+            handleClick = this.onClick.bind(this);
+        }
+
+        this.setState({
+            "handleClick": handleClick,
+            "styleClass": styleClass
+        });
+    }
+
     render() {
         return (
             <Anchor
-                callback={ this.state.callback.bind(this) }
+                callback={ () => null }
                 data={ "..." }
                 handleClick={ this.onClick.bind(this) }
-                hyperlink={ "javascript:void(0)" }
-                styleClass={ "pure-button preferences" }
+                styleClass={ this.state.styleClass }
             />
         );
     }

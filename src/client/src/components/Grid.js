@@ -446,7 +446,7 @@ class Grid extends React.Component {
      */
     getPrivateOnlyInstructors() {
         return this.controllerData.instructorsArray.filter((value, index) => {
-            var instructor = this.controllerData.instructors[value];
+            var instructor = this.controllerData.instructors.data[value];
             return instructor.privateOnly;
         });
     }
@@ -454,7 +454,7 @@ class Grid extends React.Component {
     /**
      * Return a list of the names of instructors that teach group lessons.
      */
-    getGroupInstructors(instructors) {
+    getGroupInstructors() {
         return this.controllerData.instructorsArray.filter((value, index) => {
             var instructor = this.controllerData.instructors[value];
             return !instructor.privateOnly;
@@ -534,7 +534,6 @@ class Grid extends React.Component {
      */
     modifyGridArrays(newGrids, lessonQueue) {
         var instructorOrder = this.orderInstructorsByPreferencesSize();
-        var privateOnlyInstructors = this.getPrivateOnlyInstructors();
 
         // Set allocated lessons slots to swim & private lessons.
         for (var grid = 0; grid < newGrids.length; grid++) {
@@ -616,9 +615,7 @@ class Grid extends React.Component {
         var emptyStyleClass = this.emptyGridsNotification.state.styleClass;
 
         if (gridArrays.length === 0) {
-            var instructors = this.getGroupInstructors(
-                Object.keys(this.controllerData.instructors)
-            );
+            var instructors = this.getGroupInstructors();
 
             this.noGridsNotification(
                 duration,
@@ -775,8 +772,8 @@ class Grid extends React.Component {
 
         return React.createElement(Table, {
             "callback": () => null,
-            "dataBody": () => dataBody,
-            "dataHeader": () => dataHeader,
+            "dataBody": dataBody,
+            "dataHeader": dataHeader,
             "key": "key-grid-table-" + gridIndex,
             "styleCell": styleCell,
             "styleHeader": () => null,
@@ -957,12 +954,12 @@ class Grid extends React.Component {
                     Start Time:
                     <Input
                         callback={ (ref) => this.setComponentReference("startTimeInputField", ref) }
-                        data={ "" }
                         handleBlur={ this.setLessonTimes.bind(this) }
                         handleFocus={ () => null }
                         placeholder={ "..." }
                         styleClass={ "" }
                         type={ "text" }
+                        value={ "" }
                     />
                 </div>
                 <div className="pure-menu pure-menu-horizontal">
@@ -1082,8 +1079,8 @@ class Grid extends React.Component {
                     ] }
                     isDisplayed={ false }
                     tableData={ {
-                        "dataBody": () => [],
-                        "dataHeader": () => [],
+                        "dataBody": [],
+                        "dataHeader": [],
                         "styleCell": () => null,
                         "styleHeader": () => null,
                         "styleRow": () => null,

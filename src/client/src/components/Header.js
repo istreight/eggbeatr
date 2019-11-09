@@ -318,13 +318,13 @@ class Header extends React.Component {
                     data={ [
                         React.createElement(Input, {
                             "callback": (ref) => this.setComponentReference("setInputField", ref),
-                            "data": "",
                             "handleBlur": () => null,
                             "handleFocus": this.disableEditButton.bind(this),
                             "key": "key-header-input-0",
                             "placeholder": "...",
                             "type": "text",
-                            "styleClass": "is-invisible"
+                            "styleClass": "is-invisible",
+                            "value": ""
                         })
                     ] }
                     handleClick={ () => null }

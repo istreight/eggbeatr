@@ -9,97 +9,56 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+
+import Tutorial from 'specializations/Tutorial';
+import InstructorTable from 'specializations/InstructorTable';
+import SectionDescription from 'specializations/SectionDescription';
 
 
 class Instructors extends React.Component {
     constructor(props) {
         super(props);
 
-        this.instructors = {};
+        this.state = null;
+    }
+
+    componentWillMount() {
+        this.setState(this.props.initData, this.init);
     }
 
     componentDidMount() {
-        var numValidInstructors;
-
-        this.sortInstructors(this.props.initData);
-
-        this.generateInstructorTable();
-
-        numValidInstructors = this.getNumInstructors();
-
-        this.props.callback(this.instructors, "instructors", false);
-        this.props.setChecklistQuantity("instructors", numValidInstructors);
-
-        $("#dynamicInstructors .ribbon-section-description a").click(this.editInstructors.bind(this));
-        $("#dynamicInstructors input[type='checkbox']").click(this.updatePrivateOnly.bind(this));
-
-        // Link tutorital button to next section.
-        $("#dynamicInstructors .pure-button-primary").click(() => {
-            // Disable scrolling.
-            $("body").on("mousewheel DOMMouseScroll", false);
-
-            $("#dynamicLessons .content-section-footer").css({
-                "display": "block"
-            });
-
-            $("html, body").animate({
-                scrollTop: $("#dynamicLessons").offset().top - 60
-            }, 1600, () => {
-                $("body").off("mousewheel DOMMouseScroll");
-                $("#dynamicInstructors .ribbon-section-footer").css({
-                    "display": "none"
-                });
-            });
-        });
+        return;
     }
 
     /**
-     * Replaces the text of the Instructor table cells
-     *  with input fields.
-     * The placeholder values of the existing fields are
-     *  their text values.
+     * Initialize the class members.
      */
-    inputifyRows() {
-        $("#dynamicInstructors td").each((index, element) => {
-            if ($(element).children().length === 0) {
-                var headerCells = $("#dynamicInstructors th");
+    init() {
+        this.displayComponentState();
 
-                if (index % headerCells.length === 3) {
-                    $(element).addClass("is-center");
-                    $(element).html("<input type='checkbox'>");
-                    $(element).children("input[type='checkbox']").prop("disabled", true);
-                } else {
-                    var placeholder = $(element).text() || "...";
-                    $(element).html("<input type='text' placeholder='" + placeholder + "'>");
-                }
-            }
-        });
+        this.props.callback(this.state, "instructors", false);
+        this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
     }
 
     /**
-     * Appends new input row to the Instructors table.
+     * Get number of stored lessons.
      */
-    addInputRow() {
-        var instructorTable = $("#dynamicInstructors table");
-        var numRows = instructorTable.find("tr").length - 1;
-        var className = (numRows % 2 === 0) ? "table-odd" : "table-even";
+    getComponentQuantity() {
+        var validInstructors;
+        var instructorsArray = Object.keys(this.state.data);
+        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
-        instructorTable.append("<tr class='" + className + "'><td></td><td></td><td></td><td></td><td class='is-center'><a class='pure-button pure-button-disabled preferences'>...</a></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
+        // Expired & private only instructors.
+        validInstructors = instructorsArray.filter((instructorName) => {
+            var instructor = this.state.data[instructorName];
+            var expiryTime = instructor.wsiExpiration;
+            var privateOnly = instructor.privateOnly;
 
-        // Bind 'add' buttons for new rows.
-        instructorTable.find(".add").click(this.addRow.bind(this));
-    }
-
-    /**
-     * Resets the table to appropriate colour scheme.
-     */
-    colourTable() {
-        $("#dynamicInstructors tbody tr").each((index, element) => {
-            $(element).removeClass("table-odd table-even");
-             $(element).addClass((index % 2 === 0) ? "table-odd" : "table-even");
+            return !privateOnly && Date.now() + sixtyDaysInMilliseconds <  Date.parse(expiryTime);
         });
+
+        return validInstructors.length;
     }
 
     /**
@@ -111,206 +70,14 @@ class Instructors extends React.Component {
      *  original data.
      */
     editInstructors() {
-        var editInstructorsButton = $("#dynamicInstructors .ribbon-section-description a");
+        // Set state to update values for placeholders in InstructorTable props.
+        this.setState(this.state);
 
         // Re-name and re-bind 'Edit Instructors' button.
-        editInstructorsButton.unbind("click");
-        editInstructorsButton.html("Finish Editing");
-        editInstructorsButton.click(this.finishEditingInstructors.bind(this));
-
-        $("#dynamicInstructors input[type='checkbox']").prop("disabled", true);
-
-        // Add 'Modify' column.
-        $("#dynamicInstructors thead tr").append("<th class='is-center'>Modify</th>");
-        $("#dynamicInstructors tbody tr").append("<td class='is-center'><a class='pure-button remove'>Remove</a></td>");
-
-        this.addInputRow();
-        this.inputifyRows();
-
-        $("#dynamicInstructors table .remove").click(this.removeRow.bind(this));
-
-        this.setPreferencesButtons(false);
-    }
-
-    /**
-     * Removes the row of the table of a clicked
-     *  'remove' button.
-     */
-    removeRow() {
-        var removedRow = $(event.target).closest("tr");
-        var removedData = removedRow.find("input");
-        var reName = new RegExp(/^[A-Za-z\s]+$/);
-        var instructor = removedData.filter((index, element) => {
-            return reName.test($(element).attr("placeholder"));
-        });
-
-        var instructorName = instructor.attr("placeholder");
-        if (instructorName in this.instructors) {
-            var instructorId = this.instructors[instructorName].id;
-
-            this.props.removeComponent(instructorId, "Instructor").then((res) => delete this.instructors[instructorName]);
-
-            this.props.deletePreference(instructorName);
-        }
-
-        removedRow.remove();
-
-        this.colourTable();
-        this.sizeTable();
-    }
-
-    /**
-     * Verify the contents of each input field and commit
-     *  to the table.
-     */
-    addTableContents(removeInputRow) {
-        var tableRows = $("#dynamicInstructors tr");
-        var tableCells = $("#dynamicInstructors td");
-
-        // Add row to table.
-        var addedCells = true;
-        var instructorList = [];
-        var numColumns = tableCells.length / (tableRows.length - 1);
-        tableCells.each((index, element) => {
-            var isFirstChild = index % numColumns === 0;
-
-            addedCells = this.addCells(element, instructorList, isFirstChild, removeInputRow) && addedCells;
-        });
-
-        if (!addedCells) {
-            if (removeInputRow) {
-                this.addInputRow();
-            }
-
-            this.inputifyRows();
-        }
-
-        return addedCells;
-    }
-
-    /**
-     * Add a row to the table when the 'add' button
-     *  is clicked.
-     */
-    addRow() {
-        var isValid = this.addTableContents(false);
-
-        if (!isValid) {
-            return;
-        }
-
-        this.addInputRow();
-        this.inputifyRows();
-
-        // Add row to instructors object.
-        var instructorName;
-        var body = {};
-        var addedData = $(event.target).closest("tr").find("input");
-        var preferencesButton = $(event.target).closest("tr").find("a.preferences");
-
-        addedData.each((index, element) => {
-            var inputPlaceholder = $(element).attr("placeholder");
-
-            if (inputPlaceholder === "...") {
-                return true;
-            }
-
-            if (index === 0) {
-                    instructorName = inputPlaceholder;
-
-                    body.instructor = instructorName;
-            } else if (index === 1) {
-                body.dateOfHire = inputPlaceholder;
-            } else if (index === 2) {
-                var newDate = new Date(inputPlaceholder);
-                var cell = $(element).closest("td");
-                this.checkWSIExpiration(cell, newDate);
-
-                body.wsiExpiration = inputPlaceholder;
-            }
-        });
-
-        preferencesButton.attr("data-instructor-name", instructorName);
-
-        this.props.createComponent(body, "Instructor")
-            .then((res) => {
-                this.sortInstructors(Object.assign(this.instructors, res));
-
-                // Embed ID in DOM.
-                $("#dynamicInstructors table tr").last().prev().attr("data-instructor-id", res[instructorName].id);
-
-                // Bind click to change 'privateOnly' field.
-                var checkedBoxes = $("#dynamicInstructors input[type='checkbox']").slice(0, -1);
-                checkedBoxes.prop("disabled", false);
-                checkedBoxes.click(this.updatePrivateOnly.bind(this));
-            });
-
-        // Put 'remove' in the last cell of the row.
-        $(event.target).closest("td").html("<a class='pure-button remove'>Remove</a>");
-
-        // Rebind each 'remove'.
-        $("#dynamicInstructors table .remove").click(this.removeRow.bind(this));
-
-        this.colourTable();
-        this.sizeTable();
-    }
-
-    /**
-     * Adds the input values or valid placeholder values
-     *  from the input fields to the table.
-     */
-    addCells(cell, instructorList, isFirstChild, removeInputRow) {
-        var isWSIValue = false;
-        var cellIndex = $(cell).index();
-        var cellElement = $(cell).children().first();
-        var thCells = $(cell).closest("table").find("th");
-
-        if (thCells.eq(cellIndex).html() === "WSI Expiration") {
-            isWSIValue = true;
-        }
-
-        if (cellElement.is("input")) {
-            if (cellElement.attr("placeholder") === "..." && removeInputRow) {
-                $(cell).closest("tr").remove();
-
-                return true;
-            } else if (cellElement.attr("type") === "checkbox") {
-                return true;
-            }
-
-            // Input field data (or placeholder value for existing data).
-            var newData = cellElement.val() || cellElement.attr("placeholder");
-            newData = newData.replace(/^\s+|\s+$/, "");
-
-            var expiryTime;
-            var isValidData = false;
-            if (isFirstChild) {
-                var reName = new RegExp(/^[A-Za-z\s]+$/);
-
-                isValidData = reName.test(newData) && !instructorList.includes(newData);
-
-                instructorList.push(newData);
-            } else if (newData.split("-").length === 3) {
-                isValidData = !isNaN(Date.parse(newData));
-                expiryTime = Date.parse(newData);
-            }
-
-            if (isValidData) {
-                $(cell).html(newData);
-                $(cell).removeClass("error-cell");
-
-                if (expiryTime && isWSIValue) {
-                    this.checkWSIExpiration(cell, expiryTime);
-                }
-            } else {
-                $(cell).hide().addClass("error-cell").fadeIn(800);
-                cellElement.val("");
-            }
-
-            return isValidData;
-        }
-
-        return true;
+        this.editButton.setState({
+            "data": "Finish Editing",
+            "handleClick": this.finishEditingInstructors.bind(this)
+        }, () => this.instructorTable.toggleTableState(true));
     }
 
     /**
@@ -319,154 +86,78 @@ class Instructors extends React.Component {
      *  data.
      */
     finishEditingInstructors() {
-        var tableRows;
-        var numValidInstructors;
-        var editPromises = [];
-        var editInstructorsButton = $("#dynamicInstructors .ribbon-section-description a");
+        this.editButton.setState({
+            "data": "Edit Instructors",
+            "handleClick": this.editInstructors.bind(this)
+        }, () => this.instructorTable.toggleTableState(false));
 
-        var isValid = this.addTableContents(true);
-
-        if (!isValid) {
-            return;
-        }
-
-        tableRows = $("#dynamicInstructors tr");
-
-        // Update class object with new values.
-        tableRows.each((rowIndex, row) => {
-            var instructor;
-            var instructorId;
-            var instructorName;
-
-            // Remove 'Modify' column & skip header row.
-            if (rowIndex === 0) {
-                $(row).children("th").last().remove();
-
-                return true;
-            } else {
-                $(row).children("td").last().remove();
-            }
-
-            instructorId = $(row).attr("data-instructor-id");
-
-            [instructor, instructorName] = this.findInstructorById(instructorId);
-
-            $(row).children("td").each((cellIndex, element) => {
-                var cellText = $(element).text();
-
-                if (cellText !== "...") {
-                    if (cellIndex === 0) {
-                        if (!(cellText in this.instructors)) {
-                            this.instructors[cellText] = instructor;
-
-                            delete this.instructors[instructorName];
-                        }
-                    } else if (cellIndex === 1) {
-                        instructor.dateOfHire = cellText;
-                    } else if (cellIndex === 2) {
-                        instructor.wsiExpiration = cellText;
-                    }
-                }
-            });
-        });
-
-        // Re-title and re-bind 'Edit Instructors' button.
-        editInstructorsButton.unbind("click");
-        editInstructorsButton.html("Edit Instructors");
-        editInstructorsButton.click(this.editInstructors.bind(this));
-
-        $("#dynamicInstructors input[type='checkbox']").prop("disabled", false);
-
-        numValidInstructors = this.getNumInstructors();
-        this.setPreferencesButtons(true);
-
-        this.props.callback(this.instructors, "instructors", true);
-        this.props.setChecklistQuantity("instructors", numValidInstructors);
+        this.props.callback(this.state, "instructors", true);
+        this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
     }
 
     /**
      * Transforms the Instructors object to an HTML table.
      */
-    generateInstructorTable() {
-        var isOdd = true;
-        var newTable = "";
+    displayComponentState() {
+        this.sortInstructors(this.state.data);
+    }
 
-        this.sortInstructors(this.instructors);
+    /**
+     * Add an instructor to the state via the Add button in the Instructors table.
+     */
+    addInstructor(instructorBody) {
+        // Add to database.
+        return this.props.createComponent(instructorBody, "Instructor").then((res) => {
+            this.sortInstructors(Object.assign(this.state.data, res.data));
 
-        for (var instructorName in this.instructors) {
-            var rowColour = isOdd ? "table-odd" : "table-even";
-            var reDate = new RegExp(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/);
+            return res;
+        });
+    }
 
-            var instructor = this.instructors[instructorName];
-            var instructorId = instructor.id;
-            var dateOfHire = instructor.dateOfHire;
-            var privateOnly = instructor.privateOnly;
-            var wsiExpiration = instructor.wsiExpiration;
+    /**
+     * Remove an instructor from the state via instructor ID passed by the Remove button.
+     */
+    removeInstructor(instructorId) {
+        var instructors = JSON.parse(JSON.stringify(this.state.data));
 
-            var isChecked = privateOnly ? "checked" : "";
-            var checkbox = "<input type='checkbox'" + isChecked + ">";
+        for (var instructorName in instructors) {
+            var instructor = instructors[instructorName];
 
-            var wsiExpirationCell = "<td>" + wsiExpiration + "</td>";
+            if (instructor.id === instructorId) {
+                this.props.removeComponent(instructorId, "Instructor").then((res) => {
+                    delete instructors[instructorName];
 
-            newTable += "<tr class='" + rowColour + "' data-instructor-id='" + instructorId + "'>";
+                    this.setState({
+                        "data": instructors
+                    }, () => this.instructorTable.toggleTableState(true));
+                });
 
-            newTable += "<td>" + instructorName + "</td>";
-            newTable += "<td>" + dateOfHire + "</td>";
+                this.props.deletePreference(instructorName);
 
-            // Placing indicators if WSI is expiring or expired.
-            if (reDate.test(wsiExpiration)) {
-                var cellObject = this.checkWSIExpiration(
-                    $(wsiExpirationCell),
-                    Date.parse(wsiExpiration)
-                );
-
-                wsiExpirationCell = cellObject.get(0).outerHTML;
+                break;
             }
-
-            newTable += wsiExpirationCell
-            newTable += "<td class='is-center'>" + checkbox + "</td>"
-
-            newTable += "<td class='is-center'><a class='pure-button preferences'>...</a></td>";
-            newTable += "</tr>";
-
-            isOdd = !isOdd;
         }
-
-        $("#dynamicInstructors tbody").html(newTable);
-
-        this.colourTable();
-        this.sizeTable();
     }
 
-    /**
-     * Update the 'privateOnly' field of an instructor.
-     */
-    updatePrivateOnly() {
-        var row = $(event.target).closest("tr");
-        var id = row.attr("data-instructor-id");
-        var checkedBoxes = row.find("input:checked");
-        var [instructor, instructorName] = this.findInstructorById(id);
+    updateInstructor(instructorName, instructorBody, newInstructorName) {
+        var instructor = this.state.data[instructorName];
 
-        instructor.privateOnly = checkedBoxes.length > 0;
-        this.props.callback(this.instructors, "instructors", true);
-        this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
-    }
+        console.log("here", instructorName, newInstructorName);
 
-    /**
-     * Check if the WSI certification date is expiring or expired.
-     */
-    checkWSIExpiration(cell, expiryTime) {
-        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
+        if (instructorName === newInstructorName) {
+            Object.assign(instructor, instructorBody);
+            Object.assign(this.state.data[instructorName], instructor);
+        } else {
+            // Duplicate the old instructor's data to under the new instructor's name.
+            var newInstructor = {};
+            newInstructor[newInstructorName] = instructor;
+            Object.assign(this.state.data, newInstructor);
 
-        if (expiryTime < Date.now()) {
-            // Date has expired.
-            $(cell).addClass("error-cell");
-        } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
-            // Date is expiring in 60 days.
-            $(cell).addClass("warning-table");
+            // Remove the old instructor.
+            delete this.state.data[instructorName];
         }
 
-        return cell;
+        this.props.callback(this.state, "instructors", true);
     }
 
     /**
@@ -475,8 +166,8 @@ class Instructors extends React.Component {
     findInstructorById(id) {
         var instructorId = parseInt(id, 10);
 
-        for (var instructorName in this.instructors) {
-            var instructor = this.instructors[instructorName];
+        for (var instructorName in this.state.data) {
+            var instructor = this.state.data[instructorName];
 
             if (instructor.id === instructorId) {
                 return [instructor, instructorName];
@@ -491,11 +182,11 @@ class Instructors extends React.Component {
      */
     getNumInstructors() {
         var expiredArray;
-        var instructorsArray = Object.keys(this.instructors);
+        var instructorsArray = Object.keys(this.state.data);
         const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
         expiredArray = instructorsArray.filter((instructorName) => {
-            var instructor = this.instructors[instructorName];
+            var instructor = this.state.data[instructorName];
             var expiryTime = instructor.wsiExpiration;
 
             return Date.parse(expiryTime) < Date.now() + sixtyDaysInMilliseconds;
@@ -514,42 +205,74 @@ class Instructors extends React.Component {
             sorted[key] = instructors[key];
         });
 
-        this.instructors = sorted;
+        this.state.data = sorted;
     }
 
     /**
      * Size the table based on the number of instructors.
      */
     sizeTable() {
+        var cHeight;
         var newHeight;
-        var numRows = $("#dynamicInstructors tr").length;
+        var instructors = Object.keys(this.state.data);
+        var dynamicInstructors = document.getElementById("dynamicInstructors");
 
-        if (numRows > 5) {
-            newHeight = 7.125 * (numRows - 5) + 92;
-        } else {
-            newHeight = 92;
+        cHeight = dynamicInstructors.clientHeight;
+        newHeight = cHeight + (40 * (instructors.length - 3));
+
+        if (instructors.length > 3) {
+            dynamicInstructors.style.height = newHeight + "px";
         }
-
-        $("#dynamicInstructors").css({
-            "height": newHeight + "vh"
-        });
     }
 
+    /**
+     * Return an array of the values in the header of the Instructors table.
+     * The return value is a two-dimensional array with one row.
+     */
+    getTableHeader() {
+        return [[
+            "Instructor",
+            "Date of Hire",
+            "WSI Expiration",
+            "Privates Only",
+            "Preferences"
+        ]];
+    }
 
     /**
-     * Disables the preferences button in the Instructors table.
+     * Return an array of the values that make up the body of the Instructors table.
+     * The return value is a two-dimensional array with one row for each instructor in the current state.
      */
-    setPreferencesButtons(enable) {
-        return;
-        var preferenceButtons = $("#dynamicInstructors .preferences");
+    getTableBody() {
+        var tableBody = [];
 
-            if (enable) {
-            preferenceButtons.removeClass("pure-button-disabled");
-            preferenceButtons.click(this.props.handlePreferencesClick);
-            } else {
-            preferenceButtons.unbind("click");
-            preferenceButtons.addClass("pure-button-disabled");
-            }
+        for (var instructorName in this.state.data) {
+            var instructor = this.state.data[instructorName];
+
+            var tableRow = [
+                instructorName,
+                instructor.dateOfHire,
+                instructor.wsiExpiration,
+                {
+                    "instructorId": instructor.id,
+                    "privateOnly": instructor.privateOnly
+                }, {
+                    "instructorId": instructor.id,
+                    "instructorName": instructorName
+                }
+            ];
+
+            tableBody.push(tableRow);
+        }
+
+        return tableBody;
+    }
+
+    /**
+     * Set the reference to subcomponent references.
+     */
+    setComponentReference(name, reference) {
+        this[name] = reference;
     }
 
     render() {
@@ -558,51 +281,37 @@ class Instructors extends React.Component {
                 <h2 className="content-head content-head-ribbon">
                     Instructors
                 </h2>
-                <div className="ribbon-section-description">
-                    Customize the team of instructors.
-                    <ul className="ribbon-section-explanation">
-                        <li>Add or remove instructors from the set</li>
-                        <li>Say a little bit about them</li>
-                        <li>Modify their teaching preferences</li>
-                    </ul>
-                    <a className="pure-button left-button">
-                        Edit Instructors
-                    </a>
-                </div>
-                <table className="pure-table">
-                    <thead>
-                        <tr>
-                            <th className="is-center">
-                                Instructor
-                            </th>
-                            <th className="is-center">
-                                Date of Hire
-                            </th>
-                            <th className="is-center">
-                                WSI Expiration
-                            </th>
-                            <th className="is-center">
-                                Privates Only
-                            </th>
-                            <th className="is-center">
-                                Preferences
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <div className="ribbon-section-footer">
-                    <h2 className="content-head content-head-ribbon">
-                        Step #1:
-                    </h2>
-                    <p>
-                        List the instructors teaching in this lesson set. Once added, their individual preferences become available.
-                    </p>
-                    <a className="pure-button pure-button-primary">
-                        &rarr;
-                    </a>
-                </div>
+                <SectionDescription
+                    additionalData={ [] }
+                    anchorCallback={ (ref) => this.setComponentReference("editButton", ref) }
+                    anchorHandleClick={ this.editInstructors.bind(this) }
+                    buttonText={ "Edit Instructors" }
+                    data={ [
+                        "Add or remove instructors from the set",
+                        "Note the important dates",
+                        "Modify their teaching preferences"
+                    ] }
+                    title={ "Customize the team of instructors" }
+                    type={ "ribbon" }
+                />
+                <InstructorTable
+                    addCallback={ this.addInstructor.bind(this) }
+                    callback={ (ref) => this.setComponentReference("instructorTable", ref) }
+                    dataBody={ this.getTableBody() }
+                    dataHeader={ this.getTableHeader() }
+                    removeCallback={ this.removeInstructor.bind(this) }
+                    sectionId={ "dynamicInstructors" }
+                    updateCallback={ this.updateInstructor.bind(this) }
+                />
+                <Tutorial
+                    buttonClass={ "pure-button pure-button-primary" }
+                    callback={ () => null }
+                    data={ "List the instructors teaching in this lesson set. Once added, their individual preferences become available." }
+                    headingClass={ "content-head content-head-ribbon" }
+                    nextName={ "dynamicLessons" }
+                    step={ 1 }
+                    wrapperClass={ "ribbon-section-footer hide" }
+                />
             </div>
         );
     }
