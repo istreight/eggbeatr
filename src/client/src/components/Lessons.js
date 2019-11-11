@@ -549,7 +549,7 @@ class Lessons extends React.Component {
                     callback={ () => null }
                     data={ "Input the quantity of each lesson type, using digits from 1 to 9." }
                     headingClass={ "content-head" }
-                    nextName={ "dynamicPrivates" }
+                    nextName={ "dynamicPrivate" }
                     step={ 2 }
                     wrapperClass={ "content-section-footer hide" }
                 />

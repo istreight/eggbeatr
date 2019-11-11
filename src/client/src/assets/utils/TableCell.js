@@ -38,6 +38,7 @@ class TableCell extends React.Component {
 TableCell.propTypes = {
     data: PropTypes.oneOfType([
         PropTypes.array,
+        PropTypes.number,
         PropTypes.string
     ]),
     style: PropTypes.func.isRequired

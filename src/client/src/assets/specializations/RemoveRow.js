@@ -48,10 +48,8 @@ class RemoveRow extends React.Component {
         var newData;
         var prevName;
         var placeholder;
-        var instructorName;
         var newDataRow = [];
         var isUpdated = false;
-        var updatedInstructor = {};
         var dataRow = this.state.dataRow;
 
         dataRow.forEach((cellData, cellIndex) => {
@@ -62,7 +60,7 @@ class RemoveRow extends React.Component {
 
             if (enable) {
                 // Text to input.
-                if (typeof cellData === "string") {
+                if (typeof cellData === "string" || typeof cellData === "number") {
                     placeholder = cellData;
 
                     newData = React.createElement(Input, {
@@ -115,15 +113,9 @@ class RemoveRow extends React.Component {
             newDataRow.splice(-1, 1);
         }
 
+        // Update a key in the state object.
         if (isUpdated) {
-            // Package data and update in Instructors component.
-            instructorName = newDataRow[0];
-            updatedInstructor = {
-                "dateOfHire": newDataRow[1],
-                "wsiExpiration": newDataRow[2]
-            };
-
-            this.state.updateCallback(prevName, updatedInstructor, instructorName);
+            this.state.updateCallback(this.state.id, newDataRow);
         }
 
         return newDataRow;

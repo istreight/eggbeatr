@@ -58,10 +58,16 @@ Input.propTypes = {
     checked: PropTypes.bool,
     handleBlur: PropTypes.func.isRequired,
     name: PropTypes.string,
-    placeholder: PropTypes.string.isRequired,
+    placeholder: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+    ]),
     styleClass: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
+    value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+    ]),
 }
 
 export default Input;

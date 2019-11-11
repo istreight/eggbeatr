@@ -11,86 +11,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Tutorial from 'specializations/Tutorial';
+import PrivatesTable from 'specializations/PrivatesTable';
+import SectionDescription from 'specializations/SectionDescription';
+
 
 class Private extends React.Component {
     constructor(props) {
         super(props);
 
-        this.privateLessons = {};
+        this.state = null;
+    }
+
+    componentWillMount() {
+        this.setState(this.props.initData, this.init);
     }
 
     componentDidMount() {
-        this.sortPrivates([this.props.initData]);
-
-        this.generatePrivate();
-
-        this.props.callback(this.privateLessons, "privates", false);
-        this.props.setChecklistQuantity("privates", this.getNumPrivates());
-
-        $("#dynamicPrivate .ribbon-section-description a").click(this.editPrivate.bind(this));
-
-        // Link tutorital button to next section.
-        $("#dynamicPrivate .ribbon-section-footer a").click(() => {
-            // Disable scrolling.
-            $("body").on("mousewheel DOMMouseScroll", false);
-
-            $("#dynamicGrid .content-section-footer").css({
-                "display": "block"
-            });
-
-            $("#dynamicPrivate .ribbon-section-footer").fadeOut(1000);
-
-            $("html, body").animate({
-                scrollTop: $("#dynamicGrid").offset().top - 60
-            }, 1600, () => {
-                $("body").off("mousewheel DOMMouseScroll");
-
-                $("#dynamicPrivate .ribbon-section-footer").css({
-                    "display": "none"
-                });
-            });
-        });
+        return;
     }
 
     /**
-     * Replaces the text of the Instructor table cells
-     *  with input fields.
-     * The placeholder values of the existing fields are
-     *  their text values.
+     * Initialize the class members.
      */
-    inputifyRows() {
-        $("#dynamicPrivate table td").each((index, element) => {
-            if ($(element).children().length === 0) {
-                var placeholder = $(element).text() || "...";
-                $(element).html("<input type='text' placeholder='" + placeholder + "'>");
-            }
-        });
-    }
+    init() {
+        this.displayComponentState();
 
-    /**
-     * Appends new input row to the Instructors table.
-     */
-    addInputRow() {
-        var privateTable = $("#dynamicPrivate table");
-        var numRows = privateTable.find("tr").length - 1;
-        var className = (numRows % 2 === 0) ? "table-odd" : "table-even";
-
-        // Append row of input fields and 'add' button.
-        privateTable.append("<tr class='" + className + "'><td><td></td><td></td><td class='is-center'><a class='pure-button add'>Add</a></td></tr>");
-
-        // Bind 'Add' buttons for new rows.
-        privateTable.find(".add").click(this.addRow.bind(this));
-    }
-
-    /**
-     * Resets the table to appropriate colour scheme.
-     */
-    colourTable() {
-        // Recolour rows.
-        $("#dynamicPrivate table tbody tr").each((index, element) => {
-            $(element).removeClass("table-even table-odd");
-            $(element).addClass((index % 2 === 0) ? "table-odd" : "table-even");
-        });
+        this.props.callback(this.state, "privates", false);
+        this.props.setChecklistQuantity("privates", this.getComponentQuantity());
     }
 
     /**
@@ -102,233 +50,14 @@ class Private extends React.Component {
      *  original data.
      */
     editPrivate() {
-        var editPrivate = $("#dynamicPrivate .ribbon-section-description a");
+        // Set state to update values for placeholders in PrivatesTable props.
+        this.setState(this.state);
 
-        // Re-name and re-bind 'Edit Privates' button.
-        editPrivate.unbind("click");
-        editPrivate.html("Finish Editing");
-        editPrivate.click(this.finishEditingPrivate.bind(this));
-
-        // Add 'Modify' column.
-        $("#dynamicPrivate table thead tr").append("<th class='is-center'>Modify</th>");
-        $("#dynamicPrivate table tbody tr").append("<td class='is-center'><a class='pure-button remove'>Remove</a></td>");
-
-        this.addInputRow();
-        this.inputifyRows();
-
-        $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
-    }
-
-    /**
-     * Removes the row of the table of a clicked
-     *  'remove' button.
-     */
-    removeRow() {
-        var instructorName;
-        var time;
-        var duration;
-        var removedRow = $(event.target).closest("tr");
-        var removedData = removedRow.find("input");
-        var reName = new RegExp(/^[A-Za-z\s]+$/);
-        var reTime = new RegExp(/^(0?[0-9]|1[0-2]):([0-5][05]|60)$/);
-        var reDuration = new RegExp(/^([0-5][05]|60)$/);
-
-        removedData.each((index, element) => {
-            var inputPlaceholder = $(element).attr("placeholder");
-
-            if (reName.test(inputPlaceholder)) {
-                instructorName = inputPlaceholder;
-            } else if (reTime.test(inputPlaceholder)) {
-                time = inputPlaceholder;
-            } else if (reDuration.test(inputPlaceholder)) {
-                duration = parseInt(inputPlaceholder, 10);
-            }
-        });
-
-        if (instructorName in this.privateLessons) {
-            var privateInstructor = this.privateLessons[instructorName];
-
-            for (var i = 0; i < privateInstructor.length; i++) {
-                var validTime = time + ":00" === privateInstructor[i].time;
-                var validDuration = duration === privateInstructor[i].duration;
-
-                if (validTime && validDuration) {
-                    var privatesId = privateInstructor[i].id;
-
-                    this.props.removeComponent(privatesId, "Private")
-                        .then((res) => {
-                            this.privateLessons[instructorName].splice(i - 1, 1);
-                        });
-                }
-            }
-        }
-
-        removedRow.remove();
-
-        this.colourTable();
-        this.sizeTable();
-    }
-
-    /**
-     * Verify contents of inputs and commit to the table.
-     */
-    addTableContents(removeInputRow) {
-        var tableRows = $("#dynamicPrivate tr");
-        var tableCells = $("#dynamicPrivate td");
-
-        // Add row to table.
-        var addedCells = true;
-        var numColumns = tableCells.length / (tableRows.length - 1);
-        tableCells.each((index, element) => {
-            var isFirstChild = index % numColumns === 0;
-
-            addedCells = this.addCells(element, isFirstChild, removeInputRow) && addedCells;
-        });
-
-        if (!addedCells) {
-            if (removeInputRow) {
-                this.addInputRow();
-            }
-
-            this.inputifyRows();
-        }
-
-        return addedCells;
-    }
-
-    /**
-     * Add a row to the table on 'add' button click.
-     */
-    addRow() {
-        var target = event.target;
-        var isValid = this.addTableContents(false);
-
-        if (!isValid) {
-            return;
-        }
-
-        var addedRow = $(target).closest("tr");
-        var addedData = addedRow.find("td");
-
-        this.inputifyRows();
-
-        var isDuplicate = this.checkDuplicates(addedData);
-        if (isDuplicate) {
-            addedRow.hide().addClass("error-cell").fadeIn(800);
-
-            return;
-        }
-
-        // Add row to privateLessons object.
-        var instructorName;
-        var instructorData;
-        var validInstructor;
-        var body = {};
-        $(addedData.get().reverse()).each((index, element) => {
-            var inputPlaceholder = $(element).find("input").attr("placeholder");
-
-            // Unused cell or remove button cell.
-            if (inputPlaceholder === "..." || index === 0) {
-                return true;
-            }
-
-            if (index === 1) {
-                body.duration = inputPlaceholder;
-            } else if (index === 2) {
-                body.time = inputPlaceholder;
-            } else if (index === 3) {
-                validInstructor = false;
-                instructorName = inputPlaceholder;
-
-                instructorData = this.props.connector.getInstructorData()
-                    .then((instructors) => {
-                        validInstructor = instructorName in instructors;
-
-                        if (validInstructor) {
-                            body.instructorId = instructors[instructorName].id;
-                        } else {
-                            $(element).closest("td").hide().addClass("error-cell").fadeIn(800);
-                        }
-                    }).catch(error => console.error(error));
-            }
-        });
-
-        instructorData.then(() => {
-                // If instructor is invalid, reject promise and don't add new row or remove button.
-                if (!validInstructor) {
-                    return Promise.reject("Private Instructor \"" + instructorName + "\" is not in the Instructors table.");
-                }
-            })
-            .then(() => this.props.createComponent(body, "Private"))
-            .then((res) => {
-                this.sortPrivates([this.privateLessons, res]);
-
-                // Store id in HTMl.
-                $("#dynamicPrivate table tr:last").attr("data-privates-id", res[instructorName][0].id);
-
-                // Put 'remove' in the last cell of the row.
-                $(target).closest("td").html("<a class='pure-button remove'>Remove</a>");
-
-                // Rebind each 'remove'.
-                $("#dynamicPrivate table .remove").click(this.removeRow.bind(this));
-
-                this.addInputRow();
-                this.inputifyRows();
-            }).catch(error => console.error(error));
-
-        this.colourTable();
-        this.sizeTable();
-    }
-
-    /**
-     * Adds the input values or valid placeholder values
-     *  from the input fields to the table.
-     */
-    addCells(cell, isFirstChild, removeInputRow) {
-        var cellElement = $(cell).children().first();
-
-        if (cellElement.is("input")) {
-            if (cellElement.attr("placeholder") === "..." && removeInputRow) {
-                $(cell).closest("tr").remove();
-
-                return true;
-            }
-
-            // Input field data (or placeholder value for existing data).
-            var newData = cellElement.val() || cellElement.attr("placeholder");
-            newData = newData.replace(/^\s+|\s+$/, "");
-
-            var isValidData = false;
-            if (isFirstChild) {
-                var reName = new RegExp(/^[A-Za-z\s]+$/);
-
-                isValidData = reName.test(newData);
-            } else if (newData.split(":").length === 2){
-                var [hour, minute] = newData.split(":");
-                var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
-                var reMinute = new RegExp(/^([0-5][05]|60)$/);
-
-                isValidData = reHour.test(hour) && reMinute.test(minute);
-            } else {
-                var reDuration = new RegExp(/^([0-5][05]|60)$/);
-                var duration = parseInt(newData, 10) % 60;
-
-                isValidData = reDuration.test(duration);
-            }
-
-
-            if (isValidData) {
-                $(cell).html(newData);
-                $(cell).removeClass("error-cell");
-            } else {
-                $(cell).hide().addClass("error-cell").fadeIn(800);
-                cellElement.val("");
-            }
-
-            return isValidData;
-        }
-
-        return true;
+        // Re-name and re-bind 'Edit Instructors' button.
+        this.editButton.setState({
+            "data": "Finish Editing",
+            "handleClick": this.finishEditingPrivate.bind(this)
+        }, () => this.privatesTable.toggleTableState(true));
     }
 
     /**
@@ -337,139 +66,53 @@ class Private extends React.Component {
      *  original data.
      */
     finishEditingPrivate() {
-        var tableRows;
-        var newInstructorId;
-        var newInstructorIds = [];
-        var editPrivate = $("#dynamicPrivate .ribbon-section-description a");
+        // Re-name and re-bind 'Finish Editing' button.
+        this.editButton.setState({
+            "data": "Edit Privates",
+            "handleClick": this.editPrivate.bind(this)
+        }, () => this.privatesTable.toggleTableState(false));
 
-        var isValid = this.addTableContents(true);
-
-        if (!isValid) {
-            return;
-        }
-
-        // Remove 'Modify' column.
-        tableRows = $("#dynamicPrivate tr");
-
-        // Update class object with new values.
-        tableRows.each((rowIndex, row) => {
-            var index;
-            var _private;
-            var pirvateId;
-            var instructorName;
-
-            // Remove 'Modify' column & skip header row.
-            if (rowIndex === 0) {
-                $(row).children("th").last().remove();
-
-                return true;
-            } else {
-                $(row).children("td").last().remove();
-            }
-
-            pirvateId = $(row).attr("data-privates-id");
-
-            [_private, instructorName, index] = this.findPrivateById(pirvateId);
-
-            $(row).children("td").each((cellIndex, element) => {
-                var cellText = $(element).text();
-
-                if (cellText !== "...") {
-                    if (cellIndex === 0) {
-                        if (cellText in this.privateLessons) {
-                            this.privateLessons[cellText].push(_private);
-                        } else {
-                            this.privateLessons[cellText] = [_private];
-                        }
-
-                        this.privateLessons[instructorName].splice(index, 1);
-
-                        newInstructorId = this.props.connector.getInstructorData("db")
-                            .then((res) => {
-                                for (var instructorName in res) {
-                                    if (instructorName === cellText) {
-                                        _private.instructorId = res[instructorName].id;
-                                    }
-                                }
-                            }).catch(error => console.error(error));
-
-                        newInstructorIds.push(newInstructorId);
-                    } else if (cellIndex === 1) {
-                        if (cellText !== _private.time) {
-                            _private.time = cellText;
-                        }
-                    } else if (cellIndex === 2) {
-                        if (cellText !== _private.duration) {
-                            _private.duration = cellText;
-                        }
-                    }
-                }
-            });
-        });
-
-        Promise.all(newInstructorIds)
-            .then(() => {
-                this.props.callback(this.privateLessons, "privates", true);
-                this.props.setChecklistQuantity("privates", this.getNumPrivates());
-            }).catch(error => console.error(error));
-
-        // Re-title and re-bind 'Edit Private' button.
-        editPrivate.unbind("click");
-        editPrivate.html("Edit Private");
-        editPrivate.click(this.editPrivate.bind(this));
+        this.props.callback(this.state, "privates", true);
+        this.props.setChecklistQuantity("privates", this.getComponentQuantity());
     }
 
     /**
      * Transforms an array to a PureCSS table.
      */
-    generatePrivate() {
-        var isOdd = true;
-        var newTable = "";
-
-        this.sortPrivates([this.privateLessons]);
-
-        $("#dynamicPrivate table tbody").empty();
-
-        for (var instructorName in this.privateLessons) {
-            var rowClass = isOdd ? "table-odd" : "table-even";
-            var instructor = this.privateLessons[instructorName];
-
-            for (var lessonIndex = 0; lessonIndex < instructor.length; lessonIndex++) {
-                var lesson = instructor[lessonIndex];
-                var time = lesson.time;
-                var privatesId = lesson.id;
-
-                if (time.split(":").length > 2) {
-                    time = time.replace(/:[0-9][0-9]$/, "");
-                }
-
-                newTable += "<tr class='" + rowClass + "' data-privates-id='" + privatesId + "'>"
-                    + "<td>" + instructorName + "</td>"
-                    + "<td>" + time + "</td>"
-                    + "<td>" + lesson.duration + "</td>"
-                    + "</tr>";
-
-                isOdd = !isOdd;
-            }
-        }
-
-        $("#dynamicPrivate table tbody").append(newTable);
-
-        this.colourTable();
-        this.sizeTable();
+    displayComponentState() {
+        this.sortPrivates([this.state.data]);
     }
 
     /**
      * Count the number of private lessons.
      */
-    getNumPrivates() {
+    getComponentQuantity() {
         var numPrivate = 0;
 
-        for (var instructor in this.privateLessons) {
-            numPrivate += this.privateLessons[instructor].length;
+        for (var instructor in this.state.data) {
+            numPrivate += this.state.data[instructor].length;
         }
 
         return numPrivate;
+    }
+
+    /**
+     * Given the name of an instructor, return the instructor's ID.
+     */
+    getInstructorIdByName(instructorName) {
+        if (instructorName in this.state.data) {
+            var privateLesson = this.state.data[instructorName][0];
+
+            return new Promise((resolve, reject) => resolve(privateLesson.instructorId));
+        } else {
+            return this.props.connector.getInstructorData()
+                .then((res) => {
+                    var instructors = res.data;
+                    var instructor = instructors[instructorName];
+
+                    return instructor.id;
+                }).catch(error => console.error(error));
+        }
     }
 
     /**
@@ -478,8 +121,8 @@ class Private extends React.Component {
     findPrivateById(id) {
         var privatesId = parseInt(id, 10);
 
-        for (var instructorName in this.privateLessons) {
-            var _private = this.privateLessons[instructorName];
+        for (var instructorName in this.state.data) {
+            var _private = this.state.data[instructorName];
 
             for (var i = 0; i < _private.length; i++) {
                 if (_private[i].id === privatesId) {
@@ -488,16 +131,17 @@ class Private extends React.Component {
             }
         }
 
-        return [false, ""];
+        return [false, "", -1];
     }
 
     /**
-     * Sort object keys alphabetically into 'privateLessons'.
+     * Sort object keys alphabetically into the state.
      */
     sortPrivates(privates) {
         var obj = {};
         var allKeys = [];
 
+        // Extract keys from the new set of privates.
         for (var i = 0; i < privates.length; i++) {
             allKeys = allKeys.concat(Object.keys(privates[i]));
         }
@@ -516,7 +160,9 @@ class Private extends React.Component {
             }
         });
 
-        this.privateLessons = obj;
+        this.setState({
+            "data": obj
+        });
     }
 
     /**
@@ -548,55 +194,136 @@ class Private extends React.Component {
         return obj;
     }
 
-    checkDuplicates(newData) {
-        var existingTime;
-        var existingInstructor;
+    getTableBody() {
+        var tableBody = [];
 
-        newData.each((index, element) => {
-            var cellText = $(element).find("input").attr("placeholder");
+        for (var instructorName in this.state.data) {
+            var instructor = this.state.data[instructorName];
 
-            if (!cellText || cellText === "...") {
-                return true;
+            for (var lessonIndex = 0; lessonIndex < instructor.length; lessonIndex++) {
+                var privateLesson = instructor[lessonIndex];
+                var tableRow = [
+                    privateLesson.id,
+                    instructorName,
+                    privateLesson.time,
+                    privateLesson.duration
+                ];
+
+                tableBody.push(tableRow);
             }
+        }
 
-            if (index === 0) {
-                if (cellText in this.privateLessons) {
-                    existingInstructor = cellText;
-                }
-            } else if (index === 1) {
-                var placeholderMilliseconds = cellText + ":00";
+        return tableBody;
+    }
 
-                if (existingInstructor) {
-                    var privates = this.privateLessons[existingInstructor];
-
-                    for (var i = 0; i < privates.length; i++) {
-                        if (privates[i].time === placeholderMilliseconds) {
-                            existingTime = placeholderMilliseconds;
-                        }
-                    }
-                }
-            }
-        });
-
-        return existingInstructor && existingTime;
+    getTableHeader() {
+        return [[
+            "Instructor",
+            "Time",
+            "Duration"
+        ]];
     }
 
     /**
-     * Sizes table based on number of rows.
+     * Add a private lesson to the state and database via the Add button in the Instructors table.
      */
-    sizeTable() {
-        var newHeight;
-        var numRows = $("#dynamicPrivate tr").length;
+    addPrivateLesson(privateLessonBody) {
+        return this.getInstructorIdByName(privateLessonBody.instructor)
+            .then((res) => {
+                // Get instructor ID by instructor name.
+                privateLessonBody.duration = parseInt(privateLessonBody.duration, 10);
+                privateLessonBody.instructorId = res;
+                delete privateLessonBody.instructor;
+            })
+            .then(() => this.props.createComponent(privateLessonBody, "Privates"))
+            .then((res) => {
+                this.sortPrivates([this.state.data, res.data]);
 
-        if (numRows > 5) {
-            newHeight = 7.125 * (numRows - 5) + 92;
-        } else {
-            newHeight = 92;
+                return res;
+            }).catch(error => console.error(error));
+    }
+
+    /**
+     * Remove a private lesson from the state via instructor ID passed by the Remove button.
+     */
+    removePrivateLesson(instructorId) {
+        var privateLessons = JSON.parse(JSON.stringify(this.state.data));
+
+        for (var instructorName in privateLessons) {
+            var lessonArray = privateLessons[instructorName];
+
+            for (var lessonIndex = 0; lessonIndex < lessonArray.length; lessonIndex++) {
+                var lesson = lessonArray[lessonIndex];
+
+                if (lesson.id === instructorId) {
+                    this.props.removeComponent(instructorId, "Privates").then((res) => {
+                        // Remove the  private lesson.
+                        lessonArray.splice(lessonIndex, 1);
+
+                        // Remove the instructor if there are no private lessons.
+                        if (lessonArray.length === 0) {
+                            delete privateLessons[instructorName];
+                        }
+
+                        this.setState({
+                            "data": privateLessons
+                        }, () => this.privatesTable.toggleTableState(true));
+                    });
+
+                    break;
+                }
+            }
         }
+    }
 
-        $("#dynamicPrivate").css({
-            "height": newHeight + "vh"
-        });
+    /**
+     * Update values from the PrivatesTable to the state and the database via the input fields in the table.
+     */
+    updatePrivateLesson(id, newDataRow) {
+        var privateLessons = this.state.data;
+        var newInstructorName = newDataRow[0];
+        var privateLesson, instructorName, lessonIndex;
+
+        var privateLessonBody = {
+            "time": newDataRow[1],
+            "duration": newDataRow[2]
+        };
+
+        [privateLesson, instructorName, lessonIndex] = this.findPrivateById(id);
+
+        if (instructorName === newInstructorName) {
+            Object.assign(privateLesson, privateLessonBody);
+
+            this.props.callback(this.state, "privates", true);
+        } else {
+            this.getInstructorIdByName(newInstructorName)
+                .then((newInstructorId) => {
+                    if (newInstructorName in privateLessons) {
+                        // Add to new instructor.
+                        privateLesson.instructorId = newInstructorId;
+                        privateLessons[newInstructorName].push(privateLesson);
+
+                        // Remove from old instructor.
+                        privateLessons[instructorName].splice(lessonIndex, 1);
+
+                        // Remove the instructor if there are no private lessons.
+                        if (privateLessons[instructorName].length === 0) {
+                            delete privateLessons[instructorName];
+                        }
+                    } else {
+                        privateLesson.instructorId = newInstructorId;
+                    }
+
+                    this.props.callback(this.state, "privates", true);
+                }).catch(error => console.error(error));
+        }
+    }
+
+    /**
+     * Set the reference to subcomponent references.
+     */
+    setComponentReference(name, reference) {
+        this[name] = reference;
     }
 
     render() {
@@ -605,44 +332,37 @@ class Private extends React.Component {
                     <h2 className="content-head content-head-ribbon">
                         Private Lessons
                     </h2>
-                    <div className="ribbon-section-description">
-                        Detail the private lessons.
-                        <ul className="ribbon-section-explanation">
-                            <li>Organize private lessons from the set</li>
-                            <li>Specify the who, when, and how long</li>
-                            <li>Modify their frequencies</li>
-                        </ul>
-                        <a className="pure-button left-button">
-                            Edit Private
-                        </a>
-                    </div>
-                    <table className="pure-table">
-                        <thead>
-                            <tr>
-                                <th className="is-center">
-                                    Instructor
-                                </th>
-                                <th className="is-center">
-                                    Time
-                                </th>
-                                <th className="is-center">
-                                    Duration
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <div className="ribbon-section-footer">
-                        <h2 className="content-head content-head-ribbon">
-                            Step #3:
-                        </h2>
-                        <p>
-                            List any private lessons occuring during this set.
-                        </p>
-                        <a className="pure-button pure-button-primary">
-                            &rarr;
-                        </a>
-                    </div>
+                    <SectionDescription
+                        additionalData={ [] }
+                        anchorCallback={ (ref) => this.setComponentReference("editButton", ref) }
+                        anchorHandleClick={ this.editPrivate.bind(this) }
+                        buttonText={ "Edit Privates" }
+                        data={ [
+                            "Organize private lessons from the set",
+                            "Specify the who, when, and how long",
+                            "Modify their frequencies"
+                        ] }
+                        title={ "Detail private lessons" }
+                        type={ "ribbon" }
+                    />
+                    <PrivatesTable
+                        addCallback={ this.addPrivateLesson.bind(this) }
+                        callback={ (ref) => this.setComponentReference("privatesTable", ref) }
+                        dataBody={ this.getTableBody() }
+                        dataHeader={ this.getTableHeader() }
+                        removeCallback={ this.removePrivateLesson.bind(this) }
+                        sectionId={ "dynamicPrivate" }
+                        updateCallback={ this.updatePrivateLesson.bind(this) }
+                    />
+                    <Tutorial
+                        buttonClass={ "pure-button pure-button-primary" }
+                        callback={ () => null }
+                        data={ "List any private lessons occuring during this set." }
+                        headingClass={ "content-head content-head-ribbon" }
+                        nextName={ "dynamicGrid" }
+                        step={ 3 }
+                        wrapperClass={ "ribbon-section-footer hide" }
+                    />
                 </div>
         );
     }
