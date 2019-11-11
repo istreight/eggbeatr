@@ -1,10 +1,10 @@
 /**
- * FILENAME:    InstructorTable.js
+ * FILENAME:    PrivatesTable.js
  * AUTHOR:      Isaac Streight
- * START DATE:  December 2nd, 2018
+ * START DATE:  November 10th, 2018
  *
- * This file contains the InstructorTable class, a specialization class for
- *  the table for the Instructors section of the application.
+ * This file contains the PrivatesTable class, a specialization class for
+ *  the table for the Privates section of the application.
  */
 
 import React from 'react';
@@ -13,24 +13,18 @@ import PropTypes from 'prop-types';
 import TableRow from 'utils/TableRow';
 import AddRow from 'specializations/AddRow';
 import RemoveRow from 'specializations/RemoveRow';
-import PreferencesButton from 'specializations/PreferencesButton';
-import PrivatesOnlyCheckbox from 'specializations/PrivatesOnlyCheckbox';
 
-class InstructorTable extends React.Component {
+class PrivatesTable extends React.Component {
     constructor(props) {
         super(props);
 
         this.rows = null;
         this.state = null;
         this.toggleTableState = null;
-        this.preferencesButtons = null;
-        this.privatesOnlyCheckboxes = null;
     }
 
     componentWillMount() {
         this.rows = [];
-        this.preferencesButtons = [];
-        this.privatesOnlyCheckboxes = [];
         this.toggleTableState = this.toggleState.bind(this);
 
         this.setState(this.props);
@@ -46,8 +40,8 @@ class InstructorTable extends React.Component {
 
     add() {
         var name;
-        var dateOfHire;
-        var wsiExpiration;
+        var time;
+        var duration;
         var addRowInputs = this.addRow.inputs;
 
         if (addRowInputs.length != 3) {
@@ -62,18 +56,17 @@ class InstructorTable extends React.Component {
             if (inputIndex == 0) {
                 name = input.state.value;
             } else if (inputIndex == 1) {
-                dateOfHire = input.state.value;
+                time = input.state.value;
             } else if (inputIndex == 2) {
-                wsiExpiration = input.state.value;
+                duration = input.state.value;
             }
         }
 
         this.state.addCallback({
+            "duration": duration,
             "instructor": name,
-            "dateOfHire": dateOfHire,
-            "privateOnly": false,
-            "wsiExpiration": wsiExpiration
-        }).then((res) => this.addNewInstructorRow(res));
+            "time": time
+        }).then((res) => this.addNewPrivateLessonRow(res));
 
         // Empty the inputs of the AddRow after adding the new row.
         for (var inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
@@ -85,48 +78,24 @@ class InstructorTable extends React.Component {
         this.recolourTable();
     }
 
-    addNewInstructorRow(res) {
+    addNewPrivateLessonRow(res) {
         this.setState(this.state, () => this.toggleState(true));
     }
 
-    /**
-     * Check if the WSI certification date is expiring or expired.
-     */
-    checkWSIExpiration(expiryTime) {
-        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
-
-        expiryTime = Date.parse(expiryTime);
-
-        if (expiryTime < Date.now()) {
-            return "error-cell";
-        } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
-            return "warning-cell";
-        }
-    }
-
     getBodyRows() {
-        var instructor;
-        var instructorIds = [];
+        var privateLesson;
+        var lessonIds = [];
         var data = JSON.parse(JSON.stringify(this.state.dataBody));
 
         this.rows = [];
 
         // Replace checkbox and preference button data with the object.
         for (var index = 0; index < data.length; index++) {
-            var checkboxObject;
-            var prefsButtonObject;
+            privateLesson = data[index];
 
-            instructor = data[index];
+            lessonIds.push(privateLesson[0]);
 
-            instructorIds.push(instructor[0]);
-
-            checkboxObject = this.getPrivatesOnlyCheckbox(instructor[4], index);
-            prefsButtonObject = this.getPreferencesButton(instructor[5], index);
-
-            instructor.splice(4, 1, checkboxObject);
-            instructor.splice(5, 1, prefsButtonObject);
-
-            data[index] = instructor.slice(1);
+            data[index] = privateLesson.slice(1);
         }
 
         data = this.sortBodyData(data);
@@ -137,7 +106,7 @@ class InstructorTable extends React.Component {
                 "dataRow": dataRow,
                 "key": "key-row-" + index,
                 "handleClick": this.remove.bind(this),
-                "id": instructorIds[index],
+                "id": lessonIds[index],
                 "index": index,
                 "show": this.state.toggle,
                 "styleCell": this.styleCell.bind(this),
@@ -163,30 +132,6 @@ class InstructorTable extends React.Component {
         );
     }
 
-    getPreferencesButton(prefConfig, keyIndex) {
-        return [
-            React.createElement(PreferencesButton, {
-                "callback": (ref) => this.preferencesButtons.push(ref),
-                "handleClick": () => null,
-                "instructorId": prefConfig.instructorId,
-                "instructorName": prefConfig.instructorName,
-                "key": "key-instructor-pref-" + keyIndex
-            })
-        ];
-    }
-
-    getPrivatesOnlyCheckbox(privatesOnlyConfig, keyIndex) {
-        return [
-            React.createElement(PrivatesOnlyCheckbox, {
-                "callback": (ref) => this.privatesOnlyCheckboxes.push(ref),
-                "checked": privatesOnlyConfig.privateOnly,
-                "handleChange": () => null,
-                "instructorId": privatesOnlyConfig.instructorId,
-                "key": "key-instructor-checkbox-" + keyIndex
-            })
-        ];
-    }
-
     recolourTable() {
         //Colour table rows.
         this.rows.forEach((row, index) => {
@@ -204,20 +149,6 @@ class InstructorTable extends React.Component {
     remove(instructorId) {
         this.state.removeCallback(instructorId);
 
-        // Remove preference button of removed instructor.
-        this.preferencesButtons.forEach((prefButton, prefIndex) => {
-            if (prefButton.state.instructorId === instructorId) {
-                this.preferencesButtons.splice(prefIndex, 1);
-            }
-        });
-
-        // Remove checkbox of removed instructor.
-        this.privatesOnlyCheckboxes.forEach((privatesCheckbox, privIndex) => {
-            if (privatesCheckbox.state.instructorId === instructorId) {
-                this.privatesOnlyCheckboxes.splice(privIndex, 1);
-            }
-        });
-
         this.resizeTable();
         this.recolourTable();
     }
@@ -225,9 +156,9 @@ class InstructorTable extends React.Component {
     resizeTable() {
         var oldHeight;
         var newHeight;
-        var dynamicInstructors = document.getElementById("dynamicInstructors");
+        var dynamicPrivates = document.getElementById("dynamicPrivate");
 
-        oldHeight = dynamicInstructors.style.height;
+        oldHeight = dynamicPrivates.style.height;
         oldHeight = parseInt(oldHeight.substring(0, oldHeight.indexOf("px")));
 
         if (this.rows.length > 3) {
@@ -237,7 +168,7 @@ class InstructorTable extends React.Component {
         }
 
         if (newHeight > oldHeight) {
-            dynamicInstructors.style.height = newHeight + "px";
+            dynamicPrivates.style.height = newHeight + "px";
         }
     }
 
@@ -255,30 +186,45 @@ class InstructorTable extends React.Component {
 
     styleCell(cell, index) {
         var style;
+        var isValidData;
         var instructorNames;
         var uniqueInstructors;
         var duplicateInstructors;
         var tableRows = this.state.dataBody;
-        var reName = new RegExp(/^[A-Za-z\s]+$/);
-        var tableHeaders = this.state.dataHeader;
 
-        instructorNames = tableRows.map((element, _index) => element[0]);
+        if (Array.isArray(cell)) {
+            // Base style for buttons.
+            return "is-center";
+        }
+
+        instructorNames = tableRows.map((element, index) => element[0]);
 
         uniqueInstructors = new Set(instructorNames);
         duplicateInstructors = instructorNames.filter((instructor) => !uniqueInstructors.has(instructor));
 
-        if (Array.isArray(cell)) {
-            // Base style for buttons.
-            style = "is-center";
-        } else if (!reName.test(cell) && isNaN(Date.parse(cell))) {
+        if (index === 0) {
+            var reName = new RegExp(/^[A-Za-z\s]+$/);
+
+            isValidData = reName.test(cell);
+        } else if (index === 1) {
+            var [hour, minute] = cell.split(":");
+            var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
+            var reMinute = new RegExp(/^([0-5][05]|60)$/);
+
+            isValidData = reHour.test(hour) && reMinute.test(minute);
+        } else if (index === 2) {
+            var duration = parseInt(cell, 10) % 60;
+            var reDuration = new RegExp(/^([0-5][05]|60)$/);
+
+            isValidData = reDuration.test(duration);
+        }
+
+        if (!isValidData) {
             // Invalid input.
             style = "error-cell";
         } else if (duplicateInstructors.includes(cell)) {
             // Duplicate instructor name.
             style = "error-cell";
-        } else if (tableHeaders[0][index] === "WSI Expiration") {
-            // WSI expiration.
-            style = this.checkWSIExpiration(cell);
         }
 
         return style;
@@ -312,19 +258,6 @@ class InstructorTable extends React.Component {
 
         this.addRow.toggleState(enable);
 
-        // TODO
-        // Toggling the states of the checkbox and preference button indicate a memory leak.
-        // I think this is how their references are stored and aren't updated with each new render.
-        /*
-        this.rows.forEach((row, rowIndex) => {
-            var checkbox = this.privatesOnlyCheckboxes[rowIndex];
-            var preferenceButton = this.preferencesButtons[rowIndex];
-
-            checkbox.toggleState(enable);
-            preferenceButton.toggleState(enable);
-        });
-        */
-
         this.setState({
             "toggle": enable
         });
@@ -350,7 +283,7 @@ class InstructorTable extends React.Component {
                     { this.getBodyRows() }
                     <AddRow
                         callback={ (ref) => this.setComponentReference("addRow", ref) }
-                        componentType={ "Instructors" }
+                        componentType={ "Privates" }
                         handleClick={ this.add.bind(this) }
                         index={ this.state.dataBody.length }
                         styleCell={ this.styleCell.bind(this) }
@@ -362,11 +295,11 @@ class InstructorTable extends React.Component {
     }
 }
 
-InstructorTable.defaultProps = {
+PrivatesTable.defaultProps = {
     toggle: false
 };
 
-InstructorTable.propTypes = {
+PrivatesTable.propTypes = {
     addCallback: PropTypes.func.isRequired,
     callback: PropTypes.func.isRequired,
     dataBody: PropTypes.array.isRequired,
@@ -377,4 +310,4 @@ InstructorTable.propTypes = {
     updateCallback: PropTypes.func.isRequired
 }
 
-export default InstructorTable;
+export default PrivatesTable;

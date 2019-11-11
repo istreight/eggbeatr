@@ -86,6 +86,7 @@ class Instructors extends React.Component {
      *  data.
      */
     finishEditingInstructors() {
+        // Re-name and re-bind 'Finish Editing' button.
         this.editButton.setState({
             "data": "Edit Instructors",
             "handleClick": this.editInstructors.bind(this)
@@ -115,7 +116,7 @@ class Instructors extends React.Component {
     }
 
     /**
-     * Remove an instructor from the state via instructor ID passed by the Remove button.
+     * Remove an instructor from the state and database via instructor ID passed by the Remove button.
      */
     removeInstructor(instructorId) {
         var instructors = JSON.parse(JSON.stringify(this.state.data));
@@ -139,10 +140,18 @@ class Instructors extends React.Component {
         }
     }
 
-    updateInstructor(instructorName, instructorBody, newInstructorName) {
-        var instructor = this.state.data[instructorName];
+    /**
+     * Update values from the InstructorTable to the state and the database via the input fields in the table.
+     */
+    updateInstructor(id, newDataRow) {
+        var instructor, instructorName;
+        var newInstructorName = newDataRow[0];
+        var instructorBody = {
+            "dateOfHire": newDataRow[1],
+            "wsiExpiration": newDataRow[2]
+        };
 
-        console.log("here", instructorName, newInstructorName);
+        [instructor, instructorName] = this.findInstructorById(id);
 
         if (instructorName === newInstructorName) {
             Object.assign(instructor, instructorBody);
@@ -205,7 +214,9 @@ class Instructors extends React.Component {
             sorted[key] = instructors[key];
         });
 
-        this.state.data = sorted;
+        this.setState({
+            "data": sorted
+        });
     }
 
     /**
@@ -250,6 +261,7 @@ class Instructors extends React.Component {
             var instructor = this.state.data[instructorName];
 
             var tableRow = [
+                instructor.id,
                 instructorName,
                 instructor.dateOfHire,
                 instructor.wsiExpiration,

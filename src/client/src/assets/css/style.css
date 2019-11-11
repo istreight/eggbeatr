@@ -674,8 +674,6 @@ tbody td:first-child {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 64px;
-
-    display: none;
 }
 
 #dynamicPrivate .ribbon-section-footer a {

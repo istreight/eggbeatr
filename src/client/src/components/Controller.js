@@ -60,8 +60,8 @@ class Controller extends React.Component {
      * Store the data locally, as returned from the
      *  asynchronous call.
      */
-    setComponentData(classVariable, res, isComponent) {
-        if (isComponent) {
+    setComponentData(classVariable, res, isComponentObject) {
+        if (isComponentObject) {
             this.state.componentObjects[classVariable] = res;
         } else {
             this.state.components[classVariable] = res;
@@ -265,15 +265,6 @@ class Controller extends React.Component {
 
                     lessonsComponent.displayComponentState();
                 } else if (name === "privates") {
-                    comp.privateLessons = this.state.components[name];
-
-                    this.state.componentObjects.gridChecklist.setQuantity(
-                        "privates",
-                        comp.getNumPrivates()
-                    );
-
-                    comp.generatePrivate();
-                    /*
                     var privatesComponent = comp;
                     privatesComponent.privateLessons = this.state.components[name];
 
@@ -283,7 +274,6 @@ class Controller extends React.Component {
                     );
 
                     privatesComponent.displayComponentState();
-                     */
                 }
             }
         }
@@ -503,8 +493,10 @@ class Controller extends React.Component {
             });
         } else if (database === "privates") {
             var privateUpdates = [];
-            for (var key in this.state.components.privates) {
-                var privateInstructor = this.state.components.privates[key];
+            var privatesData = this.state.components.privates.data;
+
+            for (var key in privatesData) {
+                var privateInstructor = privatesData[key];
 
                 for (var i = 0; i < privateInstructor.length; i++) {
                     var privateLesson = privateInstructor[i];
@@ -515,7 +507,7 @@ class Controller extends React.Component {
                         "time": privateLesson.time
                     };
 
-                    privateUpdates.push(this.state.connector.updatePrivatesData(id, body))
+                    privateUpdates.push(this.state.connector.updatePrivatesData(id, body));
                 }
             }
 

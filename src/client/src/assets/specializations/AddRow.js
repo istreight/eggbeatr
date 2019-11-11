@@ -44,71 +44,52 @@ class AddRow extends React.Component {
         var show = this.state.show;
 
         if (show) {
-            var inputWsi;
             var addButton;
             var inputFields;
-            var inputInstructor;
-            var inputDateOfHire;
             var preferenceButton;
             var privatesOnlyCheckbox;
 
             inputFields = [];
 
-            inputInstructor = React.createElement(Input, {
-                "callback": (ref)=> {
-                    inputFields.push(ref);
-                    Object.assign(this.inputs, inputFields);
-                },
-                "handleBlur": () => null,
-                "key": "key-addrow-input-0",
-                "placeholder": "...",
-                "styleClass": "",
-                "type": "text",
-                "value": ""
-            });
+            for (var i = 0; i < 3; i++) {
+                row.push([
+                    React.createElement(Input, {
+                        "callback": (ref)=> {
+                            inputFields.push(ref);
+                            Object.assign(this.inputs, inputFields);
+                        },
+                        "handleBlur": () => null,
+                        "key": "key-addrow-input-" + this.state.index + "-" + i,
+                        "placeholder": "...",
+                        "styleClass": "",
+                        "type": "text",
+                        "value": ""
+                    })
+                ]);
+            }
 
-            inputDateOfHire = React.createElement(Input, {
-                "callback": (ref)=> {
-                    inputFields.push(ref);
-                    Object.assign(this.inputs, inputFields);
-                },
-                "handleBlur": () => null,
-                "key": "key-addrow-input-1",
-                "placeholder": "...",
-                "styleClass": "",
-                "type": "text",
-                "value": ""
-            });
+            if (this.props.componentType === "Instructors") {
+                // Disable by default.
+                privatesOnlyCheckbox = React.createElement(PrivatesOnlyCheckbox, {
+                    "callback": () => null,
+                    "checked": false,
+                    "disabled": true,
+                    "handleChange": () => null,
+                    "instructorId": 0,
+                    "key": "key-addrow-checkbox-" + this.state.index
+                });
 
-            inputWsi = React.createElement(Input, {
-                "callback": (ref)=> {
-                    inputFields.push(ref);
-                    Object.assign(this.inputs, inputFields);
-                },
-                "handleBlur": () => null,
-                "key": "key-addrow-input-2",
-                "placeholder": "...",
-                "styleClass": "",
-                "type": "text",
-                "value": ""
-            });
+                // Disable by default.
+                preferenceButton = React.createElement(PreferencesButton, {
+                    "callback": (ref) => ref.toggleState(true),
+                    "handleClick": () => null,
+                    "instructorName": "",
+                    "key": "key-addrow-pref-" + this.state.index
+                });
 
-            privatesOnlyCheckbox = React.createElement(PrivatesOnlyCheckbox, {
-                "callback": () => null,
-                "checked": false,
-                "disabled": true,
-                "handleChange": () => null,
-                "instructorId": 0,
-                "key": "key-addrow-checkbox-0"
-            });
-
-            // Disable by default.
-            preferenceButton = React.createElement(PreferencesButton, {
-                "callback": (ref) => ref.toggleState(true),
-                "handleClick": () => null,
-                "instructorName": "",
-                "key": "key-addrow-pref-0"
-            });
+                row.push([privatesOnlyCheckbox]);
+                row.push([preferenceButton]);
+            }
 
             addButton = React.createElement(AddButton, {
                 "callback": () => null,
@@ -116,6 +97,9 @@ class AddRow extends React.Component {
                 "key": "key-addrow-addbutton-0"
             });
 
+            row.push([addButton]);
+
+            /*
             row = [
                 [inputInstructor],
                 [inputDateOfHire],
@@ -124,6 +108,7 @@ class AddRow extends React.Component {
                 [preferenceButton],
                 [addButton]
             ];
+            */
         }
 
         return row;
@@ -155,6 +140,7 @@ AddRow.defaultProps = {
 
 AddRow.propTypes = {
     callback: PropTypes.func,
+    componentType: PropTypes.string.isRequired,
     handleClick: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
     show: PropTypes.bool,

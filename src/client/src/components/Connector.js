@@ -553,7 +553,9 @@ class Connector extends React.Component {
     formatPrivatesRes(privatesRes) {
         return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
             .then(res => res.json()).then((instructors) => {
-                var newObject = {};
+                var newObject = {
+                    "data": {}
+                };
 
                 if (instructors.length === 0) {
                     return newObject;
@@ -568,7 +570,12 @@ class Connector extends React.Component {
 
                     // Strip newTime of milliseconds & leading zero.
                     var reLeadingZero = new RegExp(/^0/);
+                    var reSeconds = new RegExp(/:[0-9][0-9]$/);
+
                     newTime = newTime.replace(reLeadingZero, "");
+                    if (newTime.split(":").length > 2) {
+                        newTime = newTime.replace(reSeconds, "");
+                    }
 
                     var newInstructorObject = instructors.find((instructor) => {
                         return instructor.id === newInstructorId;
@@ -580,15 +587,15 @@ class Connector extends React.Component {
 
                     newInstructor = newInstructorObject.instructor;
 
-                    if (newInstructor in newObject) {
-                        newObject[newInstructor].push({
+                    if (newInstructor in newObject.data) {
+                        newObject.data[newInstructor].push({
                             "id": newId,
                             "instructorId": newInstructorId,
                             "duration": newDuration,
                             "time": newTime
                         });
                     } else {
-                        newObject[newInstructor] = [{
+                        newObject.data[newInstructor] = [{
                             "id": newId,
                             "instructorId": newInstructorId,
                             "duration": newDuration,
