@@ -170,7 +170,7 @@ class Private extends React.Component {
      */
     sortPrivatesByTime(privates) {
         if (privates.length === 1) {
-            return privates
+            return privates;
         }
 
         var obj = [];
@@ -183,7 +183,16 @@ class Private extends React.Component {
         // Eliminate duplicate keys.
         allTimes = Array.from(new Set(allTimes));
 
-        allTimes.sort().forEach((time) => {
+        allTimes.sort((firstEl, secondEl) => {
+            var [firstHour, firstSeconds] = firstEl.split(":");
+            var [secondHour, secondSeconds] = secondEl.split(":");
+
+            if (parseInt(firstHour) === parseInt(secondHour)) {
+                return parseInt(firstSeconds) < parseInt(secondSeconds);
+            } else {
+                return parseInt(firstHour) > parseInt(secondHour);
+            }
+        }).forEach((time) => {
             for (var i = 0; i < privates.length; i++) {
                 if (time === privates[i].time) {
                     obj.push(privates[i]);
