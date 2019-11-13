@@ -329,12 +329,6 @@ class Controller extends React.Component {
         return quantities;
     }
 
-    checkWSIExpiration(expiryTime) {
-        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
-
-        return Date.parse(expiryTime) > Date.now() + sixtyDaysInMilliseconds;
-    }
-
     /**
      * Organizes data from the Lessons, Instructors, and Private components.
      * Duration of lessons set is contained in the Grid component.
@@ -343,7 +337,6 @@ class Controller extends React.Component {
         console.log("manipulating controllerData...");
 
         if (updateDatabase) {
-            //this.minimizeData(componentName);
             this.updateDatabase(componentName);
         }
 
@@ -358,16 +351,8 @@ class Controller extends React.Component {
         );
 
         // Array of valid instructors.
-        var instructorsArray;
         var instructors = this.state.controllerData.instructors.data;
-
-        instructorsArray = Object.keys(instructors);
-        instructorsArray = instructorsArray.filter((instructorName) => {
-            var instructor = instructors[instructorName];
-
-            return this.checkWSIExpiration(instructor.wsiExpiration);
-        });
-        this.state.controllerData.instructorsArray = instructorsArray;
+        this.state.controllerData.instructorsArray = Object.keys(instructors);
 
         // Add lesson quantites and number of 1/2 & 3/4 hour lessons to controllerData.
         this.state.controllerData.lessons = Object.assign(
@@ -381,44 +366,6 @@ class Controller extends React.Component {
         );
 
         return this.state.controllerData;
-    }
-
-    /**
-     * Reduces the size of the objects to be passed to GridFactory.
-     *
-     * Reductions:
-     *      instructors             - no reductions
-     *      instructorPreferences   - remove keys for empty pairings
-     *                              - remove if all/no preferences exist
-     *      lessons                 - remove keys for empty pairings
-     *      private                 - remove empty private lessons
-     */
-    minimizeData(database) {
-        console.log("minimizing controllerData...");
-
-        // Remove keys in lessons paired with the empty string.
-        // This breaks updating lessons with a value of 0.
-        var lessonData = this.state.components.lessons.data;
-        for (var key in lessonData) {
-            var lesson = lessonData[key];
-
-            if (lesson.quantity === 0) {
-                delete this.state.components.lessons.data[key];
-            }
-        }
-
-        // Remove instructors in Privates without private lessons.
-        // Do this in the Privates component.
-        for (var instructor in this.state.components.privates) {
-            var _private = this.state.components.privates[instructor];
-
-            if (Object.keys(_private).length === 0
-                && _private.constructor === Object) {
-                delete this.state.components.privates[instructor];
-            }
-        }
-
-        this.updateDatabase(database);
     }
 
     /**
@@ -522,17 +469,12 @@ class Controller extends React.Component {
     }
 
     assignUpdates(res) {
-        var isData;
         var obj = {};
 
         for (var i = 0; i < res.length; i++) {
-            isData = false;
             var keys = Object.keys(res[i]);
 
-            if (keys.length === 1 && keys[0] === "data") {
-                isData = true;
-                keys = Object.keys(res[i].data);
-            }
+            keys = Object.keys(res[i].data);
 
             if (keys.length !== 1) {
                 continue;
@@ -540,25 +482,13 @@ class Controller extends React.Component {
 
             var key = keys[0];
             if (Array.isArray(obj[key])) {
-                if (isData) {
-                    obj[key] = obj[key].concat(res[i].data[key]);
-                } else {
-                    obj[key] = obj[key].concat(res[i][key]);
-                }
+                obj[key] = obj[key].concat(res[i].data[key]);
             } else {
-                if (isData) {
-                    Object.assign(obj, res[i].data);
-                } else {
-                    Object.assign(obj, res[i]);
-                }
+                Object.assign(obj, res[i].data);
             }
         }
 
-        if (isData) {
-            return { "data": obj };
-        } else {
-            return obj;
-        }
+        return { "data": obj };
     }
 
     /**
@@ -598,6 +528,7 @@ class Controller extends React.Component {
         var promise;
 
         console.log("Sending delete " + component + " request to database...");
+
         if (component === "Header") {
             promise = this.state.connector.deleteHeaderData(id);
         } else if (component === "Instructor") {
