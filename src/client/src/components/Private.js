@@ -292,7 +292,6 @@ class Private extends React.Component {
         var privateLessons = this.state.data;
         var newInstructorName = newDataRow[0];
         var privateLesson, instructorName, lessonIndex;
-
         var privateLessonBody = {
             "time": newDataRow[1],
             "duration": newDataRow[2]
@@ -300,9 +299,10 @@ class Private extends React.Component {
 
         [privateLesson, instructorName, lessonIndex] = this.findPrivateById(id);
 
-        if (instructorName === newInstructorName) {
-            Object.assign(privateLesson, privateLessonBody);
+        //Apply updates to time and duration.
+        Object.assign(privateLesson, privateLessonBody);
 
+        if (instructorName === newInstructorName) {
             this.props.callback(this.state, "privates", true);
         } else {
             this.getInstructorIdByName(newInstructorName)

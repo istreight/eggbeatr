@@ -153,13 +153,16 @@ class Instructors extends React.Component {
 
         [instructor, instructorName] = this.findInstructorById(id);
 
+        //Apply updates to date of hire and WSI expiration.
+        Object.assign(instructor, instructorBody);
+
         if (instructorName === newInstructorName) {
-            Object.assign(instructor, instructorBody);
             Object.assign(this.state.data[instructorName], instructor);
         } else {
             // Duplicate the old instructor's data to under the new instructor's name.
             var newInstructor = {};
             newInstructor[newInstructorName] = instructor;
+
             Object.assign(this.state.data, newInstructor);
 
             // Remove the old instructor.
