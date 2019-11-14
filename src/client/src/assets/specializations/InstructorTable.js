@@ -160,7 +160,7 @@ class InstructorTable extends React.Component {
                 addCallback={ this.add.bind(this) }
                 callback={ (ref) => {
                     this.setComponentReference("toggleTable", ref);
-                    this.state.callback(ref);
+                    this.state.callback(this);
                 } }
                 componentType={ "Instructors" }
                 customStyle={ this.checkWSIExpiration.bind(this) }

@@ -57,7 +57,7 @@ class Private extends React.Component {
         this.editButton.setState({
             "data": "Finish Editing",
             "handleClick": this.finishEditingPrivate.bind(this)
-        }, () => this.privatesTable.toggleTableState(true));
+        }, () => this.privatesTable.toggleState(true));
     }
 
     /**
@@ -70,7 +70,7 @@ class Private extends React.Component {
         this.editButton.setState({
             "data": "Edit Privates",
             "handleClick": this.editPrivate.bind(this)
-        }, () => this.privatesTable.toggleTableState(false));
+        }, () => this.privatesTable.toggleState(false));
 
         this.props.callback(this.state, "privates", true);
         this.props.setChecklistQuantity("privates", this.getComponentQuantity());
@@ -276,7 +276,7 @@ class Private extends React.Component {
 
                         this.setState({
                             "data": privateLessons
-                        }, () => this.privatesTable.toggleTableState(true));
+                        }, () => this.privatesTable.toggleState(true));
                     });
 
                     break;

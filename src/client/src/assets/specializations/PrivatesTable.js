@@ -81,7 +81,7 @@ class PrivatesTable extends React.Component {
                 addCallback={ this.add.bind(this) }
                 callback={ (ref) => {
                     this.setComponentReference("toggleTable", ref);
-                    this.state.callback(ref);
+                    this.state.callback(this);
                 } }
                 componentType={ "Privates" }
                 dataBody={ this.state.dataBody }
