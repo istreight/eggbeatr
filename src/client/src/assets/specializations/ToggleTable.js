@@ -21,13 +21,11 @@ class ToggleTable extends React.Component {
 
         this.rows = null;
         this.state = null;
-        this.toggleTableState = null;
     }
 
     componentWillMount() {
         this.rows = [];
 
-        this.toggleTableState = this.toggleState.bind(this);
         this.setState(this.props);
     }
 

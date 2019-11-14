@@ -77,7 +77,7 @@ class Instructors extends React.Component {
         this.editButton.setState({
             "data": "Finish Editing",
             "handleClick": this.finishEditingInstructors.bind(this)
-        }, () => this.instructorTable.toggleTableState(true));
+        }, () => this.instructorTable.toggleState(true));
     }
 
     /**
@@ -90,7 +90,7 @@ class Instructors extends React.Component {
         this.editButton.setState({
             "data": "Edit Instructors",
             "handleClick": this.editInstructors.bind(this)
-        }, () => this.instructorTable.toggleTableState(false));
+        }, () => this.instructorTable.toggleState(false));
 
         this.props.callback(this.state, "instructors", true);
         this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
@@ -130,7 +130,7 @@ class Instructors extends React.Component {
 
                     this.setState({
                         "data": instructors
-                    }, () => this.instructorTable.toggleTableState(true));
+                    }, () => this.instructorTable.toggleState(true));
                 });
 
                 this.props.deletePreference(instructorName);
