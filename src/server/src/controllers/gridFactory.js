@@ -136,9 +136,9 @@ const gridFactory =  {
     },
 
     addPrivateLessons(grid, data, groupInstructors, privatesGrid) {
-        for (var privateInstructor in data.privates) {
+        for (var privateInstructor in data.privates.data) {
             if (data.instructors.includes(privateInstructor)) {
-                var privateLessons = data.privates[privateInstructor];
+                var privateLessons = data.privates.data[privateInstructor];
                 for (var privateIndex = 0; privateIndex < privateLessons.length; privateIndex++) {
                     var privateLesson = privateLessons[privateIndex];
 
