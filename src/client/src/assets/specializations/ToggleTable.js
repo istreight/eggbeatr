@@ -14,6 +14,7 @@ import TableRow from 'utils/TableRow';
 import AddRow from 'specializations/AddRow';
 import RemoveRow from 'specializations/RemoveRow';
 
+
 class ToggleTable extends React.Component {
     constructor(props) {
         super(props);
@@ -102,7 +103,7 @@ class ToggleTable extends React.Component {
                 "id": ids[index],
                 "index": index,
                 "show": this.state.toggle,
-                "styleCell": this.state.styleCell,
+                "styleCell": this.styleCell.bind(this),
                 "styleRow": () => this.styleRow(index),
                 "updateCallback": this.state.updateCallback
             })
@@ -174,6 +175,46 @@ class ToggleTable extends React.Component {
         });
     }
 
+    styleCell(cell, index) {
+        var style;
+        var isValidData;
+        var instructorNames;
+        var uniqueInstructors;
+        var duplicateInstructors;
+        var tableRows = this.state.dataBody;
+        var validations = this.state.validations;
+
+        if (Array.isArray(cell)) {
+            // Base style for buttons.
+            return "is-center";
+        }
+
+        instructorNames = tableRows.map((element, _index) => element[0]);
+
+        uniqueInstructors = new Set(instructorNames);
+        duplicateInstructors = instructorNames.filter((instructor) => !uniqueInstructors.has(instructor));
+
+        if (index < validations.length) {
+            isValidData = validations[index](cell, index);
+        } else {
+            isValidData = false;
+        }
+
+        if (!isValidData) {
+            // Invalid input.
+            if (this.state.customStyle) {
+                style = this.state.customStyle(cell);
+            } else {
+                style = "error-cell";
+            }
+        } else if (duplicateInstructors.includes(cell)) {
+            // Duplicate instructor name.
+            style = "error-cell";
+        }
+
+        return style;
+    }
+
     styleRow(index) {
         if (index % 2 === 0) {
             return "table-odd";
@@ -229,7 +270,7 @@ class ToggleTable extends React.Component {
                         componentType={ this.state.componentType }
                         handleClick={ this.add.bind(this) }
                         index={ this.state.dataBody.length }
-                        styleCell={ this.state.styleCell }
+                        styleCell={ this.styleCell.bind(this) }
                         styleRow={ this.styleRow.bind(this) }
                     />
                 </tbody>
@@ -239,12 +280,14 @@ class ToggleTable extends React.Component {
 }
 
 ToggleTable.defaultProps = {
-    toggle: false
+    toggle: false,
+    validations: []
 };
 
 ToggleTable.propTypes = {
     addCallback: PropTypes.func.isRequired,
     callback: PropTypes.func.isRequired,
+    customStyle: PropTypes.func,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     getAdditionalRowData: PropTypes.func.isRequired,
@@ -252,7 +295,7 @@ ToggleTable.propTypes = {
     sectionId: PropTypes.string,
     toggle: PropTypes.bool,
     updateCallback: PropTypes.func.isRequired,
-    styleCell: PropTypes.func.isRequired
+    validations: PropTypes.array
 }
 
 export default ToggleTable;

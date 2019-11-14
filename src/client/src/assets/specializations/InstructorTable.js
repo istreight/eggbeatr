@@ -14,6 +14,7 @@ import ToggleTable from 'specializations/ToggleTable';
 import PreferencesButton from 'specializations/PreferencesButton';
 import PrivatesOnlyCheckbox from 'specializations/PrivatesOnlyCheckbox';
 
+
 class InstructorTable extends React.Component {
     constructor(props) {
         super(props);
@@ -56,6 +57,10 @@ class InstructorTable extends React.Component {
 
         expiryTime = Date.parse(expiryTime);
 
+        if (isNaN(expiryTime)) {
+            return false;
+        }
+
         if (expiryTime < Date.now()) {
             return "error-cell";
         } else if (expiryTime < Date.now() + sixtyDaysInMilliseconds) {
@@ -72,6 +77,14 @@ class InstructorTable extends React.Component {
 
         instructor.splice(4, 1, checkboxObject);
         instructor.splice(5, 1, prefsButtonObject);
+    }
+
+    getCellValidations() {
+        return [
+            (cell) => /^[A-Za-z\s]+$/.test(cell),
+            (cell) => !isNaN(Date.parse(cell)),
+            () => false
+        ];
     }
 
     getPreferencesButton(prefConfig, keyIndex) {
@@ -116,37 +129,6 @@ class InstructorTable extends React.Component {
         this.state.removeCallback(instructorId);
     }
 
-    styleCell(cell, index) {
-        var style;
-        var instructorNames;
-        var uniqueInstructors;
-        var duplicateInstructors;
-        var tableRows = this.state.dataBody;
-        var reName = new RegExp(/^[A-Za-z\s]+$/);
-        var tableHeaders = this.state.dataHeader;
-
-        instructorNames = tableRows.map((element, _index) => element[0]);
-
-        uniqueInstructors = new Set(instructorNames);
-        duplicateInstructors = instructorNames.filter((instructor) => !uniqueInstructors.has(instructor));
-
-        if (Array.isArray(cell)) {
-            // Base style for buttons.
-            style = "is-center";
-        } else if (!reName.test(cell) && isNaN(Date.parse(cell))) {
-            // Invalid input.
-            style = "error-cell";
-        } else if (duplicateInstructors.includes(cell)) {
-            // Duplicate instructor name.
-            style = "error-cell";
-        } else if (tableHeaders[0][index] === "WSI Expiration") {
-            // WSI expiration.
-            style = this.checkWSIExpiration(cell);
-        }
-
-        return style;
-    }
-
     // Give this to the Edit Instructors button.
     toggleState(enable) {
         // TODO
@@ -181,13 +163,14 @@ class InstructorTable extends React.Component {
                     this.state.callback(ref);
                 } }
                 componentType={ "Instructors" }
+                customStyle={ this.checkWSIExpiration.bind(this) }
                 dataBody={ this.state.dataBody }
                 dataHeader={ this.state.dataHeader }
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
                 removeCallback={ this.remove.bind(this) }
                 sectionId={ this.state.sectionId }
                 updateCallback={ this.state.updateCallback }
-                styleCell={ this.styleCell.bind(this) }
+                validations={ this.getCellValidations() }
             />
         );
     }
