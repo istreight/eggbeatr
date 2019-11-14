@@ -10,6 +10,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import ToggleTable from 'specializations/ToggleTable';
+
 import TableRow from 'utils/TableRow';
 import AddRow from 'specializations/AddRow';
 import RemoveRow from 'specializations/RemoveRow';
@@ -18,170 +20,36 @@ class PrivatesTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.rows = null;
         this.state = null;
-        this.toggleTableState = null;
+        this.toggleTable = null;
     }
 
     componentWillMount() {
-        this.rows = [];
-        this.toggleTableState = this.toggleState.bind(this);
-
         this.setState(this.props);
     }
 
     componentDidMount() {
-        this.props.callback(this);
+        return;
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState(nextProps);
     }
 
-    add() {
-        var name;
-        var time;
-        var duration;
-        var addRowInputs = this.addRow.inputs;
-
-        if (addRowInputs.length != 3) {
-            this.state.addCallback({});
-
-            return;
-        }
-
-        for (var inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
-            var input = addRowInputs[inputIndex];
-
-            if (inputIndex == 0) {
-                name = input.state.value;
-            } else if (inputIndex == 1) {
-                time = input.state.value;
-            } else if (inputIndex == 2) {
-                duration = input.state.value;
-            }
-        }
-
-        this.state.addCallback({
-            "duration": duration,
-            "instructor": name,
-            "time": time
-        }).then((res) => this.addNewPrivateLessonRow(res));
-
-        // Empty the inputs of the AddRow after adding the new row.
-        for (var inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
-            var input = addRowInputs[inputIndex];
-            input.setState({ "value": "" });
-        }
-
-        this.resizeTable();
-        this.recolourTable();
-    }
-
-    addNewPrivateLessonRow(res) {
-        this.setState(this.state, () => this.toggleState(true));
-    }
-
-    getBodyRows() {
-        var privateLesson;
-        var lessonIds = [];
-        var data = JSON.parse(JSON.stringify(this.state.dataBody));
-
-        this.rows = [];
-
-        // Replace checkbox and preference button data with the object.
-        for (var index = 0; index < data.length; index++) {
-            privateLesson = data[index];
-
-            lessonIds.push(privateLesson[0]);
-
-            data[index] = privateLesson.slice(1);
-        }
-
-        data = this.sortBodyData(data);
-
-        return data.map((dataRow, index) => {
-            return React.createElement(RemoveRow, {
-                "callback": (ref) => this.rows.push(ref),
-                "dataRow": dataRow,
-                "key": "key-row-" + index,
-                "handleClick": this.remove.bind(this),
-                "id": lessonIds[index],
-                "index": index,
-                "show": this.state.toggle,
-                "styleCell": this.styleCell.bind(this),
-                "styleRow": () => this.styleRow(index),
-                "updateCallback": this.state.updateCallback
-            });
+    add(inputValues) {
+        return this.state.addCallback({
+            "duration": inputValues[2],
+            "instructor": inputValues[0],
+            "time": inputValues[1]
         });
     }
 
-    getHeaderRows() {
-        var data = this.state.dataHeader;
-
-        return data.map((dataRow, index) =>
-            React.createElement(TableRow, {
-                "callback": () => null,
-                "dataRow": dataRow,
-                "isHeaderRow": true,
-                "index": index,
-                "key": "key-header-" + index,
-                "styleCell": () => "is-center",
-                "styleRow": () => null
-            })
-        );
-    }
-
-    recolourTable() {
-        //Colour table rows.
-        this.rows.forEach((row, index) => {
-            row.setState({
-                "styleRow": () => this.styleRow(index)
-            });
-        });
-
-        // Colour AddRow.
-        this.addRow.setState({
-            "styleRow": () => this.styleRow(this.rows.length)
-        });
+    getAdditionalRowData() {
+        return;
     }
 
     remove(instructorId) {
         this.state.removeCallback(instructorId);
-
-        this.resizeTable();
-        this.recolourTable();
-    }
-
-    resizeTable() {
-        var oldHeight;
-        var newHeight;
-        var dynamicPrivates = document.getElementById("dynamicPrivate");
-
-        oldHeight = dynamicPrivates.style.height;
-        oldHeight = parseInt(oldHeight.substring(0, oldHeight.indexOf("px")));
-
-        if (this.rows.length > 3) {
-            newHeight = 512 + (40 * (this.rows.length - 3));
-        } else {
-            newHeight = 512;
-        }
-
-        if (newHeight > oldHeight) {
-            dynamicPrivates.style.height = newHeight + "px";
-        }
-    }
-
-    sortBodyData(bodyData) {
-        return bodyData.sort((current, next) => {
-            if (current[0] < next[0]) {
-                return -1;
-            } else if (current[0] > next[0]) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
     }
 
     styleCell(cell, index) {
@@ -230,40 +98,8 @@ class PrivatesTable extends React.Component {
         return style;
     }
 
-    styleRow(index) {
-        if (index % 2 === 0) {
-            return "table-odd";
-        } else {
-            return "table-even"
-        }
-    }
-
-    // Give this to the Edit Instructors button.
     toggleState(enable) {
-        var headerRows = this.state.dataHeader[0];
-
-        if (headerRows.includes("Modify")) {
-            headerRows.splice(headerRows.indexOf("Modify"), 1);
-        }
-
-        if (enable) {
-            this.setState({
-                "dataHeader": [headerRows.concat("Modify")]
-            });
-        } else {
-            this.setState({
-                "dataHeader": [headerRows]
-            });
-        }
-
-        this.addRow.toggleState(enable);
-
-        this.setState({
-            "toggle": enable
-        });
-
-        this.resizeTable();
-        this.recolourTable();
+        this.toggleTable.toggleState(enable);
     }
 
     /**
@@ -275,22 +111,21 @@ class PrivatesTable extends React.Component {
 
     render() {
         return (
-            <table className="pure-table">
-                <thead>
-                    { this.getHeaderRows() }
-                </thead>
-                <tbody>
-                    { this.getBodyRows() }
-                    <AddRow
-                        callback={ (ref) => this.setComponentReference("addRow", ref) }
-                        componentType={ "Privates" }
-                        handleClick={ this.add.bind(this) }
-                        index={ this.state.dataBody.length }
-                        styleCell={ this.styleCell.bind(this) }
-                        styleRow={ this.styleRow.bind(this) }
-                    />
-                </tbody>
-            </table>
+            <ToggleTable
+                addCallback={ this.add.bind(this) }
+                callback={ (ref) => {
+                    this.setComponentReference("toggleTable", ref);
+                    this.state.callback(ref);
+                } }
+                componentType={ "Privates" }
+                dataBody={ this.state.dataBody }
+                dataHeader={ this.state.dataHeader }
+                getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
+                removeCallback={ this.remove.bind(this) }
+                sectionId={ this.state.sectionId }
+                updateCallback={ this.state.updateCallback }
+                styleCell={ this.styleCell.bind(this) }
+            />
         );
     }
 }
