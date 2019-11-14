@@ -131,10 +131,6 @@ class InstructorTable extends React.Component {
 
     // Give this to the Edit Instructors button.
     toggleState(enable) {
-        // TODO
-        // Toggling the states of the checkbox and preference button indicate a memory leak.
-        // I think this is how their references are stored and aren't updated with each new render.
-        /*
         for (var rowIndex = 0; rowIndex < this.privatesOnlyCheckboxes.length; rowIndex++) {
             var checkbox = this.privatesOnlyCheckboxes[rowIndex];
             var preferenceButton = this.preferencesButtons[rowIndex];
@@ -142,7 +138,6 @@ class InstructorTable extends React.Component {
             checkbox.toggleState(enable);
             preferenceButton.toggleState(enable);
         }
-        */
 
        this.toggleTable.toggleState(enable);
     }
