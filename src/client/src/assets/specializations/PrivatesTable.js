@@ -12,9 +12,6 @@ import PropTypes from 'prop-types';
 
 import ToggleTable from 'specializations/ToggleTable';
 
-import TableRow from 'utils/TableRow';
-import AddRow from 'specializations/AddRow';
-import RemoveRow from 'specializations/RemoveRow';
 
 class PrivatesTable extends React.Component {
     constructor(props) {
@@ -48,56 +45,25 @@ class PrivatesTable extends React.Component {
         return;
     }
 
+    getCellValidations() {
+        return [
+            (cell) => /^[A-Za-z\s]+$/.test(cell),
+            (cell) => {
+                var [hour, minute] = cell.split(":");
+                var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
+                var reMinute = new RegExp(/^([0-5][05]|60)$/);
+
+                return reHour.test(hour) && reMinute.test(minute);
+            },
+            (cell) => /^([0-5][05]|60)$/.test(parseInt(cell, 10) % 60)
+        ];
+    }
+
     remove(instructorId) {
         this.state.removeCallback(instructorId);
     }
 
-    styleCell(cell, index) {
-        var style;
-        var isValidData;
-        var instructorNames;
-        var uniqueInstructors;
-        var duplicateInstructors;
-        var tableRows = this.state.dataBody;
-
-        if (Array.isArray(cell)) {
-            // Base style for buttons.
-            return "is-center";
-        }
-
-        instructorNames = tableRows.map((element, index) => element[0]);
-
-        uniqueInstructors = new Set(instructorNames);
-        duplicateInstructors = instructorNames.filter((instructor) => !uniqueInstructors.has(instructor));
-
-        if (index === 0) {
-            var reName = new RegExp(/^[A-Za-z\s]+$/);
-
-            isValidData = reName.test(cell);
-        } else if (index === 1) {
-            var [hour, minute] = cell.split(":");
-            var reHour = new RegExp(/^0?[0-9]|1[0-2]$/);
-            var reMinute = new RegExp(/^([0-5][05]|60)$/);
-
-            isValidData = reHour.test(hour) && reMinute.test(minute);
-        } else if (index === 2) {
-            var duration = parseInt(cell, 10) % 60;
-            var reDuration = new RegExp(/^([0-5][05]|60)$/);
-
-            isValidData = reDuration.test(duration);
-        }
-
-        if (!isValidData) {
-            // Invalid input.
-            style = "error-cell";
-        } else if (duplicateInstructors.includes(cell)) {
-            // Duplicate instructor name.
-            style = "error-cell";
-        }
-
-        return style;
-    }
-
+    // Give this to the Edit Privates button.
     toggleState(enable) {
         this.toggleTable.toggleState(enable);
     }
@@ -124,7 +90,7 @@ class PrivatesTable extends React.Component {
                 removeCallback={ this.remove.bind(this) }
                 sectionId={ this.state.sectionId }
                 updateCallback={ this.state.updateCallback }
-                styleCell={ this.styleCell.bind(this) }
+                validations={ this.getCellValidations() }
             />
         );
     }
