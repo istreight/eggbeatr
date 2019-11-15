@@ -47,7 +47,6 @@ class Instructors extends React.Component {
     getComponentQuantity() {
         var validInstructors;
         var instructorsArray = Object.keys(this.state.data);
-        const sixtyDaysInMilliseconds = 60 * 24 * 60 * 60 * 1000;
 
         // Expired & private only instructors.
         validInstructors = instructorsArray.filter((instructorName) => {
@@ -55,7 +54,7 @@ class Instructors extends React.Component {
             var expiryTime = instructor.wsiExpiration;
             var privateOnly = instructor.privateOnly;
 
-            return !privateOnly && Date.now() + sixtyDaysInMilliseconds <  Date.parse(expiryTime);
+            return !privateOnly && Date.now() < Date.parse(expiryTime);
         });
 
         return validInstructors.length;
@@ -283,6 +282,26 @@ class Instructors extends React.Component {
         return tableBody;
     }
 
+    preferenceHandler(id) {
+        var instructorName = this.findInstructorById(id)[1];
+
+        this.props.handlePreferencesClick(instructorName);
+    }
+
+    privatesOnlyHandler(id, checked) {
+        var instructor, instructorName;
+
+        [instructor, instructorName] = this.findInstructorById(id);
+
+        instructor.privateOnly = checked;
+
+        Object.assign(this.state.data[instructorName], instructor);
+        this.setState(this.state, () => {
+            this.props.callback(this.state, "instructors", true);
+            this.props.setChecklistQuantity("instructors", this.getComponentQuantity());
+        });
+    }
+
     /**
      * Set the reference to subcomponent references.
      */
@@ -314,6 +333,8 @@ class Instructors extends React.Component {
                     callback={ (ref) => this.setComponentReference("instructorTable", ref) }
                     dataBody={ this.getTableBody() }
                     dataHeader={ this.getTableHeader() }
+                    preferenceHandler={ this.preferenceHandler.bind(this) }
+                    privatesOnlyHandler={ this.privatesOnlyHandler.bind(this) }
                     removeCallback={ this.removeInstructor.bind(this) }
                     sectionId={ "dynamicInstructors" }
                     updateCallback={ this.updateInstructor.bind(this) }

@@ -38,11 +38,17 @@ class InstructorPreferences extends React.Component {
     }
 
     componentDidMount() {
+        var dynamicInstructorPreferences = document.getElementById("dynamicInstructorPreferences");
+
         // Hide modal on click outside of modal.
         window.addEventListener("click", (e) => {
             if (e.target === ReactDOM.findDOMNode(this.modal)) {
                 this.modal.setState({
                     "isDisplayed": false
+                });
+            } else if (e.target.classList.contains("preferences") || dynamicInstructorPreferences.contains(e.target)) {
+                this.modal.setState({
+                    "isDisplayed": true
                 });
             }
         });
@@ -87,9 +93,12 @@ class InstructorPreferences extends React.Component {
      *  update the state of the preferences.
      */
     updatePreferenceCell(e) {
+        if (this.editButton.state.mode === "default") {
+            return;
+        }
+
         var preferences;
         var lessonIndex;
-        var newObj = {};
         var lesson = e.target.innerHTML;
         var instructor = this.selectedInstructor;
 
@@ -121,13 +130,10 @@ class InstructorPreferences extends React.Component {
                 var lessonType = row[colIndex];
 
                 preferences[rowIndex][colIndex] = [
-                    React.createElement(
-                        Anchor,
-                        {
+                    React.createElement(Anchor, {
                             "callback": () => null,
                             "data": lessonType,
                             "handleClick": this.updatePreferenceCell.bind(this),
-                            "hyperlink": "#",
                             "key": "key-anchor-" + (rowIndex * preferences.length + colIndex),
                             "styleClass": ""
                         }
@@ -147,6 +153,7 @@ class InstructorPreferences extends React.Component {
 
         if (instructorName in this.state.data) {
             this.setState(this.state, () => this.modal.setState({
+                "header": [instructorName],
                 "isDisplayed": true
             }));
         } else {
@@ -154,6 +161,7 @@ class InstructorPreferences extends React.Component {
             this.props.connector.getPreferenceData()
                 .then((res) => {
                     this.setState(res, () => this.modal.setState({
+                        "header": [instructorName],
                         "isDisplayed": true
                     }));
                 });
@@ -197,7 +205,7 @@ class InstructorPreferences extends React.Component {
             <Modal
                 body={ [
                     <p key="key-modal-p-0">
-                        The following table outlines  {
+                        The following table outlines {
                             this.selectedInstructor
                         }&#39;s level preferences.
                     </p>
@@ -211,7 +219,7 @@ class InstructorPreferences extends React.Component {
                         "mode": "default"
                     })
                 ] }
-                header={ [this.selectedInstructor] }
+                header={ [ this.selectedInstructor ] }
                 isDisplayed={ false }
                 tableData={ {
                     "dataBody": this.getPreferenceData(),

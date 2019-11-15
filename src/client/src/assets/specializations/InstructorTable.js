@@ -58,7 +58,7 @@ class InstructorTable extends React.Component {
         expiryTime = Date.parse(expiryTime);
 
         if (isNaN(expiryTime)) {
-            return false;
+            return "error-cell";
         }
 
         if (expiryTime < Date.now()) {
@@ -79,7 +79,7 @@ class InstructorTable extends React.Component {
         instructor.splice(5, 1, prefsButtonObject);
     }
 
-    getCellValidations() {
+    getInputValueValidations() {
         return [
             (cell) => /^[A-Za-z\s]+$/.test(cell),
             (cell) => !isNaN(Date.parse(cell)),
@@ -91,9 +91,8 @@ class InstructorTable extends React.Component {
         return [
             React.createElement(PreferencesButton, {
                 "callback": (ref) => this.preferencesButtons.push(ref),
-                "handleClick": () => null,
+                "handleClick": this.state.preferenceHandler,
                 "instructorId": prefConfig.instructorId,
-                "instructorName": prefConfig.instructorName,
                 "key": "key-instructor-pref-" + keyIndex
             })
         ];
@@ -104,7 +103,7 @@ class InstructorTable extends React.Component {
             React.createElement(PrivatesOnlyCheckbox, {
                 "callback": (ref) => this.privatesOnlyCheckboxes.push(ref),
                 "checked": privatesOnlyConfig.privateOnly,
-                "handleChange": () => null,
+                "handleChange": this.state.privatesOnlyHandler,
                 "instructorId": privatesOnlyConfig.instructorId,
                 "key": "key-instructor-checkbox-" + keyIndex
             })
@@ -162,16 +161,18 @@ class InstructorTable extends React.Component {
                 dataBody={ this.state.dataBody }
                 dataHeader={ this.state.dataHeader }
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
+                inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
                 sectionId={ this.state.sectionId }
                 updateCallback={ this.state.updateCallback }
-                validations={ this.getCellValidations() }
             />
         );
     }
 }
 
 InstructorTable.defaultProps = {
+    preferenceHandler: () => null,
+    privatesOnlyHandler: () => null,
     toggle: false
 };
 
@@ -180,6 +181,8 @@ InstructorTable.propTypes = {
     callback: PropTypes.func.isRequired,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
+    preferenceHandler: PropTypes.func,
+    privatesOnlyHandler: PropTypes.func,
     removeCallback: PropTypes.func.isRequired,
     sectionId: PropTypes.string,
     toggle: PropTypes.bool,

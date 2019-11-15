@@ -30,6 +30,10 @@ class Modal extends React.Component {
         this.props.callback(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps);
+    }
+
     componentDidUpdate() {
         var nodeClassList = this.node.classList;
 
