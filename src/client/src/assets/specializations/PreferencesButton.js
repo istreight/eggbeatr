@@ -32,7 +32,7 @@ class PreferencesButton extends React.Component {
     }
 
     onClick() {
-        this.state.handleClick(this.state.instructorName);
+        this.state.handleClick(this.state.instructorId);
     }
 
     toggleState(enable) {
@@ -71,7 +71,7 @@ class PreferencesButton extends React.Component {
 PreferencesButton.propTypes = {
     callback: PropTypes.func.isRequired,
     handleClick: PropTypes.func.isRequired,
-    instructorName: PropTypes.string.isRequired
+    instructorId: PropTypes.number.isRequired
 }
 
 export default PreferencesButton;

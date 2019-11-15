@@ -45,7 +45,7 @@ class PrivatesTable extends React.Component {
         return;
     }
 
-    getCellValidations() {
+    getInputValueValidations() {
         return [
             (cell) => /^[A-Za-z\s]+$/.test(cell),
             (cell) => {
@@ -87,10 +87,10 @@ class PrivatesTable extends React.Component {
                 dataBody={ this.state.dataBody }
                 dataHeader={ this.state.dataHeader }
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
+                inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
                 sectionId={ this.state.sectionId }
                 updateCallback={ this.state.updateCallback }
-                validations={ this.getCellValidations() }
             />
         );
     }

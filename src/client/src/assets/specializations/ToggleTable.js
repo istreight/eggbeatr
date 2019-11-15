@@ -180,7 +180,7 @@ class ToggleTable extends React.Component {
         var uniqueInstructors;
         var duplicateInstructors;
         var tableRows = this.state.dataBody;
-        var validations = this.state.validations;
+        var validations = this.state.inputValueValidations;
 
         if (Array.isArray(cell)) {
             // Base style for buttons.
@@ -201,7 +201,7 @@ class ToggleTable extends React.Component {
         if (!isValidData) {
             // Invalid input.
             if (this.state.customStyle) {
-                style = this.state.customStyle(cell);
+                style = this.state.customStyle(cell, index);
             } else {
                 style = "error-cell";
             }
@@ -278,8 +278,8 @@ class ToggleTable extends React.Component {
 }
 
 ToggleTable.defaultProps = {
-    toggle: false,
-    validations: []
+    inputValueValidations: [],
+    toggle: false
 };
 
 ToggleTable.propTypes = {
@@ -289,11 +289,11 @@ ToggleTable.propTypes = {
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     getAdditionalRowData: PropTypes.func.isRequired,
+    inputValueValidations: PropTypes.array,
     removeCallback: PropTypes.func.isRequired,
     sectionId: PropTypes.string,
     toggle: PropTypes.bool,
-    updateCallback: PropTypes.func.isRequired,
-    validations: PropTypes.array
+    updateCallback: PropTypes.func.isRequired
 }
 
 export default ToggleTable;

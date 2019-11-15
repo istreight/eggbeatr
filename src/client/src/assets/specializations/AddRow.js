@@ -83,7 +83,7 @@ class AddRow extends React.Component {
                 preferenceButton = React.createElement(PreferencesButton, {
                     "callback": (ref) => ref.toggleState(true),
                     "handleClick": () => null,
-                    "instructorName": "",
+                    "instructorId": -1,
                     "key": "key-addrow-pref-" + this.state.index
                 });
 
