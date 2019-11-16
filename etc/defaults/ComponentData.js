@@ -8,10 +8,10 @@ if (defaultValue == 0) {
 } else {
     headers = [
         {
-          "setTitle": "Saturday"
+          "setTitle": "Sample Set"
         },
         {
-          "setTitle": "Sunday"
+          "setTitle": "New Set"
         }
     ];
 }
