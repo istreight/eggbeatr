@@ -90,7 +90,11 @@ class InstructorTable extends React.Component {
     getPreferencesButton(prefConfig, keyIndex) {
         return [
             React.createElement(PreferencesButton, {
-                "callback": (ref) => this.preferencesButtons.push(ref),
+                "callback": (ref) => {
+                    this.preferencesButtons = this.preferencesButtons.filter((checkbox) => ref.state.instructorId !== checkbox.state.instructorId);
+
+                    this.preferencesButtons.push(ref);
+                },
                 "handleClick": this.state.preferenceHandler,
                 "instructorId": prefConfig.instructorId,
                 "key": "key-instructor-pref-" + keyIndex
@@ -101,7 +105,11 @@ class InstructorTable extends React.Component {
     getPrivatesOnlyCheckbox(privatesOnlyConfig, keyIndex) {
         return [
             React.createElement(PrivatesOnlyCheckbox, {
-                "callback": (ref) => this.privatesOnlyCheckboxes.push(ref),
+                "callback": (ref) => {
+                    this.privatesOnlyCheckboxes = this.privatesOnlyCheckboxes.filter((checkbox) => ref.state.instructorId !== checkbox.state.instructorId);
+
+                    this.privatesOnlyCheckboxes.push(ref);
+                },
                 "checked": privatesOnlyConfig.privateOnly,
                 "handleChange": this.state.privatesOnlyHandler,
                 "instructorId": privatesOnlyConfig.instructorId,
@@ -138,7 +146,7 @@ class InstructorTable extends React.Component {
             preferenceButton.toggleState(enable);
         }
 
-       this.toggleTable.toggleState(enable);
+        this.toggleTable.toggleState(enable);
     }
 
     /**
