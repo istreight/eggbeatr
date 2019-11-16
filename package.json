@@ -11,7 +11,7 @@
         "packages:build": "cd src/client; npm run build; cd ../server; npm run build",
         "packages:clean": "bash bin/clean",
         "packages:install": "npm install; cd src/client; npm install; cd ../server; npm install",
-        "packages:update": "node_modules/npm-check-updates/bin/ncu -a; node_modules/npm-check-updates/bin/ncu --packageFile src/client/package.json -a; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json -a",
+        "packages:update": "node_modules/npm-check-updates/bin/ncu --upgrade; node_modules/npm-check-updates/bin/ncu --packageFile src/client/package.json --upgrade; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json --upgrade",
         "start": "bash bin/start"
     },
     "repository": {
@@ -27,6 +27,6 @@
     "homepage": "https://github.com/istreight/eggbeatr#readme",
     "dependencies": {},
     "devDependencies": {
-        "npm-check-updates": "^3.1.8"
+        "npm-check-updates": "^3.2.1"
     }
 }
