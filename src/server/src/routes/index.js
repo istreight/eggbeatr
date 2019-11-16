@@ -26,7 +26,7 @@ module.exports = (app) => {
             ],
             description: {
                 '/api/headers': 'The list of header titles and data.',
-                '/api/grid': 'The list of generated grids and grid data.',
+                '/api/grid': 'The list of grids and grid data.',
                 '/api/lessons': 'The current quantities of lessons',
                 '/api/privates': 'The current list of private lessons and related information.',
                 '/api/instructors': 'The list of instructors and related information, including preferences and privates.',

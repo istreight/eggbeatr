@@ -4,7 +4,7 @@
  * START DATE:  October 26th, 2016
  * MIRGRATION DATE:  April 25th, 2018 (from /src/client/src/components)
  *
- * This file contains the GridFactory class that generates
+ * This file contains the GridFactory class that creates
  *  an array of the grid for the web application.
  * This class requires input data.
  */
@@ -23,10 +23,6 @@ const gridFactory =  {
         this.gridList = [];
         this.lessonTimes = data.lessonTimes;
 
-        /**
-         * Generate dynamic array.
-         * Add names of instructors and time slots.
-         */
         return this.fillGridList({
             numHalfLessons: data.lessons.half,
             numThreeQuarterLessons: data.lessons.threequarter,
