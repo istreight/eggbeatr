@@ -26,9 +26,9 @@ class Checkbox extends React.Component {
         this.props.callback(this);
     }
 
-    handleChange(e) {
+    handleChange() {
         this.toggleValue(!this.state.checked);
-        this.state.handleChange(e.target);
+        this.state.handleChange(!this.state.checked);
     }
 
     toggleState(disable) {

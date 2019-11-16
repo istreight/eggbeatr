@@ -30,8 +30,11 @@ class PrivatesOnlyCheckbox extends React.Component {
         this.props.callback(this);
     }
 
-    handleChange() {
+    handleChange(toggle) {
         this.state.handleChange(this.state.instructorId, !this.state.checked);
+        this.setState({
+            "checked": toggle
+        });
     }
 
     toggleState(enable) {
