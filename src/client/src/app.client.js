@@ -13,6 +13,7 @@ import 'css/pure.css';
 import 'css/style.css';
 import Controller from 'components/Controller';
 
+
 const controller = new Controller({
     "serverURI": "http://localhost:8081"
 });

@@ -44,14 +44,14 @@ class AddRow extends React.Component {
         var show = this.state.show;
 
         if (show) {
-            var addButton;
-            var inputFields;
-            var preferenceButton;
-            var privatesOnlyCheckbox;
+            let addButton;
+            let inputFields;
+            let preferenceButton;
+            let privatesOnlyCheckbox;
 
             inputFields = [];
 
-            for (var i = 0; i < 3; i++) {
+            for (let i = 0; i < 3; i++) {
                 row.push([
                     React.createElement(Input, {
                         "callback": (ref)=> {

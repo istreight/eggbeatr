@@ -3,7 +3,7 @@ const Models = require('../models');
 const Header = Models.Header;
 
 module.exports = {
-    list(req, res) {
+    list(_req, res) {
         return Header.findAll().then((header) => {
             res.status(200).send(header);
         }).catch((error) => {

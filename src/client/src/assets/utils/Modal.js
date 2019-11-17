@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 
 import Table from 'utils/Table';
 
+
 class Modal extends React.Component {
     constructor(props) {
         super(props);
