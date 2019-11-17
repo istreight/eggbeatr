@@ -9,11 +9,11 @@ const GridFactoryController = Controller.GridFactory;
 const InstructorPreferencesController = Controller.InstructorPreferences;
 
 module.exports = (app) => {
-    app.options('/api/*', (req, res, next) => {
+    app.options('/api/*', (_req, res) => {
         res.sendStatus(200);
     });
 
-    app.get('/api', (req, res) => res.status(200).send({
+    app.get('/api', (_req, res) => res.status(200).send({
         routes: {
             list: [
                 '/api/headers',
@@ -34,7 +34,7 @@ module.exports = (app) => {
             }
         }
     }));
-    app.all('/api', (req, res) => {
+    app.all('/api', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -43,7 +43,7 @@ module.exports = (app) => {
     // Header (all)
     app.get('/api/headers', HeadersController.list);
     app.post('/api/headers', HeadersController.create);
-    app.all('/api/headers', (req, res) => {
+    app.all('/api/headers', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -52,7 +52,7 @@ module.exports = (app) => {
     // Header (single)
     app.get('/api/headers/:headerId', HeadersController.retrieve);
     app.delete('/api/headers/:headerId', HeadersController.destroy);
-    app.all('/api/headers/:headerId', (req, res) => {
+    app.all('/api/headers/:headerId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -61,7 +61,7 @@ module.exports = (app) => {
     // Grid (all)
     app.get('/api/grid', GridController.retrieve);
     app.post('/api/grid', GridController.create);
-    app.all('/api/grid', (req, res) => {
+    app.all('/api/grid', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -70,7 +70,7 @@ module.exports = (app) => {
     // Grid (single)
     app.put('/api/grid/:gridId', GridController.update);
     app.delete('/api/grid/:gridId', GridController.destroy);
-    app.all('/api/grid/:gridId', (req, res) => {
+    app.all('/api/grid/:gridId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -78,7 +78,7 @@ module.exports = (app) => {
 
     // GridFactory
     app.post('/api/factory', GridFactoryController.create);
-    app.all('/api/factory', (req, res) => {
+    app.all('/api/factory', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -87,7 +87,7 @@ module.exports = (app) => {
     // Instructors (all)
     app.get('/api/instructors', InstructorsController.list);
     app.post('/api/instructors', InstructorsController.create);
-    app.all('/api/instructors', (req, res) => {
+    app.all('/api/instructors', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -97,7 +97,7 @@ module.exports = (app) => {
     app.get('/api/instructors/:instructorId', InstructorsController.retrieve);
     app.put('/api/instructors/:instructorId', InstructorsController.update);
     app.delete('/api/instructors/:instructorId', InstructorsController.destroy);
-    app.all('/api/instructors/:instructorId', (req, res) => {
+    app.all('/api/instructors/:instructorId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -106,7 +106,7 @@ module.exports = (app) => {
     // Preferences (all)
     app.get('/api/preferences', InstructorPreferencesController.list);
     app.post('/api/preferences', InstructorPreferencesController.create);
-    app.all('/api/preferences', (req, res) => {
+    app.all('/api/preferences', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -116,7 +116,7 @@ module.exports = (app) => {
     app.get('/api/preferences/:preferenceId', InstructorPreferencesController.retrieve);
     app.put('/api/preferences/:preferenceId', InstructorPreferencesController.update);
     app.delete('/api/preferences/:preferenceId', InstructorPreferencesController.destroy);
-    app.all('/api/preferences/:preferenceId', (req, res) => {
+    app.all('/api/preferences/:preferenceId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -125,7 +125,7 @@ module.exports = (app) => {
     // Lessons (all)
     app.get('/api/lessons', LessonsController.list);
     app.post('/api/lessons', LessonsController.create);
-    app.all('/api/lessons', (req, res) => {
+    app.all('/api/lessons', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -135,7 +135,7 @@ module.exports = (app) => {
     app.get('/api/lessons/:lessonId', LessonsController.retrieve);
     app.put('/api/lessons/:lessonId', LessonsController.update);
     app.delete('/api/lessons/:lessonId', LessonsController.destroy);
-    app.all('/api/lessons/:lessonId', (req, res) => {
+    app.all('/api/lessons/:lessonId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -144,7 +144,7 @@ module.exports = (app) => {
     // Privates (all)
     app.get('/api/privates', PrivatesController.list);
     app.post('/api/privates', PrivatesController.create);
-    app.all('/api/privates', (req, res) => {
+    app.all('/api/privates', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });
@@ -154,7 +154,7 @@ module.exports = (app) => {
     app.get('/api/privates/:privateId', PrivatesController.retrieve);
     app.put('/api/privates/:privateId', PrivatesController.update);
     app.delete('/api/privates/:privateId', PrivatesController.destroy);
-    app.all('/api/privates/:privateId', (req, res) => {
+    app.all('/api/privates/:privateId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });

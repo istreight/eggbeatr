@@ -8,10 +8,10 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import TableRow from 'utils/TableRow';
+
 
 class Table extends React.Component {
     constructor(props) {

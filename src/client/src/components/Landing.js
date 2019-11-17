@@ -14,6 +14,7 @@ import Anchor from 'utils/Anchor';
 import Animator from 'functions/Animator';
 import FnScroll from 'functions/FnScroll';
 
+
 class Landing extends React.Component {
     componentDidMount() {
         var node = ReactDOM.findDOMNode(this);
@@ -59,7 +60,6 @@ class Landing extends React.Component {
      * Starts a tutorial on how to run application.
      */
     getStarted() {
-        var range = document.createRange();
         var nextLocation = document.getElementById("dynamicInstructors");
 
         FnScroll.tutorialScroll(null, nextLocation);

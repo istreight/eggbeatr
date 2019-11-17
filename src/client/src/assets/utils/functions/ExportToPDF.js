@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import PropTypes from 'prop-types';
 import autoTable from 'jspdf-autotable';
 
+
 class ExportToPDF extends React.Component {
     constructor(props) {
         super(props);
@@ -32,7 +33,6 @@ class ExportToPDF extends React.Component {
         var rows = [];
         var isRowOdd = false;
         var instructors = [];
-        var tableBorders = [];
         var lineCoordinates = [];
         var newDate = new Date();
         var splitCellIndices = [];
@@ -88,7 +88,7 @@ class ExportToPDF extends React.Component {
                 rowsKey = columns[cellIndex].dataKey;
 
                 if (threeQuarterLessons.includes(cellText)) {
-                    var index = (rowIndex * numColumns) + cellIndex;
+                    let index = (rowIndex * numColumns) + cellIndex;
 
                     if ($(element).prev().children().length > 0) {
                         splitCellIndices.push(index - 1);
@@ -243,8 +243,8 @@ class ExportToPDF extends React.Component {
         doc.line(tableX1, tableY2, tableX2, tableY2);
 
         // Draw split cell lines.
-        for (var line = 0; line < lineCoordinates.length; line++) {
-            var [x1, y1, x2, y2] = lineCoordinates[line];
+        for (let line = 0; line < lineCoordinates.length; line++) {
+            let [x1, y1, x2, y2] = lineCoordinates[line];
 
             doc.line(x1, y1, x2, y2);
         }

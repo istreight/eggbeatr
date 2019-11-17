@@ -49,7 +49,7 @@ class Lessons extends React.Component {
         var numLessons = 0;
         var data = this.state.data;
 
-        for (var lesson in data) {
+        for (let lesson in data) {
             numLessons += data[lesson].quantity;
         }
 
@@ -70,12 +70,12 @@ class Lessons extends React.Component {
 
         this.setLessonValue(data);
 
-        var missingId = Object.keys(data).filter((value, index) => data[value].id === undefined);
+        var missingId = Object.keys(data).filter((value) => data[value].id === undefined);
 
         if (missingId.length > 0) {
             finalPromise = this.createDatabaseEntry(missingId);
         } else {
-            finalPromise = new Promise((resolve, reject) => resolve());
+            finalPromise = new Promise((resolve) => resolve());
         }
 
         finalPromise.then(() => {
@@ -88,7 +88,7 @@ class Lessons extends React.Component {
      * Store the values from the input fields.
      */
     setLessonValue(data) {
-        this.lessonInputs.forEach((lessonInput, index) => {
+        this.lessonInputs.forEach((lessonInput) => {
             var newLesson = {};
             var lessonId = undefined;
             var lessonType = lessonInput.state.name;
@@ -128,9 +128,9 @@ class Lessons extends React.Component {
     createDatabaseEntry(missingId) {
         var promiseArray = [];
 
-        for (var i = 0; i < missingId.length; i++) {
-            var lessonTitle = missingId[i];
-            var body = {
+        for (let i = 0; i < missingId.length; i++) {
+            let lessonTitle = missingId[i];
+            let body = {
                 quantity: 0,
                 title: lessonTitle,
             };
@@ -139,7 +139,7 @@ class Lessons extends React.Component {
         }
 
         return Promise.all(promiseArray).then((res) => {
-            res.forEach((r, index)=> {
+            res.forEach((r)=> {
                 var lessonData;
                 var lesson = r.data;
                 var lessonTitle = Object.keys(lesson)[0];
@@ -159,12 +159,12 @@ class Lessons extends React.Component {
      */
     displayComponentState() {
         // Set the value of the lesson inputs based on the related lessons quantity.
-        this.lessonInputs.forEach((lessonInput, index) => {
+        this.lessonInputs.forEach((lessonInput) => {
             var lessonType = lessonInput.state.name;
 
             if (lessonType.length > 0) {
-                var lessonQuantity;
-                var lesson = this.state.data[lessonType];
+                let lessonQuantity;
+                let lesson = this.state.data[lessonType];
 
                 if (lesson) {
                     lessonQuantity = lesson.quantity;

@@ -10,6 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+
 class FeatureDescritpion extends React.Component {
     constructor(props) {
         super(props);

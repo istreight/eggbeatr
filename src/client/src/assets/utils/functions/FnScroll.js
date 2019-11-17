@@ -8,10 +8,9 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 
 import Animator from 'functions/Animator';
+
 
 class FnScroll extends React.Component {
     constructor(props) {

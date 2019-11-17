@@ -120,11 +120,11 @@ class Instructors extends React.Component {
     removeInstructor(instructorId) {
         var instructors = JSON.parse(JSON.stringify(this.state.data));
 
-        for (var instructorName in instructors) {
-            var instructor = instructors[instructorName];
+        for (let instructorName in instructors) {
+            let instructor = instructors[instructorName];
 
             if (instructor.id === instructorId) {
-                this.props.removeComponent(instructorId, "Instructor").then((res) => {
+                this.props.removeComponent(instructorId, "Instructor").then(() => {
                     delete instructors[instructorName];
 
                     this.setState({
@@ -159,7 +159,7 @@ class Instructors extends React.Component {
             Object.assign(this.state.data[instructorName], instructor);
         } else {
             // Duplicate the old instructor's data to under the new instructor's name.
-            var newInstructor = {};
+            let newInstructor = {};
             newInstructor[newInstructorName] = instructor;
 
             Object.assign(this.state.data, newInstructor);
@@ -177,8 +177,8 @@ class Instructors extends React.Component {
     findInstructorById(id) {
         var instructorId = parseInt(id, 10);
 
-        for (var instructorName in this.state.data) {
-            var instructor = this.state.data[instructorName];
+        for (let instructorName in this.state.data) {
+            let instructor = this.state.data[instructorName];
 
             if (instructor.id === instructorId) {
                 return [instructor, instructorName];
@@ -259,10 +259,10 @@ class Instructors extends React.Component {
     getTableBody() {
         var tableBody = [];
 
-        for (var instructorName in this.state.data) {
-            var instructor = this.state.data[instructorName];
+        for (let instructorName in this.state.data) {
+            let instructor = this.state.data[instructorName];
 
-            var tableRow = [
+            let tableRow = [
                 instructor.id,
                 instructorName,
                 instructor.dateOfHire,

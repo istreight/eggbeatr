@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 
 import DefaultData from 'root/etc/defaults/ComponentData';
 
+
 class Connector extends React.Component {
     constructor(props) {
         super(props);
@@ -47,16 +48,16 @@ class Connector extends React.Component {
         var returnValue;
         var defaultRes = JSON.parse(JSON.stringify(DefaultData.Grids));
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
         defaultRes = this.formatGridRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
+            returnValue = new Promise((resolve) => resolve(defaultRes));
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/grid?headerId=' + this.state.headerId)
                 .then(res => res.json())
@@ -110,7 +111,7 @@ class Connector extends React.Component {
     formatGridRes(gridRes) {
         var newObject = {};
 
-        gridRes.forEach((grid, index) => {
+        gridRes.forEach((grid) => {
             var newId = grid.id;
             var newDuration = grid.duration;
             var newLessonTimes = grid.lessonTimes;
@@ -131,16 +132,16 @@ class Connector extends React.Component {
         var returnValue;
         var defaultRes = JSON.parse(JSON.stringify(DefaultData.Headers));
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
         defaultRes = this.formatHeaderRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
+            returnValue = new Promise((resolve) => resolve(defaultRes));
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/headers')
                 .then(res => res.json())
@@ -207,16 +208,16 @@ class Connector extends React.Component {
         var returnValue;
         var defaultRes = JSON.parse(JSON.stringify(DefaultData.Instructors));
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
         defaultRes = this.formatInstructorRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
+            returnValue = new Promise((resolve) => resolve(defaultRes));
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
                 .then(res => res.json())
@@ -272,7 +273,7 @@ class Connector extends React.Component {
             "data": {}
         };
 
-        instructorRes.forEach((instructor, index) => {
+        instructorRes.forEach((instructor) => {
             var newId = instructor.id;
             var newInstructor = instructor.instructor;
             var newDateOfHire = instructor.dateOfHire;
@@ -294,16 +295,16 @@ class Connector extends React.Component {
         var returnValue;
         var defaultRes = JSON.parse(JSON.stringify(DefaultData.Lessons));
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
         defaultRes = this.formatLessonsRes(defaultRes);
 
         if (populate === "default") {
-            returnValue = new Promise((resolve, reject) => resolve(defaultRes));
+            returnValue = new Promise((resolve) => resolve(defaultRes));
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/lessons?headerId=' + this.state.headerId)
                 .then(res => res.json())
@@ -359,7 +360,7 @@ class Connector extends React.Component {
             "data": {}
         };
 
-        lessonsRes.forEach((lesson, index) => {
+        lessonsRes.forEach((lesson) => {
             var newId = lesson.id;
             var newLesson = lesson.title;
             var newQuantity = lesson.quantity;
@@ -379,7 +380,7 @@ class Connector extends React.Component {
             JSON.stringify(DefaultData.InstructorPreferences)
         );
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
@@ -388,7 +389,7 @@ class Connector extends React.Component {
         if (populate === "default") {
             returnValue = defaultRes;
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/preferences?headerId=' + this.state.headerId)
                 .then(res => res.json())
@@ -460,14 +461,13 @@ class Connector extends React.Component {
                     };
                 });
 
-                for (var i = 0; i < defaultRes.length; i++) {
+                for (let i = 0; i < defaultRes.length; i++) {
                     res = defaultRes[i];
                     newLessons = newLessons.concat(res.lessons);
                 }
 
                 // Give full preferences to instructors without preferences.
                 instructors.forEach((instructor) => {
-                    var newId = maxId++;
                     var newInstructorId = instructor.id;
                     var instructorName = instructor.instructor;
 
@@ -490,7 +490,7 @@ class Connector extends React.Component {
         var returnValue;
         var defaultRes = JSON.parse(JSON.stringify(DefaultData.Privates));
 
-        for (var i = 0; i < defaultRes.length; i++) {
+        for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
         }
 
@@ -499,7 +499,7 @@ class Connector extends React.Component {
         if (populate === "default") {
             returnValue = defaultRes;
         } else if (populate === "none") {
-            returnValue = new Promise((resolve, reject) => resolve({}));
+            returnValue = new Promise((resolve) => resolve({}));
         } else {
             returnValue = fetch(this.props.serverURI + '/api/privates?headerId=' + this.state.headerId)
                 .then(res => res.json())

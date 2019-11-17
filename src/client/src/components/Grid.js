@@ -14,12 +14,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import jsPDF from 'jspdf';
 import Table from 'utils/Table';
 import Input from 'utils/Input';
 import Modal from 'utils/Modal';
 import Anchor from 'utils/Anchor';
-import autoTable from 'jspdf-autotable';
 import Tutorial from 'specializations/Tutorial';
 import ExportToPDF from 'functions/ExportToPDF';
 import UnorderedList from 'utils/UnorderedList';
@@ -86,7 +84,7 @@ class Grid extends React.Component {
                 "duration": newDuration
             });
 
-            var gridData = this.gridList.state.data;
+            let gridData = this.gridList.state.data;
             this.setState(this.state, () => {
                 // If a grid exists, create a new one with the new duration.
                 if (gridData.length > 0) {
@@ -98,12 +96,12 @@ class Grid extends React.Component {
         }
 
         // Find previously selected duration and remove "selected" class.
-        for (var i = 1; i < this.durationContainer.length; i++) {
-            var button = this.durationContainer[i];
-            var styleClass = button.state.styleClass;
-            var duration = button.refDuration.current;
-            var selectedClass = " pure-menu-selected";
-            var reReplaceCriteria = new RegExp(selectedClass, "g");
+        for (let i = 1; i < this.durationContainer.length; i++) {
+            let button = this.durationContainer[i];
+            let styleClass = button.state.styleClass;
+            let duration = button.refDuration.current;
+            let selectedClass = " pure-menu-selected";
+            let reReplaceCriteria = new RegExp(selectedClass, "g");
 
             if (newDuration === duration) {
                 isDurationSet = true;
@@ -188,8 +186,8 @@ class Grid extends React.Component {
             minute = parseInt(minute, 10);
 
             // Maximum amount of slots is 5.
-            for (var slot = 0; slot < 4; slot++) {
-                var newTime;
+            for (let slot = 0; slot < 4; slot++) {
+                let newTime;
 
                 minute = (minute + 30) % 60;
 
@@ -362,9 +360,9 @@ class Grid extends React.Component {
             "Schoolboard"
         ];
 
-        for (var key in data) {
-            var value = data[key];
-            var keyArray = Array(value.quantity).fill(key);
+        for (let key in data) {
+            let value = data[key];
+            let keyArray = Array(value.quantity).fill(key);
 
             if (threeQuarterLessons.includes(key)) {
                 newQueue[1] = newQueue[1].concat(keyArray);
@@ -416,7 +414,7 @@ class Grid extends React.Component {
         var newInstructorOrder = [];
         var instructorPreferenceLengths = [];
 
-        for (var instructorName in this.controllerData.instructorPreferences.data) {
+        for (let instructorName in this.controllerData.instructorPreferences.data) {
             var preferenceSize = this.getPreferenceLength(instructorName);
 
             instructorPreferenceLengths.push({
@@ -445,7 +443,7 @@ class Grid extends React.Component {
      * Return a list on the names of the private-only instructors.
      */
     getPrivateOnlyInstructors() {
-        return this.controllerData.instructorsArray.filter((value, index) => {
+        return this.controllerData.instructorsArray.filter((value) => {
             var instructor = this.controllerData.instructors.data[value];
             return instructor.privateOnly;
         });
@@ -455,7 +453,7 @@ class Grid extends React.Component {
      * Return a list of the names of instructors that teach group lessons.
      */
     getGroupInstructors() {
-        return this.controllerData.instructorsArray.filter((value, index) => {
+        return this.controllerData.instructorsArray.filter((value) => {
             var instructor = this.controllerData.instructors[value];
             return !instructor.privateOnly;
         });
@@ -477,21 +475,21 @@ class Grid extends React.Component {
 
         // There are no stand alone '3' cells.
         if (lessonCode === 1 || lessonCode === 2) {
-            var assigned = false;
-            var instructorName = instructor[0];
-            var typedLessons = q[lessonCode - 1];
+            let assigned = false;
+            let instructorName = instructor[0];
+            let typedLessons = q[lessonCode - 1];
 
             if (instructorName in prefs) {
-                var prefLessonsByCode = [];
-                var lessonPrefs = prefs[instructorName].lessons;
+                let prefLessonsByCode = [];
+                let lessonPrefs = prefs[instructorName].lessons;
 
-                for (var lessonIndex = 0; lessonIndex < lessonPrefs.length; lessonIndex++) {
+                for (let lessonIndex = 0; lessonIndex < lessonPrefs.length; lessonIndex++) {
                     if (typedLessons.includes(lessonPrefs[lessonIndex])) {
                         prefLessonsByCode.push(lessonPrefs[lessonIndex])
                     }
                 }
 
-                for (var lesson = 0; lesson < typedLessons.length; lesson++) {
+                for (let lesson = 0; lesson < typedLessons.length; lesson++) {
                     if (prefLessonsByCode.includes(typedLessons[lesson])) {
                         lessonCode = typedLessons.splice(lesson, 1)[0];
 
@@ -536,16 +534,17 @@ class Grid extends React.Component {
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
         // Set allocated lessons slots to swim & private lessons.
-        for (var grid = 0; grid < newGrids.length; grid++) {
-            var queue = JSON.parse(JSON.stringify(lessonQueue));
+        for (let grid = 0; grid < newGrids.length; grid++) {
+            let queue = JSON.parse(JSON.stringify(lessonQueue));
 
-            for (var name = 0; name < instructorOrder.length; name++) {
-                for (var slot = 1; slot < newGrids[grid][0].length; slot++) {
-                    for (var instructor = 1; instructor < newGrids[grid].length; instructor++) {
-                        var reactKey = "key-grid-" + name + instructor + slot;
+            for (let name = 0; name < instructorOrder.length; name++) {
+                for (let slot = 1; slot < newGrids[grid][0].length; slot++) {
+                    for (let instructor = 1; instructor < newGrids[grid].length; instructor++) {
+                        let reactKey = "key-grid-" + name + instructor + slot;
 
                         if (newGrids[grid][instructor][0] === instructorOrder[name]) {
                             this.assignLessons(newGrids[grid][instructor], slot, queue, reactKey);
+
                             break;
                         }
                     }
@@ -615,7 +614,7 @@ class Grid extends React.Component {
         var emptyStyleClass = this.emptyGridsNotification.state.styleClass;
 
         if (gridArrays.length === 0) {
-            var instructors = this.getGroupInstructors();
+            let instructors = this.getGroupInstructors();
 
             this.noGridsNotification(
                 duration,
@@ -664,23 +663,23 @@ class Grid extends React.Component {
     }
 
     createTable(duration, gridArrays, gridIndex, lessonQueue) {
+        var prevStyle;
         var styleCell;
         var dataBody = [];
         var dataHeader = [];
         var styleBody = {};
 
-        for (var instructor = 0; instructor < gridArrays[gridIndex].length; instructor++) {
-            var newData = [];
-            var instructorRow = gridArrays[gridIndex][instructor];
+        for (let instructor = 0; instructor < gridArrays[gridIndex].length; instructor++) {
+            let newData = [];
+            let instructorRow = gridArrays[gridIndex][instructor];
 
-            for (var slot = 0; slot < 2 * duration + 1; slot++) {
-                var key;
-                var style;
-                var className = "";
-                var cellContents = instructorRow[slot];
-                var prevContents = instructorRow[slot - 1];
-                var nextContents = instructorRow[slot + 1];
-                var reactKey = "key-grid-" + gridIndex + instructor + slot;
+            for (let slot = 0; slot < 2 * duration + 1; slot++) {
+                let key;
+                let style;
+                let className = "";
+                let cellContents = instructorRow[slot];
+                let prevContents = instructorRow[slot - 1];
+                let nextContents = instructorRow[slot + 1];
 
                 if (Array.isArray(cellContents)) {
                     style = cellContents[cellContents.length - 1].props.className;
@@ -693,7 +692,7 @@ class Grid extends React.Component {
                 if (slot === 0) {
                     className = "first-column";
                 } else if (style && style.includes("private-right")) {
-                    var nextStyle;
+                    let nextStyle;
 
                     if (Array.isArray(nextContents)) {
                         nextStyle = nextContents[nextContents.length - 1].props.className;
@@ -709,8 +708,6 @@ class Grid extends React.Component {
 
                     className = "private-right";
                 } else if (style && style.includes("private-left")) {
-                    var prevStyle;
-
                     if (Array.isArray(prevContents)) {
                         prevStyle = prevContents[prevContents.length - 1].props.className;
 
@@ -765,7 +762,8 @@ class Grid extends React.Component {
             if (typeof data === "string" && data in styleBody) {
                 className = styleBody[data];
             } else if (typeof data === "object") {
-                var k = data.key;
+                let k = data.key;
+
                 if (k in styleBody) {
                     className = styleBody[k];
                 }
@@ -787,14 +785,13 @@ class Grid extends React.Component {
     }
 
     createGridList(duration, gridArrays, lessonQueue) {
-        for (var gridIndex = 0; gridIndex < gridArrays.length; gridIndex++) {
-            var newTable = this.createTable(duration, gridArrays, gridIndex, lessonQueue);
+        for (let gridIndex = 0; gridIndex < gridArrays.length; gridIndex++) {
+            let newTable = this.createTable(duration, gridArrays, gridIndex, lessonQueue);
 
-            var newTableAnchor = React.createElement(Anchor, {
+            let newTableAnchor = React.createElement(Anchor, {
                 "callback": () => null,
                 "data": [newTable],
                 "handleClick": this.showModal.bind(this),
-                "hyperlink": "#",
                 "key": "key-grid-anchor-" + gridIndex,
                 "styleClass": "pure-menu-link"
             });
@@ -815,7 +812,6 @@ class Grid extends React.Component {
         var prev;
         var next;
         var index;
-        var modalTable;
         var reHashNumber = new RegExp(/#[0-9]+/);
         var disabledClass = " pure-button-disabled";
         var header = this.gridModal.state.header[0];
@@ -897,6 +893,7 @@ class Grid extends React.Component {
             Object.assign(this.gridModal.state, {
                 "body": []
             });
+
             this.gridModal.setState(this.gridModal.state);
         }
     }
@@ -938,7 +935,6 @@ class Grid extends React.Component {
                                 }
                             ],
                             "handleClick": () => null,
-                            "hyperlink": "#",
                             "key": "key-grid-description-0",
                             "styleClass": "pure-menu-list right-button is-invisible"
                         })
@@ -968,7 +964,7 @@ class Grid extends React.Component {
                 </div>
                 <div className="pure-menu pure-menu-horizontal">
                     <UnorderedList
-                        callback={ (ref) => null }
+                        callback={ () => null }
                         data={ [
                             {
                                 "data": [
@@ -979,7 +975,6 @@ class Grid extends React.Component {
                                         ),
                                         "data": "Duration",
                                         "handleClick": () => null,
-                                        "hyperlink": "#",
                                         "key": "key-grid-anchor-0",
                                         "styleClass": "pure-menu-heading"
                                     })
@@ -1057,7 +1052,6 @@ class Grid extends React.Component {
                             "callback": (ref) => this.setComponentReference("prevButton", ref),
                             "data": "Previous",
                             "handleClick": () => null,
-                            "hyperlink": "#",
                             "key": "key-grid-anchor-4",
                             "styleClass": "pure-button float-left"
                         }),
@@ -1065,7 +1059,6 @@ class Grid extends React.Component {
                             "callback": (ref) => this.setComponentReference("nextButton", ref),
                             "data": "Next",
                             "handleClick": () => null,
-                            "hyperlink": "#",
                             "key": "key-grid-anchor-5",
                             "styleClass": "pure-button float-right"
                         })
@@ -1076,7 +1069,6 @@ class Grid extends React.Component {
                             "callback": () => null,
                             "data": "Export to PDF",
                             "handleClick": this.exportToPDF.bind(this),
-                            "hyperlink": "#",
                             "key": "key-grid-anchor-5",
                             "styleClass": "pure-button"
                         })

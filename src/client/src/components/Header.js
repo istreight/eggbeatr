@@ -149,6 +149,7 @@ class Header extends React.Component {
         };
 
         isValid = this.validateSet(newSetName);
+        
         if (!isValid) {
             return;
         }
@@ -216,7 +217,6 @@ class Header extends React.Component {
 
         this.props.removeComponent(id, "Header")
             .then(() => {
-                var removedIndex = sets.indexOf(deletedSet);
                 var newSets = sets.filter((set) => set !== deletedSet);
 
                 this.updateSets(newSets, deletedSet.setTitle);
@@ -240,7 +240,7 @@ class Header extends React.Component {
      * Disable the click handler for the Edit button
      *  to prevent clash with adding Sets.
      */
-    disableEditButton(enable) {
+    disableEditButton() {
         this.editButton.setState({
             "handleClick": () => null
         });

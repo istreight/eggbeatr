@@ -50,19 +50,16 @@ class ToggleTable extends React.Component {
             return;
         }
 
-        for (var inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
-            var input = addRowInputs[inputIndex];
+        // Take the value and empty the inputs of the AddRow after adding the new row.
+        for (let inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
+            let input = addRowInputs[inputIndex];
 
             inputValues.push(input.state.value);
+
+            input.setState({ "value": "" });
         }
 
        this.state.addCallback(inputValues).then(() => this.addNewRow());
-
-        // Empty the inputs of the AddRow after adding the new row.
-        for (var inputIndex = 0; inputIndex < addRowInputs.length; inputIndex++) {
-            var input = addRowInputs[inputIndex];
-            input.setState({ "value": "" });
-        }
 
         this.resizeTable();
         this.recolourTable();
@@ -80,7 +77,7 @@ class ToggleTable extends React.Component {
         this.rows = [];
 
         // Replace checkbox and preference button data with the object.
-        for (var index = 0; index < data.length; index++) {
+        for (let index = 0; index < data.length; index++) {
             dataRow = data[index];
 
             ids.push(dataRow[0]);

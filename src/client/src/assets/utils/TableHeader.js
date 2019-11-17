@@ -8,8 +8,8 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+
 
 class TableHeader extends React.Component {
     constructor(props) {
