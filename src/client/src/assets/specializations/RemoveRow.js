@@ -14,6 +14,7 @@ import Input from 'utils/Input';
 import TableRow from 'utils/TableRow';
 import RemoveButton from 'specializations/RemoveButton';
 
+
 class RemoveRow extends React.Component {
     constructor(props) {
         super(props);
@@ -46,7 +47,6 @@ class RemoveRow extends React.Component {
     toggleState(enable) {
         var input;
         var newData;
-        var prevName;
         var placeholder;
         var newDataRow = [];
         var isUpdated = false;
@@ -84,11 +84,6 @@ class RemoveRow extends React.Component {
                 if (this.inputs.length > 0) {
                     input = this.inputs[cellIndex];
 
-                    // Capture placeholder instructor name.
-                    if (cellIndex === 0) {
-                        prevName = input.state.placeholder;
-                    }
-
                     isUpdated = isUpdated || input.state.value !== "";
                     newData = input.state.value || input.state.placeholder;
                 } else {
@@ -102,7 +97,7 @@ class RemoveRow extends React.Component {
 
         // Append or remove the Remove button from the row.
         if (enable) {
-            var removeButton = React.createElement(RemoveButton, {
+            let removeButton = React.createElement(RemoveButton, {
                 "callback": () => null,
                 "handleClick": this.handleClick.bind(this),
                 "key": "key-removerow-removebutton-0"

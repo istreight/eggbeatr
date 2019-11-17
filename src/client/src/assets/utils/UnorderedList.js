@@ -8,10 +8,10 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import ListItem from 'utils/ListItem';
+
 
 class UnorderedList extends React.Component {
     constructor(props) {

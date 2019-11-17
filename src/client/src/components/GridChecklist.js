@@ -8,7 +8,6 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Table from 'utils/Table';
 
@@ -66,8 +65,6 @@ class GridChecklist extends React.Component {
      * Check the quantities of the components to assess their validity.
      */
     checkComplete() {
-        var value;
-        var isValid;
         var isGridValid;
         var isLessonsValid;
         var isInstructorsValid;
@@ -77,17 +74,17 @@ class GridChecklist extends React.Component {
 
         styleClass = styleClass.replace(reReplaceCriteria, "");
 
-        for (var key in this.state.data) {
-            value = this.state.data[key];
-            isValid = (value.quantity > 0);
+        for (let key in this.state.data) {
+            let value = this.state.data[key];
+            let isValid = (value.quantity > 0);
 
             if (key === "instructors") {
                 Object.assign(value, { "cell": isValid ? null : "error-cell" });
 
                 isInstructorsValid = isValid;
             } else if (key === "lessons") {
-                var privateQuantity = this.state.data.privates.quantity;
-                var errorClass = (privateQuantity > 0) ? "warning-cell" : "error-cell";
+                let privateQuantity = this.state.data.privates.quantity;
+                let errorClass = (privateQuantity > 0) ? "warning-cell" : "error-cell";
 
                 Object.assign(value, { "cell": isValid ? "" : errorClass });
 
@@ -121,6 +118,7 @@ class GridChecklist extends React.Component {
 
         if (isNaN(quantity)) {
             this.componentRow = value;
+
             return;
         }
 
@@ -128,7 +126,7 @@ class GridChecklist extends React.Component {
         if (this.componentRow === "Instructors") {
             cellClass = isValid ? null : "error-cell";
         } else if (this.componentRow === "Lessons") {
-            var errorClass = (this.state.data.privates.quantity > 0) ? "warning-cell" : "error-cell";
+            let errorClass = (this.state.data.privates.quantity > 0) ? "warning-cell" : "error-cell";
 
             cellClass = isValid ? "" : errorClass;
         }

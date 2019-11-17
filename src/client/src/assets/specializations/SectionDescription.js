@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import Anchor from 'utils/Anchor';
 import UnorderedList from 'utils/UnorderedList';
 
+
 class SectionDescription extends React.Component {
     constructor(props) {
         super(props);
@@ -38,7 +39,7 @@ class SectionDescription extends React.Component {
         var newData = [];
         var data = this.state.data;
 
-        data.forEach((text, index) => newData.push({
+        data.forEach((text) => newData.push({
             "data": [text],
             "styleClass": ""
         }));

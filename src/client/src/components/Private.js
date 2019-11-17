@@ -89,7 +89,7 @@ class Private extends React.Component {
     getComponentQuantity() {
         var numPrivate = 0;
 
-        for (var instructor in this.state.data) {
+        for (let instructor in this.state.data) {
             numPrivate += this.state.data[instructor].length;
         }
 
@@ -101,9 +101,9 @@ class Private extends React.Component {
      */
     getInstructorIdByName(instructorName) {
         if (instructorName in this.state.data) {
-            var privateLesson = this.state.data[instructorName][0];
+            let privateLesson = this.state.data[instructorName][0];
 
-            return new Promise((resolve, reject) => resolve(privateLesson.instructorId));
+            return new Promise((resolve) => resolve(privateLesson.instructorId));
         } else {
             return this.props.connector.getInstructorData()
                 .then((res) => {
@@ -121,10 +121,10 @@ class Private extends React.Component {
     findPrivateById(id) {
         var privatesId = parseInt(id, 10);
 
-        for (var instructorName in this.state.data) {
-            var _private = this.state.data[instructorName];
+        for (let instructorName in this.state.data) {
+            let _private = this.state.data[instructorName];
 
-            for (var i = 0; i < _private.length; i++) {
+            for (let i = 0; i < _private.length; i++) {
                 if (_private[i].id === privatesId) {
                     return [_private[i], instructorName, i];
                 }
@@ -142,7 +142,7 @@ class Private extends React.Component {
         var allKeys = [];
 
         // Extract keys from the new set of privates.
-        for (var i = 0; i < privates.length; i++) {
+        for (let i = 0; i < privates.length; i++) {
             allKeys = allKeys.concat(Object.keys(privates[i]));
         }
 
@@ -152,9 +152,10 @@ class Private extends React.Component {
         allKeys.sort().forEach((key) => {
             obj[key] = [];
 
-            for (var i = 0; i < privates.length; i++) {
+            for (let i = 0; i < privates.length; i++) {
                 if (key in privates[i]) {
-                    var sortedTimes = this.sortPrivatesByTime(privates[i][key]);
+                    let sortedTimes = this.sortPrivatesByTime(privates[i][key]);
+
                     obj[key] = obj[key].concat(sortedTimes);
                 }
             }
@@ -176,7 +177,7 @@ class Private extends React.Component {
         var obj = [];
         var allTimes = [];
 
-        for (var i = 0; i < privates.length; i++) {
+        for (let i = 0; i < privates.length; i++) {
             allTimes.push(privates[i].time);
         }
 
@@ -193,7 +194,7 @@ class Private extends React.Component {
                 return parseInt(firstHour) > parseInt(secondHour);
             }
         }).forEach((time) => {
-            for (var i = 0; i < privates.length; i++) {
+            for (let i = 0; i < privates.length; i++) {
                 if (time === privates[i].time) {
                     obj.push(privates[i]);
                 }
@@ -206,12 +207,12 @@ class Private extends React.Component {
     getTableBody() {
         var tableBody = [];
 
-        for (var instructorName in this.state.data) {
+        for (let instructorName in this.state.data) {
             var instructor = this.state.data[instructorName];
 
-            for (var lessonIndex = 0; lessonIndex < instructor.length; lessonIndex++) {
-                var privateLesson = instructor[lessonIndex];
-                var tableRow = [
+            for (let lessonIndex = 0; lessonIndex < instructor.length; lessonIndex++) {
+                let privateLesson = instructor[lessonIndex];
+                let tableRow = [
                     privateLesson.id,
                     instructorName,
                     privateLesson.time,
@@ -258,14 +259,14 @@ class Private extends React.Component {
     removePrivateLesson(instructorId) {
         var privateLessons = JSON.parse(JSON.stringify(this.state.data));
 
-        for (var instructorName in privateLessons) {
-            var lessonArray = privateLessons[instructorName];
+        for (let instructorName in privateLessons) {
+            let lessonArray = privateLessons[instructorName];
 
-            for (var lessonIndex = 0; lessonIndex < lessonArray.length; lessonIndex++) {
-                var lesson = lessonArray[lessonIndex];
+            for (let lessonIndex = 0; lessonIndex < lessonArray.length; lessonIndex++) {
+                let lesson = lessonArray[lessonIndex];
 
                 if (lesson.id === instructorId) {
-                    this.props.removeComponent(instructorId, "Privates").then((res) => {
+                    this.props.removeComponent(instructorId, "Privates").then(() => {
                         // Remove the  private lesson.
                         lessonArray.splice(lessonIndex, 1);
 

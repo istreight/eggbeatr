@@ -10,7 +10,6 @@
 import React from 'react';
 
 import UnorderedList from 'utils/UnorderedList';
-import SectionDescription from 'specializations/SectionDescription';
 import FeatureDescription from 'specializations/FeatureDescription';
 
 

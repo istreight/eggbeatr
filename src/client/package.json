@@ -4,6 +4,10 @@
     "description": "",
     "main": "app.client.js",
     "dependencies": {
+        "@types/jquery": "^3.3.31",
+        "@types/jspdf": "^1.3.2",
+        "@types/react": "^16.9.11",
+        "@types/react-dom": "^16.9.4",
         "jquery": "^3.4.1",
         "jspdf": "^1.5.3",
         "jspdf-autotable": "^3.2.11",

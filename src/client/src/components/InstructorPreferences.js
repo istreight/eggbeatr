@@ -123,11 +123,11 @@ class InstructorPreferences extends React.Component {
     getPreferenceData() {
         var preferences = JSON.parse(JSON.stringify(this.defaultPreferences));
 
-        for (var rowIndex = 0; rowIndex < preferences.length; rowIndex++) {
-            var row = preferences[rowIndex];
+        for (let rowIndex = 0; rowIndex < preferences.length; rowIndex++) {
+            let row = preferences[rowIndex];
 
-            for (var colIndex = 0; colIndex < row.length; colIndex++) {
-                var lessonType = row[colIndex];
+            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                let lessonType = row[colIndex];
 
                 preferences[rowIndex][colIndex] = [
                     React.createElement(Anchor, {

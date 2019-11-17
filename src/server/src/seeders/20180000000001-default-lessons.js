@@ -6,10 +6,10 @@ const defaultData = require(
 );
 
 module.exports = {
-    up: (queryInterface, Sequelize) => {
+    up: (queryInterface) => {
         return queryInterface.bulkInsert('Lessons', defaultData.Lessons, {});
     },
-    down: (queryInterface, Sequelize) => {
+    down: (queryInterface) => {
         return queryInterface.bulkDelete('Lessons', null, {});
     }
 };

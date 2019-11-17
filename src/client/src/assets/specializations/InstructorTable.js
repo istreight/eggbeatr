@@ -138,9 +138,9 @@ class InstructorTable extends React.Component {
 
     // Give this to the Edit Instructors button.
     toggleState(enable) {
-        for (var rowIndex = 0; rowIndex < this.privatesOnlyCheckboxes.length; rowIndex++) {
-            var checkbox = this.privatesOnlyCheckboxes[rowIndex];
-            var preferenceButton = this.preferencesButtons[rowIndex];
+        for (let rowIndex = 0; rowIndex < this.privatesOnlyCheckboxes.length; rowIndex++) {
+            let checkbox = this.privatesOnlyCheckboxes[rowIndex];
+            let preferenceButton = this.preferencesButtons[rowIndex];
 
             checkbox.toggleState(enable);
             preferenceButton.toggleState(enable);

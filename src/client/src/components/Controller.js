@@ -23,6 +23,7 @@ import Instructors from 'components/Instructors';
 import GridChecklist from 'components/GridChecklist';
 import InstructorPreferences from 'components/InstructorPreferences';
 
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);
@@ -209,6 +210,7 @@ class Controller extends React.Component {
 
         if (componentName === "header") {
             this.state.connector.setHeaderId(component.data.selectedSet.id);
+
             return this.init().then(() => this.updateComponents(updateDatabase));
         } else {
             return this.manipulateData(componentName, updateDatabase);
@@ -223,8 +225,8 @@ class Controller extends React.Component {
             return;
         }
 
-        for (var name in this.state.componentObjects) {
-            var comp = this.state.componentObjects[name];
+        for (let name in this.state.componentObjects) {
+            let comp = this.state.componentObjects[name];
 
             if (name === "header") {
                 continue;
@@ -237,15 +239,15 @@ class Controller extends React.Component {
                  * Update Controller and Connector to reflect changes in InstructorPreferences.
                  */
                 if (name === "instructorPreferences") {
-                    var instructorPreferencesComponent = comp;
+                    let instructorPreferencesComponent = comp;
                     instructorPreferencesComponent.state = this.state.components[name];
                 } else if (name === "grid") {
-                    var gridComponent = comp;
+                    let gridComponent = comp;
                     gridComponent.state = this.state.components[name];
 
                     gridComponent.init();
                 } else if (name === "instructors") {
-                    var instructorsComponent = comp;
+                    let instructorsComponent = comp;
                     instructorsComponent.state = this.state.components[name];
 
                     this.state.componentObjects.gridChecklist.setQuantity(
@@ -255,7 +257,7 @@ class Controller extends React.Component {
 
                     instructorsComponent.displayComponentState();
                 } else if (name === "lessons") {
-                    var lessonsComponent = comp;
+                    let lessonsComponent = comp;
                     lessonsComponent.state = this.state.components[name];
 
                     this.state.componentObjects.gridChecklist.setQuantity(
@@ -265,7 +267,7 @@ class Controller extends React.Component {
 
                     lessonsComponent.displayComponentState();
                 } else if (name === "privates") {
-                    var privatesComponent = comp;
+                    let privatesComponent = comp;
                     privatesComponent.privateLessons = this.state.components[name];
 
                     this.state.componentObjects.gridChecklist.setQuantity(
@@ -316,8 +318,8 @@ class Controller extends React.Component {
         };
 
         var lessons = this.state.components.lessons.data;
-        for (var lessonType in lessons) {
-            var lesson = lessons[lessonType];
+        for (let lessonType in lessons) {
+            let lesson = lessons[lessonType];
 
             if (halfLessons.includes(lessonType)) {
                 quantities.half += lesson.quantity;
@@ -378,13 +380,13 @@ class Controller extends React.Component {
             this.state.connector.updateGridData(this.state.components.grid.data.id, this.state.components.grid.data)
                 .then(gridRes => console.log("Updated Grid:", gridRes));
         } else if (database === "instructors") {
-            var instructorUpdates = [];
-            var instructorsData = this.state.components.instructors.data;
+            let instructorUpdates = [];
+            let instructorsData = this.state.components.instructors.data;
 
-            for (var key in instructorsData) {
-                var instructor = instructorsData[key];
-                var id = instructor.id;
-                var body = {
+            for (let key in instructorsData) {
+                let instructor = instructorsData[key];
+                let id = instructor.id;
+                let body = {
                     "instructor": key,
                     "dateOfHire": instructor.dateOfHire,
                     "privateOnly": instructor.privateOnly,
@@ -400,13 +402,13 @@ class Controller extends React.Component {
                 console.log("Updated Instructors:", this.state.components.instructors);
             });
         } else if (database === "lessons") {
-            var lessonsUpdates = [];
-            var lessonData = this.state.components.lessons.data;
+            let lessonsUpdates = [];
+            let lessonData = this.state.components.lessons.data;
 
-            for (var key in lessonData) {
-                var lesson = lessonData[key];
-                var id = lesson.id;
-                var body = {
+            for (let key in lessonData) {
+                let lesson = lessonData[key];
+                let id = lesson.id;
+                let body = {
                     "quantity": lesson.quantity
                 };
 
@@ -419,13 +421,13 @@ class Controller extends React.Component {
                 console.log("Updated Lessons:", this.state.components.lessons);
             });
         } else if (database === "instructorPreferences") {
-            var preferenceUpdates = [];
-            var preferenceData = this.state.components.instructorPreferences.data;
+            let preferenceUpdates = [];
+            let preferenceData = this.state.components.instructorPreferences.data;
 
-            for (var key in preferenceData) {
-                var preference = preferenceData[key];
-                var id = preference.id;
-                var body = {
+            for (let key in preferenceData) {
+                let preference = preferenceData[key];
+                let id = preference.id;
+                let body = {
                     "instructorId": preference.instructorId,
                     "lessons": preference.lessons
                 };
@@ -439,16 +441,16 @@ class Controller extends React.Component {
                 console.log("Updated InstructorPreferences:", this.state.components.instructorPreferences);
             });
         } else if (database === "privates") {
-            var privateUpdates = [];
-            var privatesData = this.state.components.privates.data;
+            let privateUpdates = [];
+            let privatesData = this.state.components.privates.data;
 
-            for (var key in privatesData) {
-                var privateInstructor = privatesData[key];
+            for (let key in privatesData) {
+                let privateInstructor = privatesData[key];
 
-                for (var i = 0; i < privateInstructor.length; i++) {
-                    var privateLesson = privateInstructor[i];
-                    var id = privateLesson.id;
-                    var body = {
+                for (let i = 0; i < privateInstructor.length; i++) {
+                    let privateLesson = privateInstructor[i];
+                    let id = privateLesson.id;
+                    let body = {
                         "duration": privateLesson.duration,
                         "instructorId": privateLesson.instructorId,
                         "time": privateLesson.time
@@ -471,8 +473,8 @@ class Controller extends React.Component {
     assignUpdates(res) {
         var obj = {};
 
-        for (var i = 0; i < res.length; i++) {
-            var keys = Object.keys(res[i]);
+        for (let i = 0; i < res.length; i++) {
+            let keys = Object.keys(res[i]);
 
             keys = Object.keys(res[i].data);
 
@@ -480,7 +482,7 @@ class Controller extends React.Component {
                 continue;
             }
 
-            var key = keys[0];
+            let key = keys[0];
             if (Array.isArray(obj[key])) {
                 obj[key] = obj[key].concat(res[i].data[key]);
             } else {
