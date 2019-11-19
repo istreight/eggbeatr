@@ -131,7 +131,6 @@ class InstructorPreferences extends React.Component {
 
                 preferences[rowIndex][colIndex] = [
                     React.createElement(Anchor, {
-                            "callback": () => null,
                             "data": lessonType,
                             "handleClick": this.updatePreferenceCell.bind(this),
                             "key": "key-anchor-" + (rowIndex * preferences.length + colIndex),
@@ -215,12 +214,10 @@ class InstructorPreferences extends React.Component {
                     React.createElement(EditButton, {
                         "callback": (ref) => this.setComponentReference("editButton", ref),
                         "handleClick": this.edit.bind(this),
-                        "key": "key-preferences-footer-0",
-                        "mode": "default"
+                        "key": "key-preferences-footer-0"
                     })
                 ] }
                 header={ [ this.selectedInstructor ] }
-                isDisplayed={ false }
                 tableData={ {
                     "dataBody": this.getPreferenceData(),
                     "dataHeader": [[

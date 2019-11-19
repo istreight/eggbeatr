@@ -53,10 +53,15 @@ class UnorderedList extends React.Component {
     }
 }
 
+UnorderedList.defaultProps = {
+    callback: () => null,
+    styleClass: "pure-menu-list"
+}
+
 UnorderedList.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     data: PropTypes.array.isRequired,
-    styleClass: PropTypes.string.isRequired
+    styleClass: PropTypes.string
 }
 
 export default UnorderedList;

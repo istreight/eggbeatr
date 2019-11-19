@@ -40,12 +40,19 @@ class WaitIndicator extends React.Component {
     }
 }
 
+WaitIndicator.defaultProps = {
+    callback: () => null,
+    indicatorStyleClass: "is-invisible",
+    labelStyleClass: "",
+    spinnerStyleClass: ""
+}
+
 WaitIndicator.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     data: PropTypes.string.isRequired,
-    indicatorStyleClass: PropTypes.string.isRequired,
-    labelStyleClass: PropTypes.string.isRequired,
-    spinnerStyleClass: PropTypes.string.isRequired
+    indicatorStyleClass: PropTypes.string,
+    labelStyleClass: PropTypes.string,
+    spinnerStyleClass: PropTypes.string
 }
 
 export default WaitIndicator;

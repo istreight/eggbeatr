@@ -76,8 +76,12 @@ class Table extends React.Component {
     }
 }
 
+Table.defaultProps = {
+    callback: () => null
+}
+
 Table.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     styleCell: PropTypes.func.isRequired,

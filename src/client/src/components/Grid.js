@@ -773,7 +773,6 @@ class Grid extends React.Component {
         };
 
         return React.createElement(Table, {
-            "callback": () => null,
             "dataBody": dataBody,
             "dataHeader": dataHeader,
             "key": "key-grid-table-" + gridIndex,
@@ -955,16 +954,12 @@ class Grid extends React.Component {
                     <Input
                         callback={ (ref) => this.setComponentReference("startTimeInputField", ref) }
                         handleBlur={ this.setLessonTimes.bind(this) }
-                        handleFocus={ () => null }
                         placeholder={ "..." }
-                        styleClass={ "" }
                         type={ "text" }
-                        value={ "" }
                     />
                 </div>
                 <div className="pure-menu pure-menu-horizontal">
                     <UnorderedList
-                        callback={ () => null }
                         data={ [
                             {
                                 "data": [
@@ -990,8 +985,7 @@ class Grid extends React.Component {
                                         ),
                                         "data": "1\u00BD hours",
                                         "handleClick": this.setDuration.bind(this),
-                                        "key": "key-grid-anchor-1",
-                                        "styleClass": "pure-menu-link"
+                                        "key": "key-grid-anchor-1"
                                     })
                                 ],
                                 "styleClass": "pure-menu-item"
@@ -1005,8 +999,7 @@ class Grid extends React.Component {
                                         ),
                                         "data": "2 hours",
                                         "handleClick": this.setDuration.bind(this),
-                                        "key": "key-grid-anchor-2",
-                                        "styleClass": "pure-menu-link"
+                                        "key": "key-grid-anchor-2"
                                     })
                                 ],
                                 "styleClass": "pure-menu-item"
@@ -1020,8 +1013,7 @@ class Grid extends React.Component {
                                         ),
                                         "data": "2\u00BD hours",
                                         "handleClick": this.setDuration.bind(this),
-                                        "key": "key-grid-anchor-3",
-                                        "styleClass": "pure-menu-link"
+                                        "key": "key-grid-anchor-3"
                                     })
                                 ],
                                 "styleClass": "pure-menu-item"
@@ -1033,15 +1025,11 @@ class Grid extends React.Component {
                 <WaitIndicator
                     callback={ (ref) => this.setComponentReference("waitIndicator", ref) }
                     data={ "Creating..." }
-                    indicatorStyleClass={ "is-invisible" }
-                    labelStyleClass={ "" }
-                    spinnerStyleClass={ "" }
                 />
                 <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
                     <UnorderedList
                         callback={ ((ref) => this.setComponentReference("gridList", ref)) }
                         data={ [] }
-                        styleClass={ "pure-menu-list" }
                     />
                 </div>
                 <Modal
@@ -1066,14 +1054,12 @@ class Grid extends React.Component {
                     header={ [
                         "Grid #0",
                         React.createElement(Anchor, {
-                            "callback": () => null,
                             "data": "Export to PDF",
                             "handleClick": this.exportToPDF.bind(this),
                             "key": "key-grid-anchor-5",
                             "styleClass": "pure-button"
                         })
                     ] }
-                    isDisplayed={ false }
                     tableData={ {
                         "dataBody": [],
                         "dataHeader": [],
@@ -1086,7 +1072,7 @@ class Grid extends React.Component {
                 <Tutorial
                     buttonClass={ "" }
                     callback={ (ref) => this.setComponentReference("tutorial", ref) }
-                    data={ "Create a grid, and I'll  get cooking." }
+                    data={ "Create a grid, and I'll get cooking." }
                     headingClass={ "content-head" }
                     nextName={ "" }
                     step={ 4 }

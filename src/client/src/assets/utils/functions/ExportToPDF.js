@@ -251,13 +251,4 @@ class ExportToPDF extends React.Component {
     }
 }
 
-ExportToPDF.propTypes = {
-    callback: PropTypes.func.isRequired,
-    connector: PropTypes.object.isRequired,
-    createComponent: PropTypes.func.isRequired,
-    initData: PropTypes.object.isRequired,
-    removeComponent: PropTypes.func.isRequired,
-    renderComponent: PropTypes.func.isRequired
-}
-
 export default ExportToPDF;

@@ -67,11 +67,16 @@ class DurationButton extends React.Component {
     }
 }
 
+DurationButton.defaultProps = {
+    callback: () => null,
+    styleClass: "pure-menu-link"
+}
+
 DurationButton.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     data: PropTypes.string.isRequired,
     handleClick: PropTypes.func.isRequired,
-    styleClass: PropTypes.string.isRequired
+    styleClass: PropTypes.string
 }
 
 export default DurationButton;

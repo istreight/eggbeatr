@@ -110,7 +110,6 @@ class ToggleTable extends React.Component {
 
         return data.map((dataRow, index) =>
             React.createElement(TableRow, {
-                "callback": () => null,
                 "dataRow": dataRow,
                 "isHeaderRow": true,
                 "index": index,
@@ -275,13 +274,14 @@ class ToggleTable extends React.Component {
 }
 
 ToggleTable.defaultProps = {
+    callback: () => null,
     inputValueValidations: [],
     toggle: false
-};
+}
 
 ToggleTable.propTypes = {
     addCallback: PropTypes.func.isRequired,
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     customStyle: PropTypes.func,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,

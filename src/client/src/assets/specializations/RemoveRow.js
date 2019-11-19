@@ -33,9 +33,7 @@ class RemoveRow extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.updateProps) {
-            this.setState(nextProps);
-        }
+        this.setState(nextProps);
 
         this.props.callback(this);
     }
@@ -64,15 +62,10 @@ class RemoveRow extends React.Component {
                     placeholder = cellData;
 
                     newData = React.createElement(Input, {
-                        "callback": (ref)=> {
-                            this.inputs[cellIndex] = ref;
-                        },
-                        "handleBlur": () => null,
+                        "callback": (ref) => this.inputs[cellIndex] = ref,
                         "key": "key-removerow-" + this.state.index + "-input-" + cellIndex,
                         "placeholder": placeholder,
-                        "styleClass": "",
-                        "type": "text",
-                        "value": ""
+                        "type": "text"
                     });
 
                     newData = [newData];
@@ -98,7 +91,6 @@ class RemoveRow extends React.Component {
         // Append or remove the Remove button from the row.
         if (enable) {
             let removeButton = React.createElement(RemoveButton, {
-                "callback": () => null,
                 "handleClick": this.handleClick.bind(this),
                 "key": "key-removerow-removebutton-0"
             });
@@ -119,7 +111,6 @@ class RemoveRow extends React.Component {
     render() {
         return (
             <TableRow
-                callback={ () => null }
                 dataRow={ this.toggleState(this.state.show) }
                 isHeaderRow={ false }
                 index={ this.state.index }
@@ -131,16 +122,17 @@ class RemoveRow extends React.Component {
 }
 
 RemoveRow.defaultProps = {
-    show: false,
-    updateProps: true
-};
+    callback: () => null,
+    index: -1,
+    show: false
+}
 
 RemoveRow.propTypes = {
     callback: PropTypes.func,
     dataRow: PropTypes.array.isRequired,
     handleClick: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
-    index: PropTypes.number.isRequired,
+    index: PropTypes.number,
     show: PropTypes.bool,
     styleCell: PropTypes.func.isRequired,
     styleRow: PropTypes.func.isRequired,

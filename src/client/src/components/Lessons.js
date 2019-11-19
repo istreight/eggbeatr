@@ -178,7 +178,6 @@ class Lessons extends React.Component {
                     });
                 } else {
                     lessonInput.setState({
-                        "value": ""
                     });
                 }
             }
@@ -227,9 +226,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-0",
                                     "name": "Starfish",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -240,9 +237,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-1",
                                     "name": "Sea Otter",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -253,9 +248,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-2",
                                     "name": "Level 1",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -266,9 +259,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-3",
                                     "name": "Level 6",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -279,9 +270,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-4",
                                     "name": "Basics I",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ]
                         ],
@@ -294,9 +283,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-5",
                                     "name": "Duck",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -307,9 +294,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-6",
                                     "name": "Salamander",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -320,9 +305,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-7",
                                     "name": "Level 2",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -333,9 +316,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-8",
                                     "name": "Level 7",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -346,9 +327,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-9",
                                     "name": "Basics II",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ]
                         ],
@@ -361,9 +340,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-10",
                                     "name": "Sea Turtle",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -374,9 +351,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-11",
                                     "name": "Sunfish",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -387,9 +362,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-12",
                                     "name": "Level 3",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -400,9 +373,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-13",
                                     "name": "Level 8",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -413,9 +384,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-14",
                                     "name": "Strokes",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ]
                         ],
@@ -429,9 +398,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-15",
                                     "name": "Crocodile",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -442,9 +409,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-16",
                                     "name": "Level 4",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -455,9 +420,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-17",
                                     "name": "Level 9",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [""]
@@ -471,9 +434,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-18",
                                     "name": "Simple Set",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -484,9 +445,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-19",
                                     "name": "Whale",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -497,9 +456,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-20",
                                     "name": "Level 5",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -510,9 +467,7 @@ class Lessons extends React.Component {
                                     "key": "key-lessons-input-21",
                                     "name": "Level 10",
                                     "placeholder": "#",
-                                    "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ],
                             [
@@ -524,8 +479,7 @@ class Lessons extends React.Component {
                                     "name": "Schoolboard",
                                     "placeholder": "#",
                                     "styleClass": "",
-                                    "type": "text",
-                                    "value": ""
+                                    "type": "text"
                                 })
                             ]
                         ]
@@ -546,7 +500,6 @@ class Lessons extends React.Component {
                 />
                 <Tutorial
                     buttonClass={ "pure-button content-next-button" }
-                    callback={ () => null }
                     data={ "Input the quantity of each lesson type, using digits from 1 to 9." }
                     headingClass={ "content-head" }
                     nextName={ "dynamicPrivate" }

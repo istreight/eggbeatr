@@ -38,7 +38,6 @@ class ScrollingAnchor extends React.Component {
     render() {
         return (
             <Anchor
-                callback={ () => null }
                 data={ this.state.data }
                 handleClick={ this.handleClick }
                 styleClass={ this.state.styleClass }
@@ -47,12 +46,16 @@ class ScrollingAnchor extends React.Component {
     }
 }
 
+ScrollingAnchor.defaultProps = {
+    styleClass: "pure-menu-link"
+}
+
 ScrollingAnchor.propTypes = {
     data: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array
     ]),
-    styleClass: PropTypes.string.isRequired
+    styleClass: PropTypes.string
 }
 
 export default ScrollingAnchor;
