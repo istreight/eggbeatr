@@ -89,7 +89,7 @@ class PrivatesTable extends React.Component {
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
                 inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
-                sectionId={ this.state.sectionId }
+                sectionId={ "dynamicPrivate" }
                 updateCallback={ this.state.updateCallback }
             />
         );
@@ -97,16 +97,16 @@ class PrivatesTable extends React.Component {
 }
 
 PrivatesTable.defaultProps = {
+    callback: () => null,
     toggle: false
-};
+}
 
 PrivatesTable.propTypes = {
     addCallback: PropTypes.func.isRequired,
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     removeCallback: PropTypes.func.isRequired,
-    sectionId: PropTypes.string,
     toggle: PropTypes.bool,
     updateCallback: PropTypes.func.isRequired
 }

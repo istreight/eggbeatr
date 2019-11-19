@@ -79,7 +79,6 @@ class Landing extends React.Component {
                 </p>
                 <div>
                     <Anchor
-                        callback={ () => null }
                         data={ "Get Started" }
                         handleClick={ this.getStarted }
                         styleClass={ "pure-button pure-button-primary" }

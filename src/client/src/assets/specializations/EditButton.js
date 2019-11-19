@@ -49,10 +49,15 @@ class EditButton extends React.Component {
     }
 }
 
+EditButton.defaultProps = {
+    callback: () => null,
+    mode: "default"
+}
+
 EditButton.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     handleClick: PropTypes.func.isRequired,
-    mode: PropTypes.string.isRequired
+    mode: PropTypes.string
 }
 
 export default EditButton;

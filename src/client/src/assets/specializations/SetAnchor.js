@@ -43,6 +43,10 @@ class SetAnchor extends React.Component {
     }
 }
 
+SetAnchor.defaultProps = {
+    callback: () => null
+}
+
 SetAnchor.propTypes = {
     callback: PropTypes.func.isRequired,
     data: PropTypes.oneOfType([
@@ -50,7 +54,7 @@ SetAnchor.propTypes = {
         PropTypes.array
     ]),
     handleClick: PropTypes.func.isRequired,
-    hyperlink: PropTypes.string.isRequired,
+    hyperlink: PropTypes.string,
     styleClass: PropTypes.string.isRequired
 }
 

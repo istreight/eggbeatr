@@ -48,16 +48,16 @@ class PrivatesOnlyCheckbox extends React.Component {
                 checked={ this.state.checked }
                 disabled={ this.state.disabled }
                 handleChange={ this.handleChange.bind(this) }
-                type="checkbox"
             />
         );
     }
 }
 
 PrivatesOnlyCheckbox.defaultProps = {
+    callback: () => null,
     checked: false,
     disabled: false
-};
+}
 
 PrivatesOnlyCheckbox.propTypes = {
     callback: PropTypes.func,

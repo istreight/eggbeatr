@@ -57,7 +57,6 @@ class Modal extends React.Component {
                         <div className="modal-body">
                             { this.state.body }
                             <Table
-                                callback={ () => null }
                                 dataBody={ this.state.tableData.dataBody }
                                 dataHeader={ this.state.tableData.dataHeader }
                                 styleCell={ this.state.tableData.styleCell }
@@ -75,15 +74,20 @@ class Modal extends React.Component {
     }
 }
 
+Modal.defaultProps = {
+    callback: () => null,
+    isDisplayed: false
+}
+
 Modal.propTypes = {
     body: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array
     ]),
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     footer: PropTypes.array.isRequired,
     header: PropTypes.array.isRequired,
-    isDisplayed: PropTypes.bool.isRequired,
+    isDisplayed: PropTypes.bool,
     tableData: PropTypes.object.isRequired
 }
 

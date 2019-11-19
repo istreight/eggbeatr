@@ -343,7 +343,6 @@ class Private extends React.Component {
                         Private Lessons
                     </h2>
                     <SectionDescription
-                        additionalData={ [] }
                         anchorCallback={ (ref) => this.setComponentReference("editButton", ref) }
                         anchorHandleClick={ this.editPrivate.bind(this) }
                         buttonText={ "Edit Privates" }
@@ -361,12 +360,10 @@ class Private extends React.Component {
                         dataBody={ this.getTableBody() }
                         dataHeader={ this.getTableHeader() }
                         removeCallback={ this.removePrivateLesson.bind(this) }
-                        sectionId={ "dynamicPrivate" }
                         updateCallback={ this.updatePrivateLesson.bind(this) }
                     />
                     <Tutorial
                         buttonClass={ "pure-button pure-button-primary" }
-                        callback={ () => null }
                         data={ "List any private lessons occuring during this set." }
                         headingClass={ "content-head content-head-ribbon" }
                         nextName={ "dynamicGrid" }

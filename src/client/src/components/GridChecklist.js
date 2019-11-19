@@ -139,7 +139,6 @@ class GridChecklist extends React.Component {
             <div>
                 <h3 className="content-head">Grid Checklist</h3>
                 <Table
-                    callback={ () => null }
                     dataBody={ [
                         ["Instructors", this.state.data.instructors.quantity.toString()],
                         ["Lessons", this.state.data.lessons.quantity.toString()],

@@ -68,7 +68,6 @@ class SectionDescription extends React.Component {
             <div className={ this.getDescriptionStyle() }>
                 { this.state.title }
                 <UnorderedList
-                    callback={ () => null }
                     data={ this.getData() }
                     styleClass={ this.getExplanationStyle() }
                 />
@@ -85,9 +84,13 @@ class SectionDescription extends React.Component {
     }
 }
 
+SectionDescription.defaultProps = {
+    additionalData: []
+}
+
 SectionDescription.propTypes = {
     anchorCallback: PropTypes.func.isRequired,
-    additionalData: PropTypes.array.isRequired,
+    additionalData: PropTypes.array,
     anchorHandleClick: PropTypes.func.isRequired,
     buttonText: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,

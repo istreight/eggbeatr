@@ -40,10 +40,13 @@ class RemoveButton extends React.Component {
     }
 }
 
+RemoveButton.defaultProps = {
+    callback: () => null
+}
+
 RemoveButton.propTypes = {
-    callback: PropTypes.func.isRequired,
-    handleClick: PropTypes.func.isRequired,
-    id: PropTypes.number
+    callback: PropTypes.func,
+    handleClick: PropTypes.func.isRequired
 }
 
 export default RemoveButton;

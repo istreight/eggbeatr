@@ -62,7 +62,6 @@ class About extends React.Component {
                     </div>
                 </div>
                 <UnorderedList
-                    callback={ () => null }
                     data={ [
                         {
                             "data": [

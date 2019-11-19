@@ -171,7 +171,7 @@ class InstructorTable extends React.Component {
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
                 inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
-                sectionId={ this.state.sectionId }
+                sectionId={ "dynamicInstructors" }
                 updateCallback={ this.state.updateCallback }
             />
         );
@@ -179,20 +179,20 @@ class InstructorTable extends React.Component {
 }
 
 InstructorTable.defaultProps = {
+    callback: () => null,
     preferenceHandler: () => null,
     privatesOnlyHandler: () => null,
     toggle: false
-};
+}
 
 InstructorTable.propTypes = {
     addCallback: PropTypes.func.isRequired,
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     preferenceHandler: PropTypes.func,
     privatesOnlyHandler: PropTypes.func,
     removeCallback: PropTypes.func.isRequired,
-    sectionId: PropTypes.string,
     toggle: PropTypes.bool,
     updateCallback: PropTypes.func.isRequired
 }
