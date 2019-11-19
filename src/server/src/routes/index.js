@@ -151,10 +151,10 @@ module.exports = (app) => {
     });
 
     // Privates (single)
-    app.get('/api/privates/:privateId', PrivatesController.retrieve);
-    app.put('/api/privates/:privateId', PrivatesController.update);
-    app.delete('/api/privates/:privateId', PrivatesController.destroy);
-    app.all('/api/privates/:privateId', (_req, res) => {
+    app.get('/api/privates/:privatesId', PrivatesController.retrieve);
+    app.put('/api/privates/:privatesId', PrivatesController.update);
+    app.delete('/api/privates/:privatesId', PrivatesController.destroy);
+    app.all('/api/privates/:privatesId', (_req, res) => {
         res.status(405).send({
             message: 'Method Not Allowed',
         });

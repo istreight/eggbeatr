@@ -28,7 +28,7 @@ module.exports = {
             headerId: req.query.headerId,
             instructor: req.body.instructor,
             dateOfHire: req.body.dateOfHire,
-            privateOnly: req.body.privateOnly,
+            privatesOnly: req.body.privatesOnly,
             wsiExpiration: req.body.wsiExpiration
         }).then((instructor) => {
             res.status(201).send(instructor);
@@ -73,8 +73,8 @@ module.exports = {
                 });
             }
 
-            var p = req.body.privateOnly || instructor.privateOnly;
-            if (req.body.privateOnly === false) {
+            var p = req.body.privatesOnly || instructor.privatesOnly;
+            if (req.body.privatesOnly === false) {
                 p = false;
             }
 
@@ -82,7 +82,7 @@ module.exports = {
                 headerId: req.query.headerId || instructor.headerId,
                 instructor: req.body.instructor || instructor.instructor,
                 dateOfHire: req.body.dateOfHire || instructor.dateOfHire,
-                privateOnly: p,
+                privatesOnly: p,
                 wsiExpiration: req.body.wsiExpiration || instructor.wsiExpiration
             }).then((instructor) => {
                 res.status(200).send(instructor);

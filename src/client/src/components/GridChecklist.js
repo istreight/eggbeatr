@@ -83,12 +83,12 @@ class GridChecklist extends React.Component {
 
                 isInstructorsValid = isValid;
             } else if (key === "lessons") {
-                let privateQuantity = this.state.data.privates.quantity;
-                let errorClass = (privateQuantity > 0) ? "warning-cell" : "error-cell";
+                let privatesQuantity = this.state.data.privates.quantity;
+                let errorClass = (privatesQuantity > 0) ? "warning-cell" : "error-cell";
 
                 Object.assign(value, { "cell": isValid ? "" : errorClass });
 
-                isLessonsValid = isValid || privateQuantity > 0;
+                isLessonsValid = isValid || privatesQuantity > 0;
             } else if (key === "grid") {
                 isGridValid = value.quantity;
             }

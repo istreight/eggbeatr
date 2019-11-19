@@ -28,7 +28,7 @@ module.exports = {
                 defaultValue: Sequelize.NOW,
                 type: Sequelize.DATEONLY
             },
-            privateOnly: {
+            privatesOnly: {
                 allowNull: false,
                 defaultValue: false,
                 type: Sequelize.BOOLEAN

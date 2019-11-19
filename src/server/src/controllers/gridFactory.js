@@ -26,9 +26,9 @@ const gridFactory =  {
         return this.fillGridList({
             numHalfLessons: data.lessons.half,
             numThreeQuarterLessons: data.lessons.threequarter,
-            privates: data.private,
+            privates: data.privates,
             instructors: data.instructorsArray,
-            privateOnlyInstructors: data.privateOnlyInstructors,
+            privatesOnlyInstructors: data.privatesOnlyInstructors,
             duration: data.duration,
             minHoursPerInstructor: 0
         });
@@ -41,16 +41,16 @@ const gridFactory =  {
     fillGridList(data) {
         console.log(data);
 
-        var groupInstructors = data.instructors.filter(value => !data.privateOnlyInstructors.includes(value));
+        var groupInstructors = data.instructors.filter(value => !data.privatesOnlyInstructors.includes(value));
 
         var grid = Array(groupInstructors.length).fill(Array(4 * data.duration).fill(0));
         for (let instructor = 0; instructor < groupInstructors.length; instructor++) {
             grid[instructor] = [groupInstructors[instructor]].concat(grid[instructor]);
         }
 
-        var privatesGrid = Array(data.privateOnlyInstructors.length).fill(Array(4 * data.duration).fill(0));
-        for (let instructor = 0; instructor < data.privateOnlyInstructors.length; instructor++) {
-            privatesGrid[instructor] = [data.privateOnlyInstructors[instructor]].concat(privatesGrid[instructor]);
+        var privatesGrid = Array(data.privatesOnlyInstructors.length).fill(Array(4 * data.duration).fill(0));
+        for (let instructor = 0; instructor < data.privatesOnlyInstructors.length; instructor++) {
+            privatesGrid[instructor] = [data.privatesOnlyInstructors[instructor]].concat(privatesGrid[instructor]);
         }
 
         grid = this.addPrivateLessons(grid, data, groupInstructors, privatesGrid);
@@ -133,34 +133,34 @@ const gridFactory =  {
     },
 
     addPrivateLessons(grid, data, groupInstructors, privatesGrid) {
-        for (let privateInstructor in data.privates.data) {
-            if (data.instructors.includes(privateInstructor)) {
-                let privateLessons = data.privates.data[privateInstructor];
+        for (let privatesInstructor in data.privates.data) {
+            if (data.instructors.includes(privatesInstructor)) {
+                let privates = data.privates.data[privatesInstructor];
 
-                for (let privateIndex = 0; privateIndex < privateLessons.length; privateIndex++) {
-                    let privateLesson = privateLessons[privateIndex];
+                for (let privatesIndex = 0; privatesIndex < privates.length; privatesIndex++) {
+                    let privateLesson = privates[privatesIndex];
 
                     let time = privateLesson.time;
                     let duration = privateLesson.duration;
 
                     let [startHour, startMinute] = this.lessonTimes[0].split(":");
-                    let [privateHour, privateMinute] = time.split(":");
+                    let [hour, minute] = time.split(":");
 
-                    privateHour = parseInt(privateHour, 10);
-                    privateMinute = parseInt(privateMinute, 10);
+                    hour = parseInt(hour, 10);
+                    minute = parseInt(minute, 10);
                     startHour = parseInt(startHour, 10);
                     startMinute = parseInt(startMinute, 10);
 
-                    if (privateHour < startHour) {
+                    if (hour < startHour) {
                         continue;
-                    } else if (privateHour === startHour && privateMinute < startMinute) {
+                    } else if (hour === startHour && minute < startMinute) {
                         continue;
                     }
 
                     // Find instructor row.
                     let instructor;
                     grid.some((row, index) => {
-                        if (row[0] === privateInstructor) {
+                        if (row[0] === privatesInstructor) {
                             instructor = index;
 
                             return true;
@@ -170,18 +170,18 @@ const gridFactory =  {
                     });
 
                     // Find proper time slot.
-                    let slot = 1 + 4 * (privateHour - startHour) + Math.floor((privateMinute - startMinute) / 15);
+                    let slot = 1 + 4 * (hour - startHour) + Math.floor((minute - startMinute) / 15);
 
                     // Number of slots private lesson will occupy.
                     let numSlots = Math.floor(duration / 15);
 
-                    // Allocate slot for private.
-                    if (groupInstructors.includes(privateInstructor)) {
+                    // Allocate slot for privates.
+                    if (groupInstructors.includes(privatesInstructor)) {
                         if (slot + numSlots < grid[instructor].length + 1) {
                             grid[instructor].fill(4, slot, slot + numSlots);
                         }
-                    } else if (data.privateOnlyInstructors.includes(privateInstructor)) {
-                        instructor = data.privateOnlyInstructors.indexOf(privateInstructor);
+                    } else if (data.privatesOnlyInstructors.includes(privatesInstructor)) {
+                        instructor = data.privatesOnlyInstructors.indexOf(privatesInstructor);
                         if (slot + numSlots < privatesGrid[instructor].length + 1) {
                             privatesGrid[instructor].fill(4, slot, slot + numSlots);
                         }
@@ -201,11 +201,11 @@ const gridFactory =  {
         }
     },
 
-    addPrivateInstructor(privateInstructor) {
+    addPrivateInstructor(privatesInstructor) {
         var instructorIndex;
         var grid = this.gridList[0];
         var lastIndex = grid.length - 1;
-        var instructorName = privateInstructor[0];
+        var instructorName = privatesInstructor[0];
 
         // Append instructors with names alphabetically after the last instructor in the grid.
         if (grid[lastIndex][0] < instructorName) {
@@ -223,7 +223,7 @@ const gridFactory =  {
         for (let i = 0; i < this.gridList.length; i++) {
             grid = this.gridList[i];
 
-            grid.splice(instructorIndex, 0, privateInstructor);
+            grid.splice(instructorIndex, 0, privatesInstructor);
         }
     },
 

@@ -8,16 +8,16 @@ cd $(pwd)/../etc
 # Header model
 ../node_modules/.bin/sequelize model:generate --name Header --attributes setTitle:string
 
-# Instructor model
+# Instructors model
 ../node_modules/.bin/sequelize model:generate --name Instructor --attributes instructor:string,dateOfHire:dateonly,wsiExpiration:dateonly
 
-# InstructorPreference model
+# InstructorPreferences model
 ../node_modules/.bin/sequelize model:generate --name InstructorPreference --attributes lessons:array:string
 
-# Lesson model
+# Lessons model
 ../node_modules/.bin/sequelize model:generate --name Lesson --attributes title:string,quantity:integer
 
-# Private model
+# Privates model
 ../node_modules/.bin/sequelize model:generate --name Private --attributes instructor:string,time:time,duration:integer
 
 # Grid model
