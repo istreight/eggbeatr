@@ -59,7 +59,6 @@ class PreferencesButton extends React.Component {
     render() {
         return (
             <Anchor
-                callback={ () => null }
                 data={ "..." }
                 handleClick={ this.onClick.bind(this) }
                 styleClass={ this.state.styleClass }
@@ -68,8 +67,12 @@ class PreferencesButton extends React.Component {
     }
 }
 
+PreferencesButton.defaultProps = {
+    callback: () => null
+}
+
 PreferencesButton.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     handleClick: PropTypes.func.isRequired,
     instructorId: PropTypes.number.isRequired
 }

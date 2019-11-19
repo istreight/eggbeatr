@@ -40,8 +40,12 @@ class AddButton extends React.Component {
     }
 }
 
+AddButton.defaultProps = {
+    callback: () => null
+}
+
 AddButton.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     handleClick: PropTypes.func.isRequired
 }
 

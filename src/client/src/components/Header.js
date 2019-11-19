@@ -149,7 +149,7 @@ class Header extends React.Component {
         };
 
         isValid = this.validateSet(newSetName);
-        
+
         if (!isValid) {
             return;
         }
@@ -298,7 +298,6 @@ class Header extends React.Component {
                     styleClass={ "pure-menu-heading" }
                 />
                 <Anchor
-                callback={ () => null }
                     data={ "SET" }
                     handleClick={ () => null }
                     styleClass={ "pure-menu-heading" }
@@ -306,10 +305,7 @@ class Header extends React.Component {
                 <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
                     <SetList
                         callback={ (ref) => this.setComponentReference("setList", ref) }
-                        data={ this.state.data || {} }
-                        handleClick={ () => null }
-                        mode={ "default" }
-                        styleClass={ "pure-menu-list" }
+                        data={ this.state.data }
                     />
                 </div>
                 <Anchor
@@ -317,13 +313,11 @@ class Header extends React.Component {
                     data={ [
                         React.createElement(Input, {
                             "callback": (ref) => this.setComponentReference("setInputField", ref),
-                            "handleBlur": () => null,
-                            "handleFocus": this.disableEditButton.bind(this),
+                            "handleBlur": this.disableEditButton.bind(this),
                             "key": "key-header-input-0",
                             "placeholder": "...",
-                            "type": "text",
                             "styleClass": "is-invisible",
-                            "value": ""
+                            "type": "text"
                         })
                     ] }
                     handleClick={ () => null }
@@ -332,24 +326,18 @@ class Header extends React.Component {
                 <WaitIndicator
                     callback={ (ref) => this.setComponentReference("waitIndicator", ref) }
                     data={ "Loading..." }
-                    indicatorStyleClass={ "is-invisible" }
-                    labelStyleClass={ "" }
-                    spinnerStyleClass={ "" }
                 />
                 <EditButton
                     callback={ (ref) => this.setComponentReference("editButton", ref) }
                     handleClick={ () => null }
-                    mode={ "default" }
                 />
                 <UnorderedList
-                    callback={ () => null }
                     data={ [
                         {
                             "data": [
                                 React.createElement(ScrollingAnchor, {
                                     "data": "About",
-                                    "key": "key-header-li-scroll-0",
-                                    "styleClass": "pure-menu-link"
+                                    "key": "key-header-li-scroll-0"
                                 })
                             ],
                             "styleClass": "pure-menu-item"
@@ -358,8 +346,7 @@ class Header extends React.Component {
                             "data": [
                                 React.createElement(ScrollingAnchor, {
                                     "data": "Instructors",
-                                    "key": "key-header-li-scroll-1",
-                                    "styleClass": "pure-menu-link"
+                                    "key": "key-header-li-scroll-1"
                                 })
                             ],
                             "styleClass": "pure-menu-item"
@@ -368,8 +355,7 @@ class Header extends React.Component {
                             "data": [
                                 React.createElement(ScrollingAnchor, {
                                     "data": "Lessons",
-                                    "key": "key-header-li-scroll-2",
-                                    "styleClass": "pure-menu-link"
+                                    "key": "key-header-li-scroll-2"
                                 })
                             ],
                             "styleClass": "pure-menu-item"
@@ -378,8 +364,7 @@ class Header extends React.Component {
                             "data": [
                                 React.createElement(ScrollingAnchor, {
                                     "data": "Privates",
-                                    "key": "key-header-li-scroll-3",
-                                    "styleClass": "pure-menu-link"
+                                    "key": "key-header-li-scroll-3"
                                 })
                             ],
                             "styleClass": "pure-menu-item"
@@ -388,14 +373,12 @@ class Header extends React.Component {
                             "data": [
                                 React.createElement(ScrollingAnchor, {
                                     "data": "Grid",
-                                    "key": "key-header-li-scroll-4",
-                                    "styleClass": "pure-menu-link"
+                                    "key": "key-header-li-scroll-4"
                                 })
                             ],
                             "styleClass": "pure-menu-item"
                         }
                     ] }
-                    styleClass={ "pure-menu-list" }
                 />
             </div>
         );

@@ -316,7 +316,6 @@ class Instructors extends React.Component {
                     Instructors
                 </h2>
                 <SectionDescription
-                    additionalData={ [] }
                     anchorCallback={ (ref) => this.setComponentReference("editButton", ref) }
                     anchorHandleClick={ this.editInstructors.bind(this) }
                     buttonText={ "Edit Instructors" }
@@ -336,12 +335,10 @@ class Instructors extends React.Component {
                     preferenceHandler={ this.preferenceHandler.bind(this) }
                     privatesOnlyHandler={ this.privatesOnlyHandler.bind(this) }
                     removeCallback={ this.removeInstructor.bind(this) }
-                    sectionId={ "dynamicInstructors" }
                     updateCallback={ this.updateInstructor.bind(this) }
                 />
                 <Tutorial
                     buttonClass={ "pure-button pure-button-primary" }
-                    callback={ () => null }
                     data={ "List the instructors teaching in this lesson set. Once added, their individual preferences become available." }
                     headingClass={ "content-head content-head-ribbon" }
                     nextName={ "dynamicLessons" }

@@ -54,16 +54,13 @@ class AddRow extends React.Component {
             for (let i = 0; i < 3; i++) {
                 row.push([
                     React.createElement(Input, {
-                        "callback": (ref)=> {
+                        "callback": (ref) => {
                             inputFields.push(ref);
                             Object.assign(this.inputs, inputFields);
                         },
-                        "handleBlur": () => null,
                         "key": "key-addrow-input-" + this.state.index + "-" + i,
                         "placeholder": "...",
-                        "styleClass": "",
-                        "type": "text",
-                        "value": ""
+                        "type": "text"
                     })
                 ]);
             }
@@ -71,8 +68,6 @@ class AddRow extends React.Component {
             if (this.props.componentType === "Instructors") {
                 // Disable by default.
                 privatesOnlyCheckbox = React.createElement(PrivatesOnlyCheckbox, {
-                    "callback": () => null,
-                    "checked": false,
                     "disabled": true,
                     "handleChange": () => null,
                     "instructorId": 0,
@@ -83,7 +78,7 @@ class AddRow extends React.Component {
                 preferenceButton = React.createElement(PreferencesButton, {
                     "callback": (ref) => ref.toggleState(true),
                     "handleClick": () => null,
-                    "instructorId": -1,
+                    "instructorId": 0,
                     "key": "key-addrow-pref-" + this.state.index
                 });
 
@@ -92,23 +87,11 @@ class AddRow extends React.Component {
             }
 
             addButton = React.createElement(AddButton, {
-                "callback": () => null,
                 "handleClick": this.handleClick.bind(this),
                 "key": "key-addrow-addbutton-0"
             });
 
             row.push([addButton]);
-
-            /*
-            row = [
-                [inputInstructor],
-                [inputDateOfHire],
-                [inputWsi],
-                [privatesOnlyCheckbox],
-                [preferenceButton],
-                [addButton]
-            ];
-            */
         }
 
         return row;
@@ -123,7 +106,6 @@ class AddRow extends React.Component {
     render() {
         return (
             <TableRow
-                callback={ () => null }
                 dataRow={ this.getCells() }
                 isHeaderRow={ false }
                 index={ this.state.index }
@@ -135,8 +117,9 @@ class AddRow extends React.Component {
 }
 
 AddRow.defaultProps = {
+    callback: () => null,
     show: false
-};
+}
 
 AddRow.propTypes = {
     callback: PropTypes.func,

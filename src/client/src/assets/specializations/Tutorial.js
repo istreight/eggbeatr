@@ -46,10 +46,8 @@ class Tutorial extends React.Component {
                     { this.state.data }
                 </p>
                 { this.state.buttonClass ? React.createElement(Anchor, {
-                    callback: () => null,
                     "data": "\u2192",
                     "handleClick": this.handleClick.bind(this),
-                    "hyperlink": "#",
                     "styleClass": this.state.buttonClass
                 }) : null }
             </div>
@@ -57,9 +55,13 @@ class Tutorial extends React.Component {
     }
 }
 
+Tutorial.defaultProps = {
+    callback: () => null
+}
+
 Tutorial.propTypes = {
     buttonClass: PropTypes.string.isRequired,
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     data: PropTypes.string.isRequired,
     headingClass: PropTypes.string.isRequired,
     nextName: PropTypes.string.isRequired,

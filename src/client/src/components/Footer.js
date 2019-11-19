@@ -32,7 +32,6 @@ class Footer extends React.Component {
                     on the coast of BC, Canada
                 </p>
                 <UnorderedList
-                    callback={ () => null }
                     data={ [
                         {
                             "data": ["Powered by"],
@@ -40,7 +39,6 @@ class Footer extends React.Component {
                         },
                         { "data": [
                             React.createElement(Anchor, {
-                                "callback": () => null,
                                 "data": "React",
                                 "handleClick": () => null,
                                 "hyperlink": "https://reactjs.org",
@@ -49,7 +47,6 @@ class Footer extends React.Component {
                             }),
                             ", ",
                             React.createElement(Anchor, {
-                                "callback": () => null,
                                 "data": "Webpack",
                                 "handleClick": () => null,
                                 "hyperlink": "https://webpack.js.org",
@@ -58,7 +55,6 @@ class Footer extends React.Component {
                             }),
                             ", ",
                             React.createElement(Anchor, {
-                                "callback": () => null,
                                 "data": "Babel",
                                 "handleClick": () => null,
                                 "hyperlink": "https://babeljs.io",
@@ -67,7 +63,6 @@ class Footer extends React.Component {
                             }),
                             ", & ",
                             React.createElement(Anchor, {
-                                "callback": () => null,
                                 "data": "PureCSS",
                                 "handleClick": () => null,
                                 "hyperlink": "http://purecss.io",

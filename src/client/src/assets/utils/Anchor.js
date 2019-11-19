@@ -45,11 +45,12 @@ class Anchor extends React.Component {
 }
 
 Anchor.defaultProps = {
-  updateProps: true
-};
+    callback: () => null,
+    updateProps: true
+}
 
 Anchor.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     data: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.string

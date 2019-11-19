@@ -49,19 +49,23 @@ class Input extends React.Component {
 }
 
 Input.defaultProps = {
-  checked: false
-};
+    callback: () => null,
+    checked: false,
+    handleBlur: () => null,
+    styleClass: "",
+    value: ""
+}
 
 Input.propTypes = {
-    callback: PropTypes.func.isRequired,
+    callback: PropTypes.func,
     checked: PropTypes.bool,
-    handleBlur: PropTypes.func.isRequired,
+    handleBlur: PropTypes.func,
     name: PropTypes.string,
     placeholder: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string
     ]),
-    styleClass: PropTypes.string.isRequired,
+    styleClass: PropTypes.string,
     type: PropTypes.string.isRequired,
     value: PropTypes.oneOfType([
         PropTypes.number,

@@ -49,13 +49,14 @@ class Checkbox extends React.Component {
                 checked={ this.state.checked }
                 disabled={ this.state.disabled }
                 onChange={ this.handleChange.bind(this) }
-                type="checkbox"
+                type={ "checkbox" }
             />
         );
     }
 }
 
 Checkbox.defaultProps = {
+    callback: () => null,
     checked: false,
     disabled: false
 };

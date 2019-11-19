@@ -63,10 +63,8 @@ class SetList extends React.Component {
                 }
 
                 setAnchor = React.createElement(SetAnchor, {
-                    "callback": () => null,
                     "data": setTitle,
                     "handleClick": () => this.handleClick(setTitle),
-                    "hyperlink": "#",
                     "key": "key-setlist-anchor-" + index,
                     "styleClass": styleClass
                 });
@@ -84,20 +82,26 @@ class SetList extends React.Component {
     render() {
         return (
             <UnorderedList
-                callback={ () => null }
                 data={ this.setListData() }
-                styleClass={ "pure-menu-list" }
             />
         );
     }
 }
 
+SetList.defaultProps = {
+    callback: () => null,
+    data: {},
+    handleClick: () => null,
+    mode: "default",
+    styleClass: "pure-menu-list"
+}
+
 SetList.propTypes = {
-    callback: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired,
-    handleClick: PropTypes.func.isRequired,
-    mode: PropTypes.string.isRequired,
-    styleClass: PropTypes.string.isRequired,
+    callback: PropTypes.func,
+    data: PropTypes.object,
+    handleClick: PropTypes.func,
+    mode: PropTypes.string,
+    styleClass: PropTypes.string,
     width: PropTypes.string
 }
 
