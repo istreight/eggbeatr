@@ -7,7 +7,7 @@ module.exports = {
     target: 'node',
     mode: 'development',
     context: path.resolve(__dirname, contentBase),
-    entry: './app.server.js',
+    entry: './index.server.js',
     output: {
         path: path.resolve(__dirname, contentBase, 'build'),
         publicPath: '/',
