@@ -309,7 +309,7 @@ tbody td:first-child {
     margin: 5% 40px 0 0;
 }
 
-#dynamicLanding, #dynamicAbout, #dynamicInstructors, #dynamicLessons, #dynamicPrivate, #dynamicGrid {
+#dynamicLanding, #dynamicAbout, #dynamicInstructors, #dynamicLessons, #dynamicPrivates, #dynamicGrid {
     height: 92vh;
 }
 
@@ -650,33 +650,33 @@ tbody td:first-child {
     background-color: #343444;
 }
 
-#dynamicPrivate {
+#dynamicPrivates {
     padding: 45px;
 }
 
-#dynamicPrivate > div {
+#dynamicPrivates > div {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-#dynamicPrivate table {
+#dynamicPrivates table {
     margin: -9.75% 0 0 27.5%;
 
     table-layout: fixed;
 }
 
-#dynamicPrivate th {
+#dynamicPrivates th {
     width: 125px;
 }
 
-#dynamicPrivate .ribbon-section-footer {
+#dynamicPrivates .ribbon-section-footer {
     position: absolute;
     margin: auto auto auto 40px;
     bottom: 64px;
 }
 
-#dynamicPrivate .ribbon-section-footer a {
+#dynamicPrivates .ribbon-section-footer a {
     margin: -2.25% 0 0 85.2%;
 }
 
@@ -738,14 +738,14 @@ tbody td:first-child {
     border: none !important;
 }
 
-.private-lesson-cell {
+.privates-cell {
     color: white;
     background: #767676 !important;
 
     text-align: center;
 }
 
-.private-left {
+.privates-left {
     margin: -12px -16px;
 
     height: 0;
@@ -756,7 +756,7 @@ tbody td:first-child {
     text-align: left;
 }
 
-.private-right {
+.privates-right {
     margin: -12px -16px;
 
     height: 0;

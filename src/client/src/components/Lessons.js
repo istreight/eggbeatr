@@ -502,7 +502,7 @@ class Lessons extends React.Component {
                     buttonClass={ "pure-button content-next-button" }
                     data={ "Input the quantity of each lesson type, using digits from 1 to 9." }
                     headingClass={ "content-head" }
-                    nextName={ "dynamicPrivate" }
+                    nextName={ "dynamicPrivates" }
                     step={ 2 }
                     wrapperClass={ "content-section-footer hide" }
                 />

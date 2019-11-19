@@ -284,8 +284,8 @@ class Grid extends React.Component {
      *  code for split cell.
      */
     getSplitCell(code, reactKey) {
-        var privateLeft;
-        var privateRight;
+        var privatesLeft;
+        var privatesRight;
         var child = null;
         var childClassName = null;
 
@@ -295,14 +295,14 @@ class Grid extends React.Component {
                 "key": reactKey + "-work"
             }, "Work");
         } else if (code.includes("4")) {
-            privateLeft = React.createElement("div", {
-                "className": "private-left",
-                "key": reactKey + "-private"
+            privatesLeft = React.createElement("div", {
+                "className": "privates-left",
+                "key": reactKey + "-privates"
             });
 
-            privateRight = React.createElement("div", {
-                "className": "private-right",
-                "key": reactKey + "-private"
+            privatesRight = React.createElement("div", {
+                "className": "privates-right",
+                "key": reactKey + "-privates"
             });
         }
 
@@ -328,11 +328,11 @@ class Grid extends React.Component {
                 break;
             case "04":
             case "24":
-                block = [lineLeft, privateRight];
+                block = [lineLeft, privatesRight];
                 break;
             case "40":
             case "42":
-                block = [lineRight, privateLeft];
+                block = [lineRight, privatesLeft];
                 break;
             default:
                 block = [];
@@ -440,12 +440,12 @@ class Grid extends React.Component {
     }
 
     /**
-     * Return a list on the names of the private-only instructors.
+     * Return a list on the names of the privates-only instructors.
      */
-    getPrivateOnlyInstructors() {
+    getPrivatesOnlyInstructors() {
         return this.controllerData.instructorsArray.filter((value) => {
             var instructor = this.controllerData.instructors.data[value];
-            return instructor.privateOnly;
+            return instructor.privatesOnly;
         });
     }
 
@@ -455,7 +455,7 @@ class Grid extends React.Component {
     getGroupInstructors() {
         return this.controllerData.instructorsArray.filter((value) => {
             var instructor = this.controllerData.instructors[value];
-            return !instructor.privateOnly;
+            return !instructor.privatesOnly;
         });
     }
 
@@ -520,7 +520,7 @@ class Grid extends React.Component {
             Object.assign(this.controllerData, {
                 "duration": this.state.data.duration,
                 "lessonTimes": this.state.data.lessonTimes,
-                "privateOnlyInstructors": this.getPrivateOnlyInstructors()
+                "privatesOnlyInstructors": this.getPrivatesOnlyInstructors()
             })
         )
             .then((newGrids) => this.modifyGridArrays(newGrids, lessonQueue))
@@ -533,7 +533,7 @@ class Grid extends React.Component {
     modifyGridArrays(newGrids, lessonQueue) {
         var instructorOrder = this.orderInstructorsByPreferencesSize();
 
-        // Set allocated lessons slots to swim & private lessons.
+        // Set allocated lessons slots to lessons.
         for (let grid = 0; grid < newGrids.length; grid++) {
             let queue = JSON.parse(JSON.stringify(lessonQueue));
 
@@ -691,13 +691,13 @@ class Grid extends React.Component {
 
                 if (slot === 0) {
                     className = "first-column";
-                } else if (style && style.includes("private-right")) {
+                } else if (style && style.includes("privates-right")) {
                     let nextStyle;
 
                     if (Array.isArray(nextContents)) {
                         nextStyle = nextContents[nextContents.length - 1].props.className;
 
-                        if (nextStyle.includes("private-left")) {
+                        if (nextStyle.includes("privates-left")) {
                             cellContents[1] = React.cloneElement(
                                 cellContents[1],
                                 {},
@@ -706,12 +706,12 @@ class Grid extends React.Component {
                         }
                     }
 
-                    className = "private-right";
-                } else if (style && style.includes("private-left")) {
+                    className = "privates-right";
+                } else if (style && style.includes("privates-left")) {
                     if (Array.isArray(prevContents)) {
                         prevStyle = prevContents[prevContents.length - 1].props.className;
 
-                        if (prevStyle.includes("private-right")) {
+                        if (prevStyle.includes("privates-right")) {
                             cellContents[1] = React.cloneElement(
                                 cellContents[1],
                                 {},
@@ -720,11 +720,11 @@ class Grid extends React.Component {
                         }
                     }
 
-                    className = "private-left no-border";
+                    className = "privates-left no-border";
                 } else if (cellContents === "Private") {
-                    className = "private-lesson-cell";
+                    className = "privates-cell";
 
-                    if (prevStyle && prevStyle.includes("private-right")) {
+                    if (prevStyle && prevStyle.includes("privates-right")) {
                         className += " no-border";
                     }
                 }

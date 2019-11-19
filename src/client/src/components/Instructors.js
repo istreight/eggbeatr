@@ -48,13 +48,13 @@ class Instructors extends React.Component {
         var validInstructors;
         var instructorsArray = Object.keys(this.state.data);
 
-        // Expired & private only instructors.
+        // Expired & privates-only instructors.
         validInstructors = instructorsArray.filter((instructorName) => {
             var instructor = this.state.data[instructorName];
             var expiryTime = instructor.wsiExpiration;
-            var privateOnly = instructor.privateOnly;
+            var privatesOnly = instructor.privatesOnly;
 
-            return !privateOnly && Date.now() < Date.parse(expiryTime);
+            return !privatesOnly && Date.now() < Date.parse(expiryTime);
         });
 
         return validInstructors.length;
@@ -269,7 +269,7 @@ class Instructors extends React.Component {
                 instructor.wsiExpiration,
                 {
                     "instructorId": instructor.id,
-                    "privateOnly": instructor.privateOnly
+                    "privatesOnly": instructor.privatesOnly
                 }, {
                     "instructorId": instructor.id,
                     "instructorName": instructorName
@@ -293,7 +293,7 @@ class Instructors extends React.Component {
 
         [instructor, instructorName] = this.findInstructorById(id);
 
-        instructor.privateOnly = checked;
+        instructor.privatesOnly = checked;
 
         Object.assign(this.state.data[instructorName], instructor);
         this.setState(this.state, () => {

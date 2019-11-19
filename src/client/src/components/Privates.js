@@ -1,11 +1,11 @@
 /**
- * FILENAME:    Private.js
+ * FILENAME:    Privates.js
  * AUTHOR:      Isaac Streight
  * START DATE:  November 1st, 2016
  *
- * This file contains the Private class for the collection
+ * This file contains the Privates class for the collection
  *  of private lessons for the web application.
- * The Private class is exported.
+ * The Privates class is exported.
  */
 
 import React from 'react';
@@ -16,7 +16,7 @@ import PrivatesTable from 'specializations/PrivatesTable';
 import SectionDescription from 'specializations/SectionDescription';
 
 
-class Private extends React.Component {
+class Privates extends React.Component {
     constructor(props) {
         super(props);
 
@@ -42,21 +42,21 @@ class Private extends React.Component {
     }
 
     /**
-     * Places the private table in a state where the
+     * Places the Privates table in a state where the
      *  contents of the table can be changed.
      * The data in the input field will replace any data
      *  that was previously in the table cell.
      * Leaving any input field empty will not replace the
      *  original data.
      */
-    editPrivate() {
+    editPrivates() {
         // Set state to update values for placeholders in PrivatesTable props.
         this.setState(this.state);
 
         // Re-name and re-bind 'Edit Instructors' button.
         this.editButton.setState({
             "data": "Finish Editing",
-            "handleClick": this.finishEditingPrivate.bind(this)
+            "handleClick": this.finishEditingPrivates.bind(this)
         }, () => this.privatesTable.toggleState(true));
     }
 
@@ -65,11 +65,11 @@ class Private extends React.Component {
      * Empty inputs will leave the cell with its
      *  original data.
      */
-    finishEditingPrivate() {
+    finishEditingPrivates() {
         // Re-name and re-bind 'Finish Editing' button.
         this.editButton.setState({
             "data": "Edit Privates",
-            "handleClick": this.editPrivate.bind(this)
+            "handleClick": this.editPrivates.bind(this)
         }, () => this.privatesTable.toggleState(false));
 
         this.props.callback(this.state, "privates", true);
@@ -87,13 +87,13 @@ class Private extends React.Component {
      * Count the number of private lessons.
      */
     getComponentQuantity() {
-        var numPrivate = 0;
+        var numPrivates = 0;
 
         for (let instructor in this.state.data) {
-            numPrivate += this.state.data[instructor].length;
+            numPrivates += this.state.data[instructor].length;
         }
 
-        return numPrivate;
+        return numPrivates;
     }
 
     /**
@@ -116,17 +116,17 @@ class Private extends React.Component {
     }
 
     /**
-     * Find the private object & instructor name by id.
+     * Find the private lesson object & instructor name by id.
      */
     findPrivateById(id) {
         var privatesId = parseInt(id, 10);
 
         for (let instructorName in this.state.data) {
-            let _private = this.state.data[instructorName];
+            let privateLesson = this.state.data[instructorName];
 
-            for (let i = 0; i < _private.length; i++) {
-                if (_private[i].id === privatesId) {
-                    return [_private[i], instructorName, i];
+            for (let i = 0; i < privateLesson.length; i++) {
+                if (privateLesson[i].id === privatesId) {
+                    return [privateLesson[i], instructorName, i];
                 }
             }
         }
@@ -344,7 +344,7 @@ class Private extends React.Component {
                     </h2>
                     <SectionDescription
                         anchorCallback={ (ref) => this.setComponentReference("editButton", ref) }
-                        anchorHandleClick={ this.editPrivate.bind(this) }
+                        anchorHandleClick={ this.editPrivates.bind(this) }
                         buttonText={ "Edit Privates" }
                         data={ [
                             "Organize private lessons from the set",
@@ -375,7 +375,7 @@ class Private extends React.Component {
     }
 }
 
-Private.propTypes =  {
+Privates.propTypes =  {
     callback: PropTypes.func.isRequired,
     initData: PropTypes.object.isRequired,
     connector: PropTypes.object.isRequired,
@@ -384,4 +384,4 @@ Private.propTypes =  {
     setChecklistQuantity: PropTypes.func.isRequired
 }
 
-export default Private;
+export default Privates;

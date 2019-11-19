@@ -69,21 +69,21 @@ module.exports = {
             "headerId": 1,
             "instructor": "Alfa",
             "dateOfHire": "2011-02-01",
-            "privateOnly": false,
+            "privatesOnly": false,
             "wsiExpiration": "2021-04-03"
         },
         {
             "headerId": 1,
             "instructor": "Beta",
             "dateOfHire": "2012-06-05",
-            "privateOnly": false,
+            "privatesOnly": false,
             "wsiExpiration": "2022-08-07"
         },
         {
             "headerId": 1,
             "instructor": "Charlie",
             "dateOfHire": "2013-10-09",
-            "privateOnly": false,
+            "privatesOnly": false,
             "wsiExpiration": "2023-12-11"
         }
     ],

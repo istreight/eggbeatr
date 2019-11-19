@@ -44,7 +44,7 @@ class InstructorTable extends React.Component {
         return this.state.addCallback({
             "dateOfHire": inputValues[1],
             "instructor": inputValues[0],
-            "privateOnly": false,
+            "privatesOnly": false,
             "wsiExpiration": inputValues[2]
         });
     }
@@ -110,7 +110,7 @@ class InstructorTable extends React.Component {
 
                     this.privatesOnlyCheckboxes.push(ref);
                 },
-                "checked": privatesOnlyConfig.privateOnly,
+                "checked": privatesOnlyConfig.privatesOnly,
                 "handleChange": this.state.privatesOnlyHandler,
                 "instructorId": privatesOnlyConfig.instructorId,
                 "key": "key-instructor-checkbox-" + keyIndex

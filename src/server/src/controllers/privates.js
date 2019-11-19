@@ -8,8 +8,8 @@ module.exports = {
             where: {
                 headerId: req.query.headerId
             }
-        }).then((_private) => {
-            res.status(200).send(_private);
+        }).then((privateLesson) => {
+            res.status(200).send(privateLesson);
         }).catch((error) => {
             res.status(400).send(error);
         });
@@ -20,40 +20,40 @@ module.exports = {
             instructorId: req.body.instructorId,
             duration: req.body.duration,
             time: req.body.time
-        }).then((_private) => {
-            res.status(201).send(_private);
+        }).then((privateLesson) => {
+            res.status(201).send(privateLesson);
         }).catch((error) => {
             res.status(400).send(error);
         });
     },
     retrieve(req, res) {
-        return Private.findByPk(req.params.privateId).then((_private) => {
-            if (!_private) {
+        return Private.findByPk(req.params.privatesId).then((privateLesson) => {
+            if (!privateLesson) {
                 return res.status(404).send({
                     message: 'Private Not Found.'
                 });
             }
 
-            return res.status(200).send(_private);
+            return res.status(200).send(privateLesson);
         }).catch((error) => {
             res.status(400).send(error);
         });
     },
     update(req, res) {
-        return Private.findByPk(req.params.privateId).then((_private) => {
-            if (!_private) {
+        return Private.findByPk(req.params.privatesId).then((privateLesson) => {
+            if (!privateLesson) {
                 return res.status(404).send({
                     message: 'Private Not Found.'
                 });
             }
 
-            return _private.update({
-                headerId: req.query.headerId || _private.headerId,
-                instructorId: req.body.instructorId || _private.instructorId,
-                duration: req.body.duration || _private.duration,
-                time: req.body.time || _private.time
-            }).then((_private) => {
-                res.status(200).send(_private);
+            return privateLesson.update({
+                headerId: req.query.headerId || privateLesson.headerId,
+                instructorId: req.body.instructorId || privateLesson.instructorId,
+                duration: req.body.duration || privateLesson.duration,
+                time: req.body.time || privateLesson.time
+            }).then((privateLesson) => {
+                res.status(200).send(privateLesson);
             }).catch((error) => {
                 res.status(400).send(error);
             });
@@ -62,14 +62,14 @@ module.exports = {
         });
     },
     destroy(req, res) {
-        return Private.findByPk(req.params.privateId).then((_private) => {
-            if (!_private) {
+        return Private.findByPk(req.params.privatesId).then((privateLesson) => {
+            if (!privateLesson) {
                 return res.status(400).send({
                     message: 'Private Not Found.',
                 });
             }
 
-            return _private.destroy().then(() => {
+            return privateLesson.destroy().then(() => {
                 res.status(200).send({
                     message: 'Private Deleted Successfully.'
                 });
