@@ -89,7 +89,7 @@ class PrivatesTable extends React.Component {
                 getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
                 inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
-                sectionId={ "dynamicPrivate" }
+                sectionId={ "dynamicPrivates" }
                 updateCallback={ this.state.updateCallback }
             />
         );

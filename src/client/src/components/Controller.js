@@ -17,7 +17,7 @@ import Header from 'components/Header';
 import Footer from 'components/Footer';
 import Landing from 'components/Landing';
 import Lessons from 'components/Lessons';
-import Private from 'components/Private';
+import Privates from 'components/Privates';
 import Connector from 'components/Connector';
 import Instructors from 'components/Instructors';
 import GridChecklist from 'components/GridChecklist';
@@ -171,14 +171,14 @@ class Controller extends React.Component {
                 setComponentData("lessons", this, true);
         });
 
-        this.renderComponent(Private, {
+        this.renderComponent(Privates, {
                 "callback": componentCallback,
                 "connector": this.state.connector,
                 "createComponent": createComponent,
                 "initData": this.state.components.privates,
                 "removeComponent": removeComponent,
                 "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
-            }, document.getElementById("dynamicPrivate"), function() {
+            }, document.getElementById("dynamicPrivates"), function() {
                 setComponentData("privates", this, true);
         });
     }
@@ -332,7 +332,7 @@ class Controller extends React.Component {
     }
 
     /**
-     * Organizes data from the Lessons, Instructors, and Private components.
+     * Organizes data from the Lessons, Instructors, and Privates components.
      * Duration of lessons set is contained in the Grid component.
      */
     manipulateData(componentName, updateDatabase) {
@@ -363,7 +363,9 @@ class Controller extends React.Component {
         );
 
         // Add private lessons to controllerData.
-        this.state.controllerData.private = JSON.parse(
+        // here
+        console.log("here", this.state.controllerData);
+        this.state.controllerData.privates = JSON.parse(
             JSON.stringify(this.state.components.privates)
         );
 
@@ -389,7 +391,7 @@ class Controller extends React.Component {
                 let body = {
                     "instructor": key,
                     "dateOfHire": instructor.dateOfHire,
-                    "privateOnly": instructor.privateOnly,
+                    "privatesOnly": instructor.privatesOnly,
                     "wsiExpiration": instructor.wsiExpiration
                 };
 
@@ -441,7 +443,7 @@ class Controller extends React.Component {
                 console.log("Updated InstructorPreferences:", this.state.components.instructorPreferences);
             });
         } else if (database === "privates") {
-            let privateUpdates = [];
+            let privatesUpdates = [];
             let privatesData = this.state.components.privates.data;
 
             for (let key in privatesData) {
@@ -456,12 +458,12 @@ class Controller extends React.Component {
                         "time": privateLesson.time
                     };
 
-                    privateUpdates.push(this.state.connector.updatePrivatesData(id, body));
+                    privatesUpdates.push(this.state.connector.updatePrivatesData(id, body));
                 }
             }
 
-            Promise.all(privateUpdates).then((privateRes) => {
-                this.state.components.privates = this.assignUpdates(privateRes);
+            Promise.all(privatesUpdates).then((privatesRes) => {
+                this.state.components.privates = this.assignUpdates(privatesRes);
 
                 console.log("Updated Privates:", this.state.components.privates);
             });

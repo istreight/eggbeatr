@@ -277,13 +277,13 @@ class Connector extends React.Component {
             var newId = instructor.id;
             var newInstructor = instructor.instructor;
             var newDateOfHire = instructor.dateOfHire;
-            var newPrivateOnly = instructor.privateOnly;
+            var newPrivatesOnly = instructor.privatesOnly;
             var newWsiExpiration = instructor.wsiExpiration;
 
             newObject.data[newInstructor] = {
                 "id": newId,
                 "dateOfHire": newDateOfHire,
-                "privateOnly": newPrivateOnly,
+                "privatesOnly": newPrivatesOnly,
                 "wsiExpiration": newWsiExpiration
             };
         });
@@ -528,11 +528,11 @@ class Connector extends React.Component {
             .catch(error => console.error(error));
     }
 
-    updatePrivatesData(privateId, payload) {
+    updatePrivatesData(privatesId, payload) {
         var headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
-        return fetch(this.props.serverURI + '/api/privates/' + privateId + '?headerId=' + this.state.headerId, {
+        return fetch(this.props.serverURI + '/api/privates/' + privatesId + '?headerId=' + this.state.headerId, {
                 headers: headers,
                 method: 'PUT',
                 body: JSON.stringify(payload)
