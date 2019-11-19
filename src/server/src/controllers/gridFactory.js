@@ -2,7 +2,7 @@
  * FILENAME:    GridFactory.js
  * AUTHOR:      Isaac Streight
  * START DATE:  October 26th, 2016
- * MIRGRATION DATE:  April 25th, 2018 (from /src/client/src/components)
+ * MIRGRATION DATE:  April 25th, 2018 (from /src/app/src/components)
  *
  * This file contains the GridFactory class that creates
  *  an array of the grid for the web application.
