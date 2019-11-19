@@ -66,9 +66,9 @@ To initialize the database (without creating a new user), there are two NPM scri
 
 ### Run
 
-To run the client-side of the project, navigate to the `/src/client` directory and start the webpack development server:
+To run the client-side of the project, navigate to the `/src/app` directory and start the webpack development server:
 ```
-cd src/client
+cd src/app
 npm run start
 ```
 To run the server-side of the project, navigate to the `/src/server` directory and start the webpack development server:
@@ -96,16 +96,16 @@ By default, the eggbeatr UI is hosted at localhost:8080 and the eggbeatr API is 
 * Clean the project, drop the database and user, install and update NPM packages, set up the database, and run the application.
 
 `packages:build`
-* Using Webpack, the project is built and concentrated to `bundle.client.js` and `bundle.server.js`.
+* Using Webpack, the project is built and concentrated to `bundle.app.js` and `bundle.server.js`.
 
 `packages:clean`
-* Via the [/bin/clean](https://github.com/istreight/eggbeatr/blob/master/bin/clean) script, all the files and directories listed in [.gitignore](https://github.com/istreight/eggbeatr/blob/master/.gitignore) are removed from the [root](https://github.com/istreight/eggbeatr), [client](https://github.com/istreight/eggbeatr/tree/master/src/client), and [server](https://github.com/istreight/eggbeatr/tree/master/src/server) directories.
+* Via the [/bin/clean](https://github.com/istreight/eggbeatr/blob/master/bin/clean) script, all the files and directories listed in [.gitignore](https://github.com/istreight/eggbeatr/blob/master/.gitignore) are removed from the [root](https://github.com/istreight/eggbeatr), [app](https://github.com/istreight/eggbeatr/tree/master/src/app), and [server](https://github.com/istreight/eggbeatr/tree/master/src/server) directories.
 
 `packages:install`
-* Installs the npm dependencies in the root, client, and server directories.
+* Installs the npm dependencies in the root, app, and server directories.
 
 `packages:update`
-* Applies updates to npm dependencies in the root, client, and server, where dependencies have updates.
+* Applies updates to npm dependencies in the root, app, and server, where dependencies have updates.
 
 `start`
 * Using AppleScript, two additional Terminals are opened with local servers for the client-side and server-side. To start the project without AppleScript, see the **Run** section above.

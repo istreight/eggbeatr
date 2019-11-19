@@ -6,7 +6,7 @@ t=$(osascript -e 'exists application "Terminal"')
 # Open the servers.
 if [[ $? -eq 0 ]] && [[ $t -eq "true" ]]
 then
-    osascript -e 'tell application "Terminal" to do script "cd '$(pwd)'/src/client; npm run start"'
+    osascript -e 'tell application "Terminal" to do script "cd '$(pwd)'/src/app; npm run start"'
     osascript -e 'tell application "Terminal" to do script "cd '$(pwd)'/src/server; npm run start"'
 fi
 

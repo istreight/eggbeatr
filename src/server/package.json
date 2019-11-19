@@ -2,7 +2,7 @@
     "name": "server",
     "version": "1.0.0",
     "description": "",
-    "main": "app.server.js",
+    "main": "index.server.js",
     "dependencies": {
         "@types/morgan": "^1.7.37",
         "@types/webpack-node-externals": "^1.6.3",
@@ -28,7 +28,7 @@
         "webpack-node-externals": "^1.7.2"
     },
     "scripts": {
-        "start": "nodemon src/app.server.js",
+        "start": "nodemon src/index.server.js",
         "build": "webpack -p --config etc/webpack.server.config.js"
     },
     "keywords": [],

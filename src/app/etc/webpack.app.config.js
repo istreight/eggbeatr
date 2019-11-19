@@ -6,11 +6,11 @@ module.exports = {
     target: 'web',
     mode: 'development',
     context: path.resolve(__dirname, contentBase),
-    entry: './app.client.js',
+    entry: './index.app.js',
     output: {
         path: path.resolve(__dirname, contentBase, 'build'),
         publicPath: '/',
-        filename: './bundle.client.js'
+        filename: './bundle.app.js'
     },
     devServer: {
         contentBase: path.resolve(__dirname, contentBase)
