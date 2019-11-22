@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.app.js",
     "dependencies": {
+        "@babel/polyfill": "^7.7.0",
         "@types/jquery": "^3.3.31",
         "@types/jspdf": "^1.3.2",
         "@types/react": "^16.9.11",
@@ -20,6 +21,7 @@
         "@babel/core": "^7.7.2",
         "@babel/preset-env": "^7.7.1",
         "@babel/preset-react": "^7.7.0",
+        "@babel/preset-stage-0": "^7.0.0",
         "babel-loader": "^8.0.6",
         "css-loader": "^3.2.0",
         "pure-css": "^1.0.4",

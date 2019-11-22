@@ -352,7 +352,6 @@ class Instructors extends React.Component {
 
 Instructors.propTypes = {
     callback: PropTypes.func.isRequired,
-    connector: PropTypes.object.isRequired,
     createComponent: PropTypes.func.isRequired,
     deletePreference: PropTypes.func.isRequired,
     handlePreferencesClick: PropTypes.func.isRequired,

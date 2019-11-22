@@ -33,6 +33,7 @@ class Controller extends React.Component {
             "componentObjects": {},
             "controllerData": {},
             "connector": new Connector({
+                "githubURI": this.props.githubURI,
                 "serverURI": this.props.serverURI
             })
         };
@@ -94,6 +95,10 @@ class Controller extends React.Component {
     renderComponents() {
         console.log("rendering components...");
 
+        var setGridChecklistQuantity;
+        var components = this.state.components;
+        var componentObjects = this.state.componentObjects;
+
         // Store functions as local variables to be passed to components.
         var createComponent = this.createComponent.bind(this);
         var removeComponent = this.removeComponent.bind(this);
@@ -104,9 +109,11 @@ class Controller extends React.Component {
             Landing, {}, document.getElementById("dynamicLanding")
         );
 
-        this.renderComponent(
-            Footer, {}, document.getElementById("dynamicFooter")
-        );
+        this.renderComponent(Footer, {
+            "callback": componentCallback
+        }, document.getElementById("dynamicFooter"), function() {
+            setComponentData("footer", this, true);
+        });
 
         this.renderComponent(
             About, {}, document.getElementById("dynamicAbout")
@@ -115,7 +122,7 @@ class Controller extends React.Component {
         this.renderComponent(Header, {
                 "callback": componentCallback,
                 "createComponent": createComponent,
-                "initData": this.state.components.header,
+                "initData": components.header,
                 "removeComponent": removeComponent
             }, document.getElementById("dynamicHeader"), function() {
                 setComponentData("header", this, true);
@@ -126,23 +133,25 @@ class Controller extends React.Component {
             setComponentData("gridChecklist", this, true);
         });
 
+        setGridChecklistQuantity = componentObjects.gridChecklist.setQuantity.bind(componentObjects.gridChecklist);
+
         this.renderComponent(Grid, {
                 "callback": componentCallback,
                 "createComponent": createComponent,
                 "getGrids": this.state.connector.getGridArrays.bind(this),
-                "gridChecklistCallback": this.state.componentObjects.gridChecklist.setCreateGridComponents.bind(this.state.componentObjects.gridChecklist),
-                "initData": this.state.components.grid,
-                "getSetTitle": this.state.componentObjects.header.getSelectedSet.bind(this.state.componentObjects.header),
+                "gridChecklistCallback": componentObjects.gridChecklist.setCreateGridComponents.bind(componentObjects.gridChecklist),
+                "initData": components.grid,
+                "getSetTitle": componentObjects.header.getSelectedSet.bind(componentObjects.header),
                 "removeComponent": removeComponent,
-                "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
+                "setChecklistQuantity": setGridChecklistQuantity
             }, document.getElementById("dynamicGrid"), function() {
                 setComponentData("grid", this, true);
         });
 
         this.renderComponent(InstructorPreferences, {
                 "callback": componentCallback,
-                "connector": this.state.connector,
-                "initData": this.state.components.instructorPreferences
+                "getPreferenceData": this.state.connector.getPreferenceData,
+                "initData": components.instructorPreferences
             }, document.getElementById("dynamicInstructorPreferences"),
             function() {
                 setComponentData("instructorPreferences", this, true);
@@ -150,37 +159,47 @@ class Controller extends React.Component {
 
         this.renderComponent(Instructors, {
                 "callback": componentCallback,
-                "connector": this.state.connector,
                 "createComponent": createComponent,
-                "deletePreference": this.state.componentObjects.instructorPreferences.deletePreference.bind(this.state.componentObjects.instructorPreferences),
-                "handlePreferencesClick": this.state.componentObjects.instructorPreferences.displayComponentState.bind(this.state.componentObjects.instructorPreferences),
-                "initData": this.state.components.instructors,
+                "deletePreference": componentObjects.instructorPreferences.deletePreference.bind(componentObjects.instructorPreferences),
+                "handlePreferencesClick": componentObjects.instructorPreferences.displayComponentState.bind(componentObjects.instructorPreferences),
+                "initData": components.instructors,
                 "removeComponent": removeComponent,
-                "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
+                "setChecklistQuantity": setGridChecklistQuantity
             }, document.getElementById("dynamicInstructors"), function() {
                 setComponentData("instructors", this, true);
         });
 
         this.renderComponent(Lessons, {
                 "callback": componentCallback,
-                "connector": this.state.connector,
                 "createComponent": createComponent,
-                "initData": this.state.components.lessons,
-                "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
+                "initData": components.lessons,
+                "setChecklistQuantity": setGridChecklistQuantity
             }, document.getElementById("dynamicLessons"), function() {
                 setComponentData("lessons", this, true);
         });
 
         this.renderComponent(Privates, {
                 "callback": componentCallback,
-                "connector": this.state.connector,
                 "createComponent": createComponent,
-                "initData": this.state.components.privates,
+                "initData": components.privates,
+                "getInstructorData": this.state.connector.getInstructorData,
                 "removeComponent": removeComponent,
-                "setChecklistQuantity": this.state.componentObjects.gridChecklist.setQuantity.bind(this.state.componentObjects.gridChecklist)
+                "setChecklistQuantity": setGridChecklistQuantity
             }, document.getElementById("dynamicPrivates"), function() {
                 setComponentData("privates", this, true);
         });
+
+        this.state.connector.getReleaseVersion()
+            .then(res => {
+                var headerState = JSON.parse(JSON.stringify(components.header));
+
+                Object.assign(headerState.data, {
+                    "versionName": res.data.name
+                });
+
+                componentObjects.footer.setState(res);
+                componentObjects.header.setState(headerState);
+            }).catch(error => console.error(error));
     }
 
     /**
@@ -347,7 +366,7 @@ class Controller extends React.Component {
             JSON.stringify(this.state.components.instructors)
         );
 
-        // Add instructor instructorPreferences to controllerData.
+        // Add instructorPreferences to controllerData.
         this.state.controllerData.instructorPreferences = JSON.parse(
             JSON.stringify(this.state.components.instructorPreferences)
         );
@@ -363,8 +382,6 @@ class Controller extends React.Component {
         );
 
         // Add private lessons to controllerData.
-        // here
-        console.log("here", this.state.controllerData);
         this.state.controllerData.privates = JSON.parse(
             JSON.stringify(this.state.components.privates)
         );
@@ -515,14 +532,12 @@ class Controller extends React.Component {
             promise = this.state.connector.setLessonData(body);
         }
 
-        promise.then((res) => {
+        console.log("Sent create new " + component + " request to database.");
+
+        return promise.then((res) => {
             console.log("Created new " + component + ":", res);
             return res;
         }).catch(error => console.error(error));
-
-        console.log("Sent create new " + component + " request to database.");
-
-        return promise;
     }
 
     /**
@@ -557,7 +572,8 @@ class Controller extends React.Component {
 }
 
 Controller.propTypes = {
-    serverURI: PropTypes.object.isRequired
+    githubURI: PropTypes.string.isRequired,
+    serverURI: PropTypes.string.isRequired
 }
 
 export default Controller;

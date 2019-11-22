@@ -15,6 +15,7 @@ import Controller from 'components/Controller';
 
 
 const controller = new Controller({
+    "githubURI": "https://api.github.com/repos/istreight/eggbeatr",
     "serverURI": "http://localhost:8081"
 });
 
