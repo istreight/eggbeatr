@@ -494,9 +494,8 @@ class Lessons extends React.Component {
                         ]
                     ] }
                     styleCell={ () => null }
-                    styleHeader={ () => null }
                     styleRow={ (index) => index % 2 ? "table-even" : "table-odd" }
-                    styleTable={ () => "pure-table" }
+                    styleTable={ "pure-table" }
                 />
                 <Tutorial
                     buttonClass={ "pure-button content-next-button" }
@@ -513,7 +512,6 @@ class Lessons extends React.Component {
 
 Lessons.propTypes = {
     callback: PropTypes.func.isRequired,
-    connector: PropTypes.object.isRequired,
     createComponent: PropTypes.func.isRequired,
     initData: PropTypes.object.isRequired,
     setChecklistQuantity: PropTypes.func.isRequired

@@ -105,7 +105,7 @@ class Privates extends React.Component {
 
             return new Promise((resolve) => resolve(privateLesson.instructorId));
         } else {
-            return this.props.connector.getInstructorData()
+            return this.props.getInstructorData()
                 .then((res) => {
                     var instructors = res.data;
                     var instructor = instructors[instructorName];
@@ -378,8 +378,8 @@ class Privates extends React.Component {
 Privates.propTypes =  {
     callback: PropTypes.func.isRequired,
     initData: PropTypes.object.isRequired,
-    connector: PropTypes.object.isRequired,
     createComponent: PropTypes.func.isRequired,
+    getInstructorData: PropTypes.func.isRequired,
     removeComponent: PropTypes.func.isRequired,
     setChecklistQuantity: PropTypes.func.isRequired
 }

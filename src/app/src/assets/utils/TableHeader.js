@@ -24,7 +24,7 @@ class TableHeader extends React.Component {
 
     render() {
         return (
-            <th className={ this.state.style() }>
+            <th>
                 { this.state.data }
             </th>
         );
@@ -35,8 +35,7 @@ TableHeader.propTypes = {
     data: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.string
-    ]),
-    style: PropTypes.func.isRequired
+    ])
 }
 
 export default TableHeader;

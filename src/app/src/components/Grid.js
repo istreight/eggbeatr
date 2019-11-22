@@ -777,9 +777,8 @@ class Grid extends React.Component {
             "dataHeader": dataHeader,
             "key": "key-grid-table-" + gridIndex,
             "styleCell": styleCell,
-            "styleHeader": () => null,
             "styleRow": (index) => index % 2 ? "table-even" : "table-odd",
-            "styleTable": () => "pure-table"
+            "styleTable": "pure-table"
         });
     }
 
@@ -1064,9 +1063,8 @@ class Grid extends React.Component {
                         "dataBody": [],
                         "dataHeader": [],
                         "styleCell": () => null,
-                        "styleHeader": () => null,
                         "styleRow": () => null,
-                        "styleTable": () => "pure-table"
+                        "styleTable": "pure-table"
                     } }
                 />
                 <Tutorial

@@ -451,6 +451,7 @@ class Connector extends React.Component {
                         return true;
                     }
 
+                    // This covers the case where the preference ID is -1, for uninstantiated preferences components.
                     maxId = Math.max(newId, maxId);
                     newInstructor = newInstructorObject.instructor;
 
@@ -607,9 +608,28 @@ class Connector extends React.Component {
                 return newObject;
             }).catch(error => console.error(error));
     }
+
+    async getReleaseVersion() {
+        const res = await fetch(this.props.githubURI + '/releases');
+        const json = await res.json();
+
+        var latest = json[0];
+        var name = latest.name;
+        var url = latest.html_url;
+        var tagName = latest.tag_name;
+
+        return {
+            "data": {
+                "name": name,
+                "tag": tagName,
+                "url": url
+            }
+        };
+    }
 }
 
 Connector.propTypes = {
+    githubURI: PropTypes.string.isRequired,
     serverURI: PropTypes.string.isRequired
 }
 
