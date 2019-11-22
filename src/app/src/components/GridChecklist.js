@@ -149,9 +149,8 @@ class GridChecklist extends React.Component {
                         "Quantity"
                     ]] }
                     styleCell={ this.getCellStyle.bind(this) }
-                    styleHeader={ () => null }
                     styleRow={ (index) => index % 2 ? "table-even" : "table-odd" }
-                    styleTable={ () => "pure-table" }
+                    styleTable={ "pure-table" }
                 />
             </div>
         );

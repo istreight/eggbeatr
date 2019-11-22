@@ -25,6 +25,10 @@ class ScrollingAnchor extends React.Component {
         this.setState(this.props);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps);
+    }
+
     handleClick() {
         var target = "dynamic" + this.node.innerHTML;
 

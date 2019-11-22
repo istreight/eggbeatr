@@ -38,8 +38,7 @@ class TableRow extends React.Component {
             cells = data.map((cellData, index) =>
                 React.createElement(TableHeader, {
                     "data": cellData,
-                    "key": "key-cell-" + index,
-                    "style": style
+                    "key": "key-cell-" + index
                 })
             );
         } else {

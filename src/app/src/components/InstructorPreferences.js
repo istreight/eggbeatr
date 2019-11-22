@@ -82,7 +82,7 @@ class InstructorPreferences extends React.Component {
                 cellClass += "hide-preference-";
             }
 
-            cellClass += index % 2 ? "even" : "odd";
+            cellClass += (index % 2) ? "even" : "odd";
         }
 
         return cellClass;
@@ -102,9 +102,7 @@ class InstructorPreferences extends React.Component {
         var lesson = e.target.innerHTML;
         var instructor = this.selectedInstructor;
 
-        preferences = JSON.parse(
-            JSON.stringify(this.state.data[instructor])
-        );
+        preferences = JSON.parse(JSON.stringify(this.state.data[instructor]));
 
         lessonIndex = preferences.lessons.indexOf(lesson);
         if (lessonIndex > -1) {
@@ -120,7 +118,7 @@ class InstructorPreferences extends React.Component {
     /**
      * Edit the lesson preference cells.
      */
-    getPreferenceData() {
+    getPreferenceButtons() {
         var preferences = JSON.parse(JSON.stringify(this.defaultPreferences));
 
         for (let rowIndex = 0; rowIndex < preferences.length; rowIndex++) {
@@ -156,8 +154,8 @@ class InstructorPreferences extends React.Component {
                 "isDisplayed": true
             }));
         } else {
-            // Fetch new data and set State for instructors without preferences.
-            this.props.connector.getPreferenceData()
+            // Fetch new data and set state for instructors without preferences.
+            this.props.getPreferenceData()
                 .then((res) => {
                     this.setState(res, () => this.modal.setState({
                         "header": [instructorName],
@@ -219,7 +217,7 @@ class InstructorPreferences extends React.Component {
                 ] }
                 header={ [ this.selectedInstructor ] }
                 tableData={ {
-                    "dataBody": this.getPreferenceData(),
+                    "dataBody": this.getPreferenceButtons(),
                     "dataHeader": [[
                         "Parent & Tot",
                         "Pre-School",
@@ -228,9 +226,8 @@ class InstructorPreferences extends React.Component {
                         "Teens & Adults"
                     ]],
                     "styleCell": this.getCellStyle.bind(this),
-                    "styleHeader": () => null,
                     "styleRow": (index) => index % 2 ? "table-even" : "table-odd",
-                    "styleTable": () => "pure-table"
+                    "styleTable": "pure-table"
                 } }
             />
         );
@@ -239,7 +236,7 @@ class InstructorPreferences extends React.Component {
 
 InstructorPreferences.propTypes = {
     callback: PropTypes.func.isRequired,
-    connector: PropTypes.object.isRequired,
+    getPreferenceData: PropTypes.func.isRequired,
     initData: PropTypes.object.isRequired
 }
 

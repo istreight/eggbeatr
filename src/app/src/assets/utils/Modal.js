@@ -60,7 +60,6 @@ class Modal extends React.Component {
                                 dataBody={ this.state.tableData.dataBody }
                                 dataHeader={ this.state.tableData.dataHeader }
                                 styleCell={ this.state.tableData.styleCell }
-                                styleHeader={ this.state.tableData.styleHeader }
                                 styleRow={ this.state.tableData.styleRow }
                                 styleTable={ this.state.tableData.styleTable }
                             />

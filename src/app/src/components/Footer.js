@@ -8,76 +8,54 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Anchor from 'utils/Anchor';
 import UnorderedList from 'utils/UnorderedList';
 
 
 class Footer extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = null;
+    }
+
+    componentWillMount() {
+        this.setState(this.props.initData, () => {
+            this.props.callback(this.state, "footer", false)
+        });
+    }
+
     render() {
         return (
             <div className="is-center">
-                Made with &hearts;<br />by {
-                    React.createElement(Anchor, {
-                        "callback": () => null,
-                        "data": "Isaac Streight",
-                        "handleClick": () => null,
-                        "hyperlink": "https://github.com/istreight/eggbeatr",
-                        "key": "key-footer-anchor-0",
-                        "styleClass": "footer-links"
-                    })
-                }
-                <p>
-                    Created during Winter 2016<br />
-                    on the coast of BC, Canada
-                </p>
-                <UnorderedList
-                    data={ [
-                        {
-                            "data": ["Powered by"],
-                            "styleClass": ""
-                        },
-                        { "data": [
-                            React.createElement(Anchor, {
-                                "data": "React",
-                                "handleClick": () => null,
-                                "hyperlink": "https://reactjs.org",
-                                "key": "key-footer-anchor-1",
-                                "styleClass": "footer-links"
-                            }),
-                            ", ",
-                            React.createElement(Anchor, {
-                                "data": "Webpack",
-                                "handleClick": () => null,
-                                "hyperlink": "https://webpack.js.org",
-                                "key": "key-footer-anchor-2",
-                                "styleClass": "footer-links"
-                            }),
-                            ", ",
-                            React.createElement(Anchor, {
-                                "data": "Babel",
-                                "handleClick": () => null,
-                                "hyperlink": "https://babeljs.io",
-                                "key": "key-footer-anchor-3",
-                                "styleClass": "footer-links"
-                            }),
-                            ", & ",
-                            React.createElement(Anchor, {
-                                "data": "PureCSS",
-                                "handleClick": () => null,
-                                "hyperlink": "http://purecss.io",
-                                "key": "key-footer-anchor-4",
-                                "styleClass": "footer-links"
-                            })
-                        ],
-                        "styleClass": ""
-                    }
-                    ] }
-                    styleClass={ "" }
+                { this.state.data.name }
+                <Anchor
+                    callback={ () => null }
+                    data={ this.state.data.tag }
+                    handleClick={ () => null }
+                    hyperlink={ this.state.data.url }
+                    styleClass={ "footer-links" }
                 />
             </div>
         );
     }
+}
+
+Footer.defaultProps = {
+    initData: {
+        "data": {
+            "name": "",
+            "tag": "",
+            "url": ""
+        }
+    }
+}
+
+Footer.propTypes = {
+    callback: PropTypes.func.isRequired,
+    initData: PropTypes.object
 }
 
 export default Footer;

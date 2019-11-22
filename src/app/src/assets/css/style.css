@@ -934,20 +934,10 @@ tbody td:first-child {
 }
 
 #dynamicFooter div {
-    height: 40px;
-
     font-size: 14px;
-    line-height: 23px;
+    line-height: 20px;
 }
 
-#dynamicFooter p {
-    margin: -48px 0;
-    text-align: left;
-}
-
-#dynamicFooter ul {
-    margin: -48px 0;
-    text-align: right;
-
-    list-style-type: none;
+#dynamicFooter a {
+    padding: 16px;
 }

@@ -56,7 +56,7 @@ class Table extends React.Component {
                 "isHeaderRow": true,
                 "index": index,
                 "key": "key-header-" + index,
-                "styleCell": this.state.styleHeader,
+                "styleCell": () => null,
                 "styleRow": () => null
             })
         );
@@ -64,7 +64,7 @@ class Table extends React.Component {
 
     render() {
         return (
-            <table className={ this.state.styleTable() }>
+            <table className={ this.state.styleTable }>
                 <thead>
                     { this.getHeaderRows() }
                 </thead>
@@ -85,9 +85,8 @@ Table.propTypes = {
     dataBody: PropTypes.array.isRequired,
     dataHeader: PropTypes.array.isRequired,
     styleCell: PropTypes.func.isRequired,
-    styleHeader: PropTypes.func.isRequired,
     styleRow: PropTypes.func.isRequired,
-    styleTable: PropTypes.func.isRequired
+    styleTable: PropTypes.string.isRequired
 }
 
 export default Table;

@@ -29,7 +29,13 @@ class Header extends React.Component {
     }
 
     componentWillMount() {
-        this.setState(this.sortSets(this.props.initData), () => {
+        var sorted = this.sortSets(this.props.initData);
+
+        Object.assign(sorted.data, {
+            "versionName": ""
+        });
+
+        this.setState(sorted, () => {
             this.finishEditing();
             this.props.callback(this.state, "header", false);
         });
@@ -294,7 +300,7 @@ class Header extends React.Component {
         return (
             <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
                 <ScrollingAnchor
-                    data={ "eggbeatr \u2014 BETA" }
+                    data={ this.state.data.versionName }
                     styleClass={ "pure-menu-heading" }
                 />
                 <Anchor

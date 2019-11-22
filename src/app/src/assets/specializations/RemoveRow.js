@@ -123,7 +123,6 @@ class RemoveRow extends React.Component {
 
 RemoveRow.defaultProps = {
     callback: () => null,
-    index: -1,
     show: false
 }
 
