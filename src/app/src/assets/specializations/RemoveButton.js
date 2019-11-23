@@ -5,44 +5,45 @@
  *
  * This file contains the RemoveButton class, a specialization class for the
  *  Anchor React class, the buttons responsible for removing component items.
+ *
+ * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import Anchor from 'utils/Anchor';
-
-
+import React from "react";
+import PropTypes from "prop-types";
+import Anchor from "utils/Anchor";
 class RemoveButton extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
-
     componentDidMount() {
         this.props.callback(this);
     }
-
     render() {
-        return (
-            <Anchor
-                callback={ this.state.callback.bind(this) }
-                data={ "Remove" }
-                handleClick={ this.state.handleClick.bind(this) }
-                styleClass={ "pure-button remove" }
+        return ( <
+            Anchor callback = {
+                this.state.callback.bind(this)
+            }
+            data = {
+                "Remove"
+            }
+            handleClick = {
+                this.state.handleClick.bind(this)
+            }
+            styleClass = {
+                "pure-button remove"
+            }
             />
         );
-    }
+    }
 }
-
 RemoveButton.defaultProps = {
     callback: () => null
-}
-
+};
 RemoveButton.propTypes = {
-    callback: PropTypes.func,
-    handleClick: PropTypes.func.isRequired
-}
-
+    callback: PropTypes.func
+    , handleClick: PropTypes.func.isRequired
+};
 export default RemoveButton;

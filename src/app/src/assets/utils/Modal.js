@@ -5,31 +5,27 @@
  *
  * This file contains the Table class, a utility class for
  *  table tags in the application.
+ *
+ * @format
  */
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-
-import Table from 'utils/Table';
-
-
+import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import Table from "utils/Table";
 class Modal extends React.Component {
     constructor(props) {
         super(props);
-
         this.node = null;
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
-
     componentDidMount() {
         this.node = ReactDOM.findDOMNode(this);
         this.props.callback(this);
     }
-
     componentDidUpdate() {
         var nodeClassList = this.node.classList;
-
         if (this.state.isDisplayed) {
             nodeClassList.add("show");
             nodeClassList.remove("hide");
@@ -38,48 +34,53 @@ class Modal extends React.Component {
             nodeClassList.remove("show");
         }
     }
-
     render() {
-        return (
-                <div className="modal">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            { this.state.header }
-                        </div>
-                        <div className="modal-body">
-                            { this.state.body }
-                            <Table
-                                dataBody={ this.state.tableData.dataBody }
-                                dataHeader={ this.state.tableData.dataHeader }
-                                styleCell={ this.state.tableData.styleCell }
-                                styleRow={ this.state.tableData.styleRow }
-                                styleTable={ this.state.tableData.styleTable }
-                            />
-                        </div>
-                        <div className="modal-footer">
-                            { this.state.footer }
-                        </div>
-                    </div>
-                </div>
+        return ( <
+            div className = "modal" >
+            <
+            div className = "modal-content" >
+            <
+            div className = "modal-header" > {
+                this.state.header
+            } < /div> <
+            div className = "modal-body" > {
+                this.state.body
+            } <
+            Table dataBody = {
+                this.state.tableData.dataBody
+            }
+            dataHeader = {
+                this.state.tableData.dataHeader
+            }
+            styleCell = {
+                this.state.tableData.styleCell
+            }
+            styleRow = {
+                this.state.tableData.styleRow
+            }
+            styleTable = {
+                this.state.tableData.styleTable
+            }
+            /> <
+            /div> <
+            div className = "modal-footer" > {
+                this.state.footer
+            } < /div> <
+            /div> <
+            /div>
         );
-    }
+    }
 }
-
 Modal.defaultProps = {
-    callback: () => null,
-    isDisplayed: false
-}
-
+    callback: () => null
+    , isDisplayed: false
+};
 Modal.propTypes = {
-    body: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.array
-    ]),
-    callback: PropTypes.func,
-    footer: PropTypes.array.isRequired,
-    header: PropTypes.array.isRequired,
-    isDisplayed: PropTypes.bool,
-    tableData: PropTypes.object.isRequired
-}
-
+    body: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
+    , callback: PropTypes.func
+    , footer: PropTypes.array.isRequired
+    , header: PropTypes.array.isRequired
+    , isDisplayed: PropTypes.bool
+    , tableData: PropTypes.object.isRequired
+};
 export default Modal;

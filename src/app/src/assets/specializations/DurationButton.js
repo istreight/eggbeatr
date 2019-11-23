@@ -5,34 +5,29 @@
  *
  * This file contains the DurationButton class, a specialization class
  *  for the duration buttons of the Grid section.
+ *
+ * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
-
-
+import React from "react";
+import PropTypes from "prop-types";
 class DurationButton extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
-
     componentDidMount() {
         this.props.callback(this);
         this.setNumericDuration();
     }
-
     handleClick() {
         var styleClass = this.state.styleClass;
-
         this.setState({
-            "styleClass": styleClass + " pure-menu-selected"
+            styleClass: styleClass + " pure-menu-selected"
         });
-
         this.state.handleClick(this.duration);
     }
-
     /**
      * Translate the textual representation of the duration button
      *  to a float value.
@@ -40,37 +35,35 @@ class DurationButton extends React.Component {
     setNumericDuration() {
         var duration;
         var text = this.state.data.replace(" hours", "");
-
         duration = parseInt(text[0], 10);
-
         if (text.includes("\u00BD")) {
             duration += 0.5;
         }
-
         this.duration = duration;
-
         return duration;
     }
-
     render() {
-        return (
-            <a className={ this.state.styleClass } onClick={ this.handleClick.bind(this) }>
-                { this.state.data }
-            </a>
+        return ( <
+            a className = {
+                this.state.styleClass
+            }
+            onClick = {
+                this.handleClick.bind(this)
+            } > {
+                this.state.data
+            } <
+            /a>
         );
-    }
+    }
 }
-
 DurationButton.defaultProps = {
-    callback: () => null,
-    styleClass: "pure-menu-link"
-}
-
+    callback: () => null
+    , styleClass: "pure-menu-link"
+};
 DurationButton.propTypes = {
-    callback: PropTypes.func,
-    data: PropTypes.string.isRequired,
-    handleClick: PropTypes.func.isRequired,
-    styleClass: PropTypes.string
-}
-
+    callback: PropTypes.func
+    , data: PropTypes.string.isRequired
+    , handleClick: PropTypes.func.isRequired
+    , styleClass: PropTypes.string
+};
 export default DurationButton;

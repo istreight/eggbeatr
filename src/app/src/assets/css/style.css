@@ -2,10 +2,11 @@
  * FILENAME:    style.css
  * AUTHOR:      Isaac Streight
  * START DATE:  October 19th, 2016
- *
+ * 
  * This file contains the styling for the lesson calendar web application.
+ *
+ * @format
  */
-
 
 /* "Creating Grids" & "Switch Sets" indicators */
 @-webkit-keyframes scale {
@@ -13,9 +14,11 @@
         opacity: 0;
         -webkit-transform: scale(0);
     }
+
     70% {
         opacity: 1;
     }
+
     100% {
         opacity: 0;
         -webkit-transform: scale(1);
@@ -30,8 +33,8 @@
 
 ::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background-color: rgba(0,0,0,.5);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 input[type="text"] {
@@ -48,7 +51,11 @@ input[type="text"].focus {
     box-shadow: 0 0 5px 1px #969696;
 }
 
-html, body, .content, .ribbon, .modal {
+.content,
+.modal,
+.ribbon,
+body,
+html {
     max-width: 100%;
     overflow-x: hidden;
 }
@@ -112,7 +119,7 @@ html, body, .content, .ribbon, .modal {
 .content-next-button {
     margin: -2.5% 0 0 100%;
 
-    font-size: 120%
+    font-size: 120%;
 }
 
 .is-left {
@@ -128,7 +135,7 @@ html, body, .content, .ribbon, .modal {
 }
 
 .float-right {
-    float: right
+    float: right;
 }
 
 .table-odd {
@@ -157,7 +164,8 @@ tr:hover .line {
     border-color: #cbcbcb !important;
 }
 
-th, td {
+td,
+th {
     text-align: right;
 }
 
@@ -179,23 +187,31 @@ tbody td:first-child {
 
 /* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    z-index: 10; /* Foreground */
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    z-index: 10;
+    /* Foreground */
 }
 
 /* Modal Content/Box */
 .modal-content {
     background-color: #f0f0f0;
-    margin: 7.5% auto; /* 15% from the top and centered */
+    margin: 7.5% auto;
+    /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid transparent;
-    width: 75%; /* Could be more or less, depending on screen size */
+    width: 75%;
+    /* Could be more or less, depending on screen size */
 }
 
 /* Modal Header */
@@ -287,7 +303,7 @@ tbody td:first-child {
     -webkit-animation-delay: 2s;
 }
 
-.wait-spinner span:nth-child(3){
+.wait-spinner span:nth-child(3) {
     -webkit-animation-delay: 1s;
 }
 
@@ -309,11 +325,14 @@ tbody td:first-child {
     margin: 5% 40px 0 0;
 }
 
-#dynamicLanding, #dynamicAbout, #dynamicInstructors, #dynamicLessons, #dynamicPrivates, #dynamicGrid {
+#dynamicAbout,
+#dynamicGrid,
+#dynamicInstructors,
+#dynamicLanding,
+#dynamicLessons,
+#dynamicPrivates {
     height: 92vh;
 }
-
-
 
 /* HEADER */
 
@@ -335,7 +354,7 @@ tbody td:first-child {
     position: absolute;
     top: 15px;
     margin-left: 48%;
-    color: #6FBEF3;
+    color: #6fbef3;
 }
 
 #dynamicHeader .wait-label {
@@ -348,7 +367,7 @@ tbody td:first-child {
 }
 
 #dynamicHeader .wait-spinner span {
-    border: 3px solid #6FBEF3;
+    border: 3px solid #6fbef3;
 }
 
 #dynamicHeader .header-input {
@@ -378,17 +397,15 @@ tbody td:first-child {
     font-size: 12px;
 }
 
-#dynamicHeader .pure-button:hover,
-#dynamicHeader .pure-button.hover {
+#dynamicHeader .pure-button.hover,
+#dynamicHeader .pure-button:hover {
     background-color: #1f8dd6;
-    background-image: linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10));
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
 }
 
 #dynamicHeader .removable-header {
     color: rgb(223, 117, 20);
 }
-
-
 
 /* LANDING */
 
@@ -400,15 +417,13 @@ tbody td:first-child {
     line-height: 24px;
 }
 
-#dynamicLanding .splash > div {
+#dynamicLanding .splash>div {
     margin-top: 7%;
 }
 
 #dynamicLanding a {
     opacity: 0;
 }
-
-
 
 /* ABOUT */
 
@@ -422,13 +437,13 @@ tbody td:first-child {
     padding: 45px;
 }
 
-#dynamicAbout > div {
+#dynamicAbout>div {
     width: 100%;
     height: 90%;
 }
 
 #dynamicAbout ul {
-    margin: 7.5% 0 0 0;
+    margin: 7.5% 0 0;
 
     padding: 32px;
 
@@ -463,8 +478,6 @@ tbody td:first-child {
     direction: ltr;
 }
 
-
-
 /* INSTRUCTOR */
 
 .add {
@@ -483,7 +496,7 @@ tbody td:first-child {
     padding: 45px;
 }
 
-#dynamicInstructors > div {
+#dynamicInstructors>div {
     position: relative;
     width: 100%;
     height: 100%;
@@ -508,8 +521,6 @@ tbody td:first-child {
 #dynamicInstructors .pure-button-primary {
     margin: -2.25% 0 0 85.2%;
 }
-
-
 
 /* INSTRUCTOR PREFERENCES */
 
@@ -538,7 +549,7 @@ tbody td:first-child {
 #dynamicInstructorPreferences table {
     width: 80%;
 
-    margin: 40px auto 24px auto;
+    margin: 40px auto 24px;
 }
 
 #dynamicInstructorPreferences th {
@@ -552,8 +563,6 @@ tbody td:first-child {
 
     height: 44px;
 }
-
-
 
 /* LESSONS */
 
@@ -571,7 +580,7 @@ tbody td:first-child {
     padding: 45px;
 }
 
-#dynamicLessons > div {
+#dynamicLessons>div {
     position: relative;
     width: 100%;
     height: 90%;
@@ -630,8 +639,6 @@ tbody td:first-child {
     color: #333333;
 }
 
-
-
 /* PRIVATE */
 
 .menu-odd {
@@ -654,7 +661,7 @@ tbody td:first-child {
     padding: 45px;
 }
 
-#dynamicPrivates > div {
+#dynamicPrivates>div {
     position: relative;
     width: 100%;
     height: 100%;
@@ -679,8 +686,6 @@ tbody td:first-child {
 #dynamicPrivates .ribbon-section-footer a {
     margin: -2.25% 0 0 85.2%;
 }
-
-
 
 /* GRID */
 
@@ -847,7 +852,8 @@ tbody td:first-child {
     table-layout: fixed;
 }
 
-#dynamicGrid .pure-menu-scrollable th, #dynamicGrid .pure-menu-scrollable td {
+#dynamicGrid .pure-menu-scrollable td,
+#dynamicGrid .pure-menu-scrollable th {
     width: 128px;
     height: 40px;
 }
@@ -881,7 +887,8 @@ tbody td:first-child {
     table-layout: fixed;
 }
 
-#dynamicGrid .modal-body th, #dynamicGrid .modal-body td {
+#dynamicGrid .modal-body td,
+#dynamicGrid .modal-body th {
     width: 128px;
     height: 64px;
 }
@@ -893,8 +900,6 @@ tbody td:first-child {
 #dynamicGrid .content-section-footer p {
     color: #333333;
 }
-
-
 
 /* GRID CHECKLIST */
 
@@ -919,12 +924,11 @@ tbody td:first-child {
     text-align: center;
 }
 
-#dynamicGridChecklist th, #dynamicGridChecklist td {
+#dynamicGridChecklist td,
+#dynamicGridChecklist th {
     width: 160px;
     height: 40px;
 }
-
-
 
 /* FOOTER */
 

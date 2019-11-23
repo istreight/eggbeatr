@@ -1,21 +1,21 @@
+<!-- @format -->
+
 # eggbeatr
 
-eggbeatr is a web application to schedule instructors with  lessons. It does the tedious work, leaving you with creative control.
-
+eggbeatr is a web application to schedule instructors with lessons. It does the tedious work, leaving you with creative control.
 
 ### Goal
 
 The goal of this project is to improve the schedule generating process, taking on the repetitive aspects.
 
-
 ### Hosting
 
 Currently, eggbeatr is not hosted on a public domain.
 
-
 ## Getting Started
 
 First off, clone the project:
+
 ```
 git clone https://github.com/istreight/eggbeatr.git
 ```
@@ -39,6 +39,7 @@ The project requires [Node.js](https://nodejs.org/en/) and [PostgeSQL](https://w
 ##### Verify installations
 
 To verify [Node.js](https://nodejs.org/en/), [Node Packet Manager](https://www.npmjs.com), and [PostgeSQL](https://www.postgresql.org/download/) have successfully been installed successfully, run the following commands and verify the results don't cause errors:
+
 ```
 $ node --version
 v10.11.0
@@ -67,11 +68,14 @@ To initialize the database (without creating a new user), there are two NPM scri
 ### Run
 
 To run the client-side of the project, navigate to the `/src/app` directory and start the webpack development server:
+
 ```
 cd src/app
 npm run start
 ```
+
 To run the server-side of the project, navigate to the `/src/server` directory and start the webpack development server:
+
 ```
 cd src/server
 npm run start
@@ -84,41 +88,49 @@ By default, the eggbeatr UI is hosted at localhost:8080 and the eggbeatr API is 
 ### NPM scripts
 
 `db:init`
-* Initialize the database with the default values. The raw values can be found in [/etc/defaults/ComponentData.js](https://github.com/istreight/eggbeatr/blob/master/etc/defaults/ComponentData.js) and are set in the database by the [seeders](https://github.com/istreight/eggbeatr/tree/master/src/server/src/seeders).
+
+- Initialize the database with the default values. The raw values can be found in [/etc/defaults/ComponentData.js](https://github.com/istreight/eggbeatr/blob/master/etc/defaults/ComponentData.js) and are set in the database by the [seeders](https://github.com/istreight/eggbeatr/tree/master/src/server/src/seeders).
 
 `db:empty`
-* Initialize the database without the default values.
+
+- Initialize the database without the default values.
 
 `db:setup`
-* Create the required user and database, then populate the database with the default values. The default values can be removed by subsequently running `npm run db:empty`.
+
+- Create the required user and database, then populate the database with the default values. The default values can be removed by subsequently running `npm run db:empty`.
 
 `install-app`
-* Clean the project, drop the database and user, install and update NPM packages, set up the database, and run the application.
+
+- Clean the project, drop the database and user, install and update NPM packages, set up the database, and run the application.
 
 `packages:build`
-* Using Webpack, the project is built and concentrated to `bundle.app.js` and `bundle.server.js`.
+
+- Using Webpack, the project is built and concentrated to `bundle.app.js` and `bundle.server.js`.
 
 `packages:clean`
-* Via the [/bin/clean](https://github.com/istreight/eggbeatr/blob/master/bin/clean) script, all the files and directories listed in [.gitignore](https://github.com/istreight/eggbeatr/blob/master/.gitignore) are removed from the [root](https://github.com/istreight/eggbeatr), [app](https://github.com/istreight/eggbeatr/tree/master/src/app), and [server](https://github.com/istreight/eggbeatr/tree/master/src/server) directories.
+
+- Via the [/bin/clean](https://github.com/istreight/eggbeatr/blob/master/bin/clean) script, all the files and directories listed in [.gitignore](https://github.com/istreight/eggbeatr/blob/master/.gitignore) are removed from the [root](https://github.com/istreight/eggbeatr), [app](https://github.com/istreight/eggbeatr/tree/master/src/app), and [server](https://github.com/istreight/eggbeatr/tree/master/src/server) directories.
 
 `packages:install`
-* Installs the npm dependencies in the root, app, and server directories.
+
+- Installs the npm dependencies in the root, app, and server directories.
 
 `packages:update`
-* Applies updates to npm dependencies in the root, app, and server, where dependencies have updates.
+
+- Applies updates to npm dependencies in the root, app, and server, where dependencies have updates.
 
 `start`
-* Using AppleScript, two additional Terminals are opened with local servers for the client-side and server-side. To start the project without AppleScript, see the **Run** section above.
+
+- Using AppleScript, two additional Terminals are opened with local servers for the client-side and server-side. To start the project without AppleScript, see the **Run** section above.
 
 ### Built With
 
-* [Babel](https://babeljs.io) - JavaScript Compiler
-* [Express](http://expressjs.com) - Middleware Web Framework for Node.js
-* [Nodemon](https://nodemon.io) - Hot Reloading for Development Server
-* [PostgreSQL](https://www.postgresql.org) - Open Source Relational Database
-* [ReactJS](https://reactjs.org) - JavaScript UI Library
-* [Webpack](https://webpack.js.org) - JavaScript Module Bundler
-
+- [Babel](https://babeljs.io) - JavaScript Compiler
+- [Express](http://expressjs.com) - Middleware Web Framework for Node.js
+- [Nodemon](https://nodemon.io) - Hot Reloading for Development Server
+- [PostgreSQL](https://www.postgresql.org) - Open Source Relational Database
+- [ReactJS](https://reactjs.org) - JavaScript UI Library
+- [Webpack](https://webpack.js.org) - JavaScript Module Bundler
 
 ## How To Use
 

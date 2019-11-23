@@ -1,32 +1,30 @@
-'use strict';
-
+/** @format */
+"use strict";
 module.exports = (sequelize, DataTypes) => {
-    var Header = sequelize.define('Header', {
+    var Header = sequelize.define("Header", {
         setTitle: DataTypes.STRING
     }, {});
-
     Header.associate = (models) => {
         Header.hasMany(models.Grid, {
-            foreignKey: 'headerId',
-            as: 'grid'
+            foreignKey: "headerId"
+            , as: "grid"
         });
         Header.hasMany(models.Instructor, {
-            foreignKey: 'headerId',
-            as: 'instructors'
+            foreignKey: "headerId"
+            , as: "instructors"
         });
         Header.hasMany(models.InstructorPreference, {
-            foreignKey: 'headerId',
-            as: 'instructorPreferences'
+            foreignKey: "headerId"
+            , as: "instructorPreferences"
         });
         Header.hasMany(models.Lesson, {
-            foreignKey: 'headerId',
-            as: 'lessons'
+            foreignKey: "headerId"
+            , as: "lessons"
         });
         Header.hasMany(models.Private, {
-            foreignKey: 'headerId',
-            as: 'privates'
+            foreignKey: "headerId"
+            , as: "privates"
         });
     };
-
     return Header;
 };

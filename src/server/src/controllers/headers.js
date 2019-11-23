@@ -1,7 +1,6 @@
-const Models = require('../models');
-
+/** @format */
+const Models = require("../models");
 const Header = Models.Header;
-
 module.exports = {
     list(_req, res) {
         return Header.findAll().then((header) => {
@@ -9,8 +8,8 @@ module.exports = {
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    create(req, res) {
+    }
+    , create(req, res) {
         return Header.create({
             setTitle: req.body.setTitle
         }).then((header) => {
@@ -18,31 +17,29 @@ module.exports = {
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    retrieve(req, res) {
+    }
+    , retrieve(req, res) {
         return Header.findByPk(req.params.headerId).then((header) => {
             if (!header) {
                 return res.status(404).send({
-                    message: 'Header Not Found.'
+                    message: "Header Not Found."
                 });
             }
-
             return res.status(200).send(header);
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    destroy(req, res) {
+    }
+    , destroy(req, res) {
         return Header.findByPk(req.params.headerId).then((header) => {
             if (!header) {
                 return res.status(404).send({
-                    message: 'Header Not Found.'
+                    message: "Header Not Found."
                 });
             }
-
             return header.destroy().then(() => {
                 res.status(200).send({
-                    message: 'Header Deleted Successfully.'
+                    message: "Header Deleted Successfully."
                 });
             }).catch((error) => {
                 res.status(400).send(error);

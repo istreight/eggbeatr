@@ -5,63 +5,62 @@
  *
  * This file contains the Checkbox class, a utility class for checkbox-type
  *  input tags in the application.
+ *
+ * @format
  */
-
-import React from 'react';
-import PropTypes from 'prop-types';
-
-
+import React from "react";
+import PropTypes from "prop-types";
 class Checkbox extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
-
     componentDidMount() {
         this.props.callback(this);
     }
-
     handleChange() {
         this.toggleValue(!this.state.checked);
         this.state.handleChange(!this.state.checked);
     }
-
     toggleState(disable) {
         this.setState({
-            "disabled": disable
+            disabled: disable
         });
     }
-
     toggleValue(enable) {
         this.setState({
-            "checked": enable
+            checked: enable
         });
     }
-
     render() {
-        return (
-            <input
-                checked={ this.state.checked }
-                disabled={ this.state.disabled }
-                onChange={ this.handleChange.bind(this) }
-                type={ "checkbox" }
+        return ( <
+            input checked = {
+                this.state.checked
+            }
+            disabled = {
+                this.state.disabled
+            }
+            onChange = {
+                this.handleChange.bind(this)
+            }
+            type = {
+                "checkbox"
+            }
             />
         );
-    }
+    }
 }
-
 Checkbox.defaultProps = {
-    callback: () => null,
-    checked: false,
-    disabled: false
+    callback: () => null
+    , checked: false
+    , disabled: false
 };
-
 Checkbox.propTypes = {
-    callback: PropTypes.func,
-    checked: PropTypes.bool,
-    disabled: PropTypes.bool,
-    handleChange: PropTypes.func.isRequired
-}
-
+    callback: PropTypes.func
+    , checked: PropTypes.bool
+    , disabled: PropTypes.bool
+    , handleChange: PropTypes.func.isRequired
+};
 export default Checkbox;

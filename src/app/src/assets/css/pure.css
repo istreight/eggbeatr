@@ -1,3 +1,5 @@
+/** @format */
+
 * {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -38,14 +40,12 @@ label {
 
 .l-box-lrg {
     padding: 2em;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .is-center {
     text-align: center;
 }
-
-
 
 /*
  * -- PURE FORM STYLES --
@@ -83,7 +83,6 @@ a.pure-button-primary {
     font-size: 120%;
 }
 
-
 /*
  * -- MENU STYLES --
  * I want to customize how my .pure-menu looks at the top of the page
@@ -92,7 +91,7 @@ a.pure-button-primary {
 .home-menu {
     padding: 0.5em;
     text-align: center;
-    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .home-menu {
@@ -117,16 +116,15 @@ a.pure-button-primary {
 }
 
 .home-menu a {
-    color: #6FBEF3;
+    color: #6fbef3;
 }
 
-.home-menu li a:hover,
-.home-menu li a:focus {
+.home-menu li a:focus,
+.home-menu li a:hover {
     background: none;
     border: none;
-    color: #AECFE5;
+    color: #aecfe5;
 }
-
 
 /*
  * -- SPLASH STYLES --
@@ -151,7 +149,10 @@ a.pure-button-primary {
     height: 50%;
     margin: auto;
     position: absolute;
-    top: 100px; left: 0; bottom: 0; right: 0;
+    top: 100px;
+    left: 0;
+    bottom: 0;
+    right: 0;
     text-align: center;
     text-transform: uppercase;
 }
@@ -207,6 +208,7 @@ a.pure-button-primary {
 .content-subhead {
     color: #1f8dd6;
 }
+
 .content-subhead i {
     margin-right: 7px;
 }
@@ -233,6 +235,7 @@ a.pure-button-primary {
     body {
         font-size: 16px;
     }
+
     /* We want to give the content area some more padding */
     .content {
         padding: 1em;
@@ -259,7 +262,6 @@ a.pure-button-primary {
         font-size: 250%;
     }
 
-
     /* We remove the border-separator assigned to .l-box-lrg */
     .l-box-lrg {
         border: none;
@@ -272,6 +274,7 @@ a.pure-button-primary {
  * of the mobile and tablet styles.
  */
 @media (min-width: 78em) {
+
     /* We increase the header font size even more */
     .splash-head {
         font-size: 300%;

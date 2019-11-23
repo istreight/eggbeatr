@@ -1,7 +1,6 @@
-const Models = require('../models');
-
+/** @format */
+const Models = require("../models");
 const Grid = Models.Grid;
-
 module.exports = {
     retrieve(req, res) {
         return Grid.findAll({
@@ -13,30 +12,30 @@ module.exports = {
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    create(req, res) {
+    }
+    , create(req, res) {
         return Grid.create({
-            headerId: req.query.headerId,
-            duration: req.body.duration,
-            lessonTimes: req.body.lessonTimes
+            headerId: req.query.headerId
+            , duration: req.body.duration
+            , lessonTimes: req.body.lessonTimes
         }).then((grid) => {
             res.status(201).send(grid);
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    update(req, res) {
+    }
+    , update(req, res) {
         return Grid.findByPk(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
-                    message: 'Grid Not Found.'
+                    message: "Grid Not Found."
                 });
             }
-
             return grid.update({
-                headerId: req.query.headerId || grid.headerId,
-                duration: req.body.duration || grid.duration,
-                lessonTimes: req.body.lessonTimes || grid.lessonTimes
+                headerId: req.query.headerId || grid.headerId
+                , duration: req.body.duration || grid.duration
+                , lessonTimes: req.body.lessonTimes || grid
+                    .lessonTimes
             }).then((grid) => {
                 res.status(200).send(grid);
             }).catch((error) => {
@@ -45,18 +44,17 @@ module.exports = {
         }).catch((error) => {
             res.status(400).send(error);
         });
-    },
-    destroy(req, res) {
+    }
+    , destroy(req, res) {
         return Grid.findByPk(req.params.gridId).then((grid) => {
             if (!grid) {
                 return res.status(404).send({
-                    message: 'Grid Not Found.'
+                    message: "Grid Not Found."
                 });
             }
-
             return grid.destroy().then(() => {
                 res.status(200).send({
-                    message: 'Grid Deleted Successfully.'
+                    message: "Grid Deleted Successfully."
                 });
             }).catch((error) => {
                 res.status(400).send(error);
