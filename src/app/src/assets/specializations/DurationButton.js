@@ -15,13 +15,7 @@ class DurationButton extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.refDuration = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
-        this.refDuration = React.createRef();
+        this.state = { ...props };
     }
 
     componentDidMount() {
@@ -36,7 +30,7 @@ class DurationButton extends React.Component {
             "styleClass": styleClass + " pure-menu-selected"
         });
 
-        this.state.handleClick(this.refDuration.current);
+        this.state.handleClick(this.duration);
     }
 
     /**
@@ -44,23 +38,23 @@ class DurationButton extends React.Component {
      *  to a float value.
      */
     setNumericDuration() {
-        var duration = 0;
+        var duration;
         var text = this.state.data.replace(" hours", "");
 
-        duration += parseInt(text[0], 10);
+        duration = parseInt(text[0], 10);
 
         if (text.includes("\u00BD")) {
             duration += 0.5;
         }
 
-        this.refDuration.current = duration;
+        this.duration = duration;
 
         return duration;
     }
 
     render() {
         return (
-            <a className={ this.state.styleClass } onClick={ this.handleClick.bind(this) } ref={ this.refDuration  }>
+            <a className={ this.state.styleClass } onClick={ this.handleClick.bind(this) }>
                 { this.state.data }
             </a>
         );

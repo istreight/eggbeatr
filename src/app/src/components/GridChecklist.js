@@ -16,12 +16,8 @@ class GridChecklist extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
         this.componentRow = null;
-    }
-
-    componentWillMount() {
-        this.setState({
+        this.state = {
             "data": {
                 "grid": {
                     "quantity": false,
@@ -40,7 +36,7 @@ class GridChecklist extends React.Component {
                     "cell": ""
                 }
             }
-        });
+        };
     }
 
     /**

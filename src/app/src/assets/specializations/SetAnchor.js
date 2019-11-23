@@ -18,11 +18,7 @@ class SetAnchor extends React.Component {
         super(props);
 
         this.node = null;
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
@@ -30,8 +26,8 @@ class SetAnchor extends React.Component {
         this.node = ReactDOM.findDOMNode(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps) {
+        return nextProps;
     }
 
     render() {

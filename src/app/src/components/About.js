@@ -16,37 +16,6 @@ import FeatureDescription from 'specializations/FeatureDescription';
 class About extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = null;
-    }
-
-    componentWillMount() {
-        var person = {
-            "imgSrc": "assets/img/person-icon.png",
-            "textDesc": "Schedule private lessons at a specific time and we'll make sure nothing conflicts."
-        };
-
-        var settings = {
-            "imgSrc": "assets/img/settings-icon.png",
-            "textDesc": "Our algorithm pairs your instructors with your lessons just like you would."
-        };
-
-        var stats = {
-            "imgSrc": "assets/img/stats-icon.png",
-            "textDesc": "We'll do the monotonous work so you can spend more time on what you enjoy."
-        };
-
-        var timer = {
-            "imgSrc": "assets/img/timer-icon.png",
-            "textDesc": "eggbeatr makes the most of your instructors by using their time between lessons."
-        };
-
-        this.setState({
-            "stats": stats,
-            "timer": timer,
-            "person": person,
-            "settings": settings
-        });
     }
 
     render() {
@@ -66,9 +35,9 @@ class About extends React.Component {
                         {
                             "data": [
                                 React.createElement(FeatureDescription, {
-                                    "imgSrc": this.state.person.imgSrc,
+                                    "imgSrc": "assets/img/person-icon.png",
                                     "key": "key-featuredescription-0",
-                                    "textDesc": this.state.person.textDesc
+                                    "textDesc": "Schedule private lessons at a specific time and we'll make sure nothing conflicts."
                                 })
                             ],
                             "styleClass": ""
@@ -76,9 +45,9 @@ class About extends React.Component {
                         {
                             "data": [
                                 React.createElement(FeatureDescription, {
-                                    "imgSrc": this.state.settings.imgSrc,
+                                    "imgSrc": "assets/img/settings-icon.png",
                                     "key": "key-featuredescription-0",
-                                    "textDesc": this.state.settings.textDesc
+                                    "textDesc": "Our algorithm pairs your instructors with your lessons just like you would."
                                 })
                             ],
                             "styleClass": ""
@@ -86,9 +55,9 @@ class About extends React.Component {
                         {
                             "data": [
                                 React.createElement(FeatureDescription, {
-                                    "imgSrc": this.state.stats.imgSrc,
+                                    "imgSrc": "assets/img/stats-icon.png",
                                     "key": "key-featuredescription-0",
-                                    "textDesc": this.state.stats.textDesc
+                                    "textDesc": "We'll do the monotonous work so you can spend more time on what you enjoy."
                                 })
                             ],
                             "styleClass": ""
@@ -96,9 +65,9 @@ class About extends React.Component {
                         {
                             "data": [
                                 React.createElement(FeatureDescription, {
-                                    "imgSrc": this.state.timer.imgSrc,
+                                    "imgSrc": "assets/img/timer-icon.png",
                                     "key": "key-featuredescription-0",
-                                    "textDesc": this.state.timer.textDesc
+                                    "textDesc": "eggbeatr makes the most of your instructors by using their time between lessons."
                                 })
                             ],
                             "styleClass": ""

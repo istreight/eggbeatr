@@ -21,14 +21,8 @@ class AddRow extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.inputs = null;
-    }
-
-    componentWillMount() {
         this.inputs = [];
-
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {

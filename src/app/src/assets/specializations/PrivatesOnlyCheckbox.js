@@ -18,12 +18,7 @@ class PrivatesOnlyCheckbox extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.checkbox = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {

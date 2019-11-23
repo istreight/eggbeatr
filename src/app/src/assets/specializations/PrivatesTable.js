@@ -17,20 +17,7 @@ class PrivatesTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.toggleTable = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
-    }
-
-    componentDidMount() {
-        return;
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+        this.state = { ...props };
     }
 
     add(inputValues) {
@@ -39,10 +26,6 @@ class PrivatesTable extends React.Component {
             "instructor": inputValues[0],
             "time": inputValues[1]
         });
-    }
-
-    getAdditionalRowData() {
-        return;
     }
 
     getInputValueValidations() {
@@ -86,7 +69,7 @@ class PrivatesTable extends React.Component {
                 componentType={ "Privates" }
                 dataBody={ this.state.dataBody }
                 dataHeader={ this.state.dataHeader }
-                getAdditionalRowData={ this.getAdditionalRowData.bind(this) }
+                getAdditionalRowData={ () => null }
                 inputValueValidations={ this.getInputValueValidations() }
                 removeCallback={ this.remove.bind(this) }
                 sectionId={ "dynamicPrivates" }

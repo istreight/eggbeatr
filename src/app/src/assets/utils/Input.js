@@ -15,11 +15,7 @@ class Input extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
