@@ -17,19 +17,15 @@ class Table extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
         this.props.callback(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps) {
+        return nextProps;
     }
 
     getBodyRows() {

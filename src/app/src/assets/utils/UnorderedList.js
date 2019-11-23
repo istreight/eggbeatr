@@ -17,19 +17,19 @@ class UnorderedList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
         this.props.callback(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.updateProps) {
+            return nextProps;
+        } else {
+            return prevState;
+        }
     }
 
     getListItems() {
@@ -55,13 +55,15 @@ class UnorderedList extends React.Component {
 
 UnorderedList.defaultProps = {
     callback: () => null,
-    styleClass: "pure-menu-list"
+    styleClass: "pure-menu-list",
+    updateProps: true
 }
 
 UnorderedList.propTypes = {
     callback: PropTypes.func,
     data: PropTypes.array.isRequired,
-    styleClass: PropTypes.string
+    styleClass: PropTypes.string,
+    updateProps: PropTypes.bool
 }
 
 export default UnorderedList;

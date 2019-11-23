@@ -18,21 +18,13 @@ class Modal extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
         this.node = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
         this.node = ReactDOM.findDOMNode(this);
         this.props.callback(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
     }
 
     componentDidUpdate() {

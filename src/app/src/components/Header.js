@@ -25,20 +25,18 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        var sorted = this.sortSets(this.props.initData);
+        var sorted = this.sortSets(props.initData);
 
         Object.assign(sorted.data, {
             "versionName": ""
         });
 
-        this.setState(sorted, () => {
-            this.finishEditing();
-            this.props.callback(this.state, "header", false);
-        });
+        this.state = sorted;
+    }
+
+    componentDidMount() {
+        this.finishEditing();
+        this.props.callback(this.state, "header", false);
     }
 
     /**

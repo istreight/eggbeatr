@@ -11,20 +11,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Anchor from 'utils/Anchor';
-import UnorderedList from 'utils/UnorderedList';
 
 
 class Footer extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
+        this.state = { ...props.initData };
     }
 
-    componentWillMount() {
-        this.setState(this.props.initData, () => {
-            this.props.callback(this.state, "footer", false)
-        });
+    componentDidMount() {
+        this.props.callback(this.state, "footer", false);
     }
 
     render() {

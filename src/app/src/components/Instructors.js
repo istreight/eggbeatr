@@ -20,21 +20,10 @@ class Instructors extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props.initData, this.init);
+        this.state = { ...props.initData };
     }
 
     componentDidMount() {
-        return;
-    }
-
-    /**
-     * Initialize the class members.
-     */
-    init() {
         this.displayComponentState();
 
         this.props.callback(this.state, "instructors", false);

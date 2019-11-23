@@ -19,14 +19,8 @@ class ToggleTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.rows = null;
-        this.state = null;
-    }
-
-    componentWillMount() {
         this.rows = [];
-
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
@@ -36,8 +30,12 @@ class ToggleTable extends React.Component {
         this.recolourTable();
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (prevState.toggle) {
+            return prevState;
+        } else {
+            return nextProps;
+        }
     }
 
     add() {
@@ -130,7 +128,7 @@ class ToggleTable extends React.Component {
 
         // Colour AddRow.
         this.addRow.setState({
-            "styleRow": () => this.styleRow(this.rows.length)
+            "styleRow": () => this.styleRow(this.rows.length + 1)
         });
     }
 

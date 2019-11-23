@@ -18,13 +18,7 @@ class PreferencesButton extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(Object.assign({
-            "styleClass": "pure-button preferences"
-        }, this.props));
+        this.state = { ...props, "styleClass": "pure-button preferences" };
     }
 
     componentDidMount() {

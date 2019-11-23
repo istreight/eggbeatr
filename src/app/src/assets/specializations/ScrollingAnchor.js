@@ -18,15 +18,11 @@ class ScrollingAnchor extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
+        this.state = { ...props };
     }
 
-    componentWillMount() {
-        this.setState(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps) {
+        return nextProps;
     }
 
     handleClick() {
