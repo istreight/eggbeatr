@@ -17,14 +17,8 @@ import UnorderedList from 'utils/UnorderedList';
 class SectionDescription extends React.Component {
     constructor(props) {
         super(props);
-    }
 
-    componentWillMount() {
-        this.setState(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+        this.state = { ...props };
     }
 
     getAnchorStyle() {

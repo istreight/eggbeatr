@@ -20,23 +20,10 @@ class Privates extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props.initData, this.init);
+        this.state = { ...props.initData };
     }
 
     componentDidMount() {
-        return;
-    }
-
-    /**
-     * Initialize the class members.
-     */
-    init() {
-        this.displayComponentState();
-
         this.props.callback(this.state, "privates", false);
         this.props.setChecklistQuantity("privates", this.getComponentQuantity());
     }
@@ -76,9 +63,6 @@ class Privates extends React.Component {
         this.props.setChecklistQuantity("privates", this.getComponentQuantity());
     }
 
-    /**
-     * Transforms an array to a PureCSS table.
-     */
     displayComponentState() {
         this.sortPrivates([this.state.data]);
     }

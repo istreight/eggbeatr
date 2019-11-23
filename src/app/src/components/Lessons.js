@@ -22,20 +22,11 @@ class Lessons extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.lessonInputs = null;
-    }
-
-    componentWillMount() {
         this.lessonInputs = [];
-
-        this.setState(this.props.initData, this.init);
+        this.state = { ...props.initData };
     }
 
-    /**
-     * Initialize the class members.
-     */
-    init() {
+    componentDidMount() {
         this.displayComponentState();
 
         this.props.callback(this.state, "lessons", false);

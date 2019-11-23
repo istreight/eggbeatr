@@ -19,25 +19,13 @@ class InstructorTable extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.toggleTable = null;
-        this.preferencesButtons = null;
-        this.privatesOnlyCheckboxes = null;
-    }
-
-    componentWillMount() {
+        this.state = { ...props };
         this.preferencesButtons = [];
         this.privatesOnlyCheckboxes = [];
-
-        this.setState(this.props);
     }
 
-    componentDidMount() {
-        return;
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps) {
+        return nextProps;
     }
 
     add(inputValues) {

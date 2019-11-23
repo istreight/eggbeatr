@@ -30,17 +30,12 @@ class Grid extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.controllerData = null;
-        this.durationContainer = null;
-    }
-
-    componentWillMount() {
         this.durationContainer = [];
-        this.setState(this.props.initData, this.init);
+        this.state = { ...props.initData };
     }
 
     componentDidMount() {
+        this.init();
         window.addEventListener("click", this.hideModal.bind(this));
     }
 
@@ -48,8 +43,9 @@ class Grid extends React.Component {
      * Initialize the class members.
      */
     init() {
-        // Select the button based on the state duration value.
         var duration;
+
+        // Select the button based on the state duration value.
         if (this.state.data) {
             duration = this.state.data.duration;
         }
@@ -99,7 +95,7 @@ class Grid extends React.Component {
         for (let i = 1; i < this.durationContainer.length; i++) {
             let button = this.durationContainer[i];
             let styleClass = button.state.styleClass;
-            let duration = button.refDuration.current;
+            let duration = button.duration;
             let selectedClass = " pure-menu-selected";
             let reReplaceCriteria = new RegExp(selectedClass, "g");
 
@@ -1029,6 +1025,7 @@ class Grid extends React.Component {
                     <UnorderedList
                         callback={ ((ref) => this.setComponentReference("gridList", ref)) }
                         data={ [] }
+                        updateProps={ false }
                     />
                 </div>
                 <Modal

@@ -17,11 +17,7 @@ class Anchor extends React.Component {
         super(props);
 
         this.node = null;
-        this.state = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
@@ -29,9 +25,11 @@ class Anchor extends React.Component {
         this.node = ReactDOM.findDOMNode(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.updateProps) {
-            this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.updateProps) {
+            return nextProps;
+        } else {
+            return prevState;
         }
     }
 

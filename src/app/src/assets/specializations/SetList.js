@@ -1,10 +1,10 @@
 /**
- * FILENAME:    UnorderedList.js
+ * FILENAME:    SetList.js
  * AUTHOR:      Isaac Streight
  * START DATE:  July 8th, 2018
  *
- * This file contains the UnorderedList class, a utility class for
- *  unordered list tags in the application.
+ * This file contains the SetList class, a specialization class for
+ *  the list of anchors in the header.
  */
 
 import React from 'react';
@@ -18,20 +18,11 @@ class SetList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.listData = null;
-    }
-
-    componentWillMount() {
-        this.setState(this.props);
+        this.state = { ...props };
     }
 
     componentDidMount() {
         this.props.callback(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
     }
 
     handleClick(setTitle) {

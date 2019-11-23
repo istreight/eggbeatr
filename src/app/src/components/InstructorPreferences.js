@@ -21,8 +21,8 @@ class InstructorPreferences extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = null;
-        this.selectedInstructor = null;
+        this.state = { ...props.initData };
+        this.selectedInstructor = Object.keys(props.initData.data)[0];
         this.defaultPreferences = [
             ["Starfish", "Sea Otter", "Level 1", "Level 6", "Basics I"],
             ["Duck", "Salamander", "Level 2", "Level 7", "Basics II"],
@@ -30,11 +30,6 @@ class InstructorPreferences extends React.Component {
             ["", "Crocodile", "Level 4", "Level 9", ""],
             ["Simple Set", "Whale", "Level 5", "Level 10", "Schoolboard"]
         ];
-    }
-
-    componentWillMount() {
-        this.setState(this.props.initData);
-        this.selectedInstructor = Object.keys(this.props.initData.data)[0];
     }
 
     componentDidMount() {
