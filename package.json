@@ -11,8 +11,7 @@
         "packages:build": "cd src/app; npm run build; cd ../server; npm run build",
         "packages:clean": "bash bin/clean",
         "packages:install": "npm install; cd src/app; npm install; cd ../server; npm install",
-        "packages:update": "node_modules/npm-check-updates/bin/ncu --upgrade; node_modules/npm-check-updates/bin/ncu --packageFile src/app/package.json --upgrade; node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json --upgrade",
-        "start": "bash bin/start"
+        "packages:upgrade": "bash bin/upgrade_packages"
     },
     "repository": {
         "type": "git",
