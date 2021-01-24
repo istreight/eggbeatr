@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+while [ "${1:-}" != "" ]; do
+    case "$1" in
+        "-d" | "--dryrun") # Alias for no flag
+        ;;
+        "-u" | "--upgrade")
+        upgrade=1
+        ;;
+    esac
+    shift
+done
+
+if [[ $upgrade -eq 1 ]]
+then
+    node_modules/npm-check-updates/bin/ncu --upgrade
+    node_modules/npm-check-updates/bin/ncu --packageFile src/app/package.json --upgrade
+    node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json --upgrade
+else
+    node_modules/npm-check-updates/bin/ncu
+    node_modules/npm-check-updates/bin/ncu --packageFile src/app/package.json
+    node_modules/npm-check-updates/bin/ncu --packageFile src/server/package.json
+
+    echo "Run npm run packages:upgrade --upgrade to upgrade package.json"
+fi

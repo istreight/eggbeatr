@@ -5,10 +5,7 @@ bash bin/clean
 
 # Install and update NPM packages.
 npm run packages:install
-npm run packages:update
+npm run packages:upgrade
 
 # Set-up and initalize the database.
 npm run db:setup
-
-# Run application.
-npm run start
