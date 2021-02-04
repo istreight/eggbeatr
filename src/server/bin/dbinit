@@ -14,8 +14,6 @@ cd $(pwd)/../etc
 
 if [[ "$1" == "empty" ]]
 then
-    export EGGBEATR_DEFAULTVALUE=0
-
     # To seed without the default data, use db:lessons.
     # Lessons are required to be initalized since they are not being created or deleted, only modified.
     ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000000-default-header.js
