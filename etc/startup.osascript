@@ -1,20 +1,23 @@
 #!/usr/bin/osascript
 
-on run {input, parameters}
+on run {eggbeatrPath}
 
-    -- Search for the first eggbeatr directory in the user's home.
-	set eggbeatrPath to do shell script ("find $HOME -type d -name eggbeatr 2>/dev/null | head -n 1")
+	tell application "System Events" to set pathType to (get class of item (POSIX file eggbeatrPath as text))
 
-	if eggbeatrPath is "" then
-        -- Display error and exit if no directory is found.
+	if ((pathType as string) is equal to "folder") then
+		set loadingNotification to "eggbeatr project loading from root " & return & eggbeatrPath
+		display notification loadingNotification with title "Eggbeatr" subtitle "Loading Development Environment"
+	else
+		-- Display error and exit if no directory is found.
 		set errorTitle to "Error: Project Root Not Found"
-		set errorContent to "Could not find eggbeatr within " & return & (system attribute "HOME")
+		set errorContent to "Please pass the eggbeatr project root as a paramter to this script." & return & return & "Recieved: " & eggbeatrPath
 
 		display dialog errorContent buttons {"Cancel"} with icon stop with title errorTitle
 	end if
 
 	-- Confirmation to run.
-	display dialog "Press 'OK' to set up the eggbeatr development environment." with icon note
+	set runConfirmation to "Press 'OK' to set up the eggbeatr development environment." & return & return & "Project found in " & eggbeatrPath
+	display dialog runConfirmation with icon note
 
 	tell application "Terminal"
 		launch
@@ -32,7 +35,7 @@ on run {input, parameters}
 
 			do script ("npm run packages:clean") in setupTab
 			my wait(setupTab)
-			do script ("npm install") in setupTab
+			do script ("npm run packages:install") in setupTab
 			my wait(setupTab)
 			do script ("npm run packages:upgrade -- --dryrun") in setupTab
 			my wait(setupTab)
@@ -50,6 +53,9 @@ on run {input, parameters}
 			my wait(setupTab)
 		end try
 
+		do script ("npm run db:init") in setupTab
+		my wait(setupTab)
+
 		set appTab to do script ("cd " & eggbeatrPath & "/src/app")
 		set serverTab to do script ("cd " & eggbeatrPath & "/src/server")
 
@@ -57,7 +63,7 @@ on run {input, parameters}
 		do script ("npm run start") in serverTab
 	end tell
 
-	return input
+	return eggbeatrPath
 end run
 
 
