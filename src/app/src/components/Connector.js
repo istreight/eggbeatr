@@ -12,12 +12,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import DefaultData from 'root/etc/defaults/ComponentData';
+import ComponentData from 'root/etc/defaults/ComponentData';
 
 
 class Connector extends React.Component {
     constructor(props) {
         super(props);
+
+        this.defaults = (new ComponentData).getDefaultData();
 
         this.state = {
             "headerId": 1
@@ -46,7 +48,7 @@ class Connector extends React.Component {
 
     getGridData(populate) {
         var returnValue;
-        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Grids));
+        var defaultRes = JSON.parse(JSON.stringify(this.defaults.Grids));
 
         for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
@@ -130,7 +132,7 @@ class Connector extends React.Component {
 
     getHeaderData(populate) {
         var returnValue;
-        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Headers));
+        var defaultRes = JSON.parse(JSON.stringify(this.defaults.Headers));
 
         for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
@@ -206,7 +208,7 @@ class Connector extends React.Component {
 
     getInstructorData(populate) {
         var returnValue;
-        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Instructors));
+        var defaultRes = JSON.parse(JSON.stringify(this.defaults.Instructors));
 
         for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
@@ -293,7 +295,7 @@ class Connector extends React.Component {
 
     getLessonData(populate) {
         var returnValue;
-        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Lessons));
+        var defaultRes = JSON.parse(JSON.stringify(this.defaults.Lessons));
 
         for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
@@ -377,7 +379,7 @@ class Connector extends React.Component {
     getPreferenceData(populate) {
         var returnValue;
         var defaultRes = JSON.parse(
-            JSON.stringify(DefaultData.InstructorPreferences)
+            JSON.stringify(this.defaults.InstructorPreferences)
         );
 
         for (let i = 0; i < defaultRes.length; i++) {
@@ -420,7 +422,7 @@ class Connector extends React.Component {
 
     formatPreferenceRes(preferenceRes) {
         var defaultRes = JSON.parse(
-            JSON.stringify(DefaultData.InstructorPreferences)
+            JSON.stringify(this.defaults.InstructorPreferences)
         );
 
         return fetch(this.props.serverURI + '/api/instructors?headerId=' + this.state.headerId)
@@ -489,7 +491,7 @@ class Connector extends React.Component {
 
     getPrivatesData(populate) {
         var returnValue;
-        var defaultRes = JSON.parse(JSON.stringify(DefaultData.Privates));
+        var defaultRes = JSON.parse(JSON.stringify(this.defaults.Privates));
 
         for (let i = 0; i < defaultRes.length; i++) {
             Object.assign(defaultRes[i], { "id": i + 1 });
