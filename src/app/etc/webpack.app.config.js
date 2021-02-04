@@ -12,8 +12,11 @@ module.exports = {
         publicPath: '/',
         filename: './bundle.app.js'
     },
+    //devtool: 'nosources-source-map', // Production
+    devtool: 'eval-source-map', // Development only!
     devServer: {
-        contentBase: path.resolve(__dirname, contentBase)
+        contentBase: path.resolve(__dirname, contentBase),
+        hot: true
     },
     resolve: {
         alias: {

@@ -7,11 +7,11 @@
         "db:init": "cd $(pwd)/src/server/bin; bash dbinit",
         "db:empty": "cd $(pwd)/src/server/bin; bash dbinit empty",
         "db:setup": "cd $(pwd)/src/server/bin; bash dbsetup",
-        "install-app": "bash bin/install",
-        "packages:build": "cd src/app; npm run build; cd ../server; npm run build",
-        "packages:clean": "bash bin/clean",
-        "packages:install": "npm install; cd src/app; npm install; cd ../server; npm install",
-        "packages:upgrade": "bash bin/upgrade_packages"
+        "install-app": "bash $(pwd)/bin/install",
+        "packages:build": "cd $(pwd)/src/app; npm run build; cd ../server; npm run build",
+        "packages:clean": "bash $(pwd)/bin/clean",
+        "packages:install": "npm install; cd $(pwd)/src/app; npm install; cd ../server; npm install",
+        "packages:upgrade": "bash $(pwd)/bin/upgrade_packages"
     },
     "repository": {
         "type": "git",
@@ -24,8 +24,7 @@
         "url": "https://github.com/istreight/eggbeatr/issues"
     },
     "homepage": "https://github.com/istreight/eggbeatr#readme",
-    "dependencies": {},
     "devDependencies": {
-        "npm-check-updates": "^3.2.1"
+        "npm-check-updates": "^11.1.1"
     }
 }
