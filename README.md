@@ -84,7 +84,7 @@ By default, the eggbeatr UI is hosted at localhost:8080 and the eggbeatr API is 
 ### npm scripts
 
 `db:init`
-* Initialize the database with the default values. The raw values can be found in [`/etc/defaults/ComponentData.js`](https://github.com/istreight/eggbeatr/blob/master/etc/defaults/ComponentData.js) and are set in the database by the [`seeders`](https://github.com/istreight/eggbeatr/tree/master/src/server/src/seeders).
+* Initialize the database with the default values. The raw values can be found in [`/etc/defaults/ComponentData.js`](https://github.com/istreight/eggbeatr/blob/main/etc/defaults/ComponentData.js) and are set in the database by the [`seeders`](https://github.com/istreight/eggbeatr/tree/main/src/server/src/seeders).
 
 `db:empty`
 * Initialize the database without the default values.

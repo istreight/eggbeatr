@@ -9,7 +9,7 @@ Additionally, I may set up UI/regression testing, using a framework like [Seleni
 
 ## Submitting changes
 
-Please send a [GitHub Pull Request to eggbeatr](https://github.com/istreight/eggbeatr/pull/new/master) with a clear statement about your change.
+Please send a [GitHub Pull Request to eggbeatr](https://github.com/istreight/eggbeatr/pull/new/main) with a clear statement about your change.
 
 When you send a pull request, please include a set of tests (unit tests are a minimum, UI/regression are a fantastic addition). Following the existing coding conventions improves the pull request drastically.
 
