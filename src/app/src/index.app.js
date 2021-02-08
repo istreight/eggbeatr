@@ -7,7 +7,7 @@
  */
 
 
-import PureCSS from 'pure-css';
+import PureCSS from 'purecss';
 
 import '@css/pure.css';
 import '@css/style.css';
