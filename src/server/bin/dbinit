@@ -4,21 +4,19 @@
 cd $(pwd)/../etc
 
 # Drop database and current set of data.
-../node_modules/.bin/sequelize db:drop
+npx sequelize db:drop
 
 # Creates new database; requires "create" privileges on database role specified in etc/config.json.
-../node_modules/.bin/sequelize db:create
+npx sequelize db:create
 
 # Creates relations in the database based on the src/models.
-../node_modules/.bin/sequelize db:migrate
+npx sequelize db:migrate
 
 if [[ "$1" == "empty" ]]
 then
-    # To seed without the default data, use db:lessons.
-    # Lessons are required to be initalized since they are not being created or deleted, only modified.
-    ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000000-default-header.js
-    ../node_modules/.bin/sequelize db:seed --seed ../seeders/20180000000001-default-lessons.js
+    # Seed the database with only the header (minimum requirement).
+    npx sequelize db:seed --seed ../seeders/20180000000000-default-header.js
 else
     # Seed database with default data.
-    ../node_modules/.bin/sequelize db:seed:all
+    npx sequelize db:seed:all
 fi

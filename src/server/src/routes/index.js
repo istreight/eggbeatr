@@ -25,9 +25,9 @@ module.exports = (app) => {
                 '/api/preferences'
             ],
             description: {
-                '/api/headers': 'The list of header titles and data.',
-                '/api/grid': 'The list of grids and grid data.',
-                '/api/lessons': 'The current quantities of lessons',
+                '/api/headers': 'The list of header titles and metadata.',
+                '/api/grid': 'The list of grids and grid metadata.',
+                '/api/lessons': 'The current quantities of lessons.',
                 '/api/privates': 'The current list of private lessons and related information.',
                 '/api/instructors': 'The list of instructors and related information, including preferences and privates.',
                 '/api/preferences': 'The list of preferred lessons from a specified instructor.'

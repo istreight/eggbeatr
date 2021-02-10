@@ -13,13 +13,13 @@ done
 
 if [[ $upgrade -eq 1 ]]
 then
-    node_modules/npm-check-updates/bin/cli.js --upgrade
-    node_modules/npm-check-updates/bin/cli.js --packageFile src/app/package.json --upgrade
-    node_modules/npm-check-updates/bin/cli.js --packageFile src/server/package.json --upgrade
+    npx ncu --upgrade
+    npx ncu --packageFile src/app/package.json --upgrade
+    npx ncu --packageFile src/server/package.json --upgrade
 else
-    node_modules/npm-check-updates/bin/cli.js
-    node_modules/npm-check-updates/bin/cli.js --packageFile src/app/package.json
-    node_modules/npm-check-updates/bin/cli.js --packageFile src/server/package.json
+    npx ncu
+    npx ncu --packageFile src/app/package.json
+    npx ncu --packageFile src/server/package.json
 
     echo "Run npm run packages:upgrade -- --upgrade to upgrade package.json"
 fi
