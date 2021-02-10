@@ -30,8 +30,8 @@
         "webpack-dev-server": "^3.11.2"
     },
     "scripts": {
-        "start": "webpack serve --open --config etc/webpack.app.config.js",
-        "build": "webpack -p --config etc/webpack.app.config.js"
+        "start": "webpack serve --open --config etc/webpack.config.app.js",
+        "build": "webpack -p --config etc/webpack.config.app.js"
     },
     "keywords": [],
     "author": "",
