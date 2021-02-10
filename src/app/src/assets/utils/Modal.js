@@ -11,7 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import Table from 'utils/Table';
+import Table from '@utils/Table';
 
 
 class Modal extends React.Component {

@@ -12,7 +12,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ComponentData from 'root/etc/defaults/ComponentData';
+import ComponentData from '@root/etc/defaults/ComponentData';
 
 
 class Connector extends React.Component {

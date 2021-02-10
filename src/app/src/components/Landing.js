@@ -10,9 +10,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Anchor from 'utils/Anchor';
-import Animator from 'functions/Animator';
-import FnScroll from 'functions/FnScroll';
+import Anchor from '@utils/Anchor';
+import Animator from '@functions/Animator';
+import FnScroll from '@functions/FnScroll';
 
 
 class Landing extends React.Component {

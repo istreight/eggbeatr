@@ -10,7 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Anchor from 'utils/Anchor';
+import Anchor from '@utils/Anchor';
 
 
 class AddButton extends React.Component {

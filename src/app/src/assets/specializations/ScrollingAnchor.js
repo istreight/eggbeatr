@@ -10,8 +10,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Anchor from 'utils/Anchor';
-import FnScroll from 'functions/FnScroll';
+import Anchor from '@utils/Anchor';
+import FnScroll from '@functions/FnScroll';
 
 
 class ScrollingAnchor extends React.Component {

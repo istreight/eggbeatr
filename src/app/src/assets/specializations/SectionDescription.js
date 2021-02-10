@@ -10,8 +10,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Anchor from 'utils/Anchor';
-import UnorderedList from 'utils/UnorderedList';
+import Anchor from '@utils/Anchor';
+import UnorderedList from '@utils/UnorderedList';
 
 
 class SectionDescription extends React.Component {

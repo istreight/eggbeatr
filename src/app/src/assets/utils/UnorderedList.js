@@ -10,7 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ListItem from 'utils/ListItem';
+import ListItem from '@utils/ListItem';
 
 
 class UnorderedList extends React.Component {

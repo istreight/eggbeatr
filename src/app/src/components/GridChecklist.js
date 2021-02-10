@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import Table from 'utils/Table';
+import Table from '@utils/Table';
 
 
 class GridChecklist extends React.Component {

@@ -10,11 +10,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Input from 'utils/Input';
-import TableRow from 'utils/TableRow';
-import AddButton from 'specializations/AddButton';
-import PreferencesButton from 'specializations/PreferencesButton';
-import PrivatesOnlyCheckbox from 'specializations/PrivatesOnlyCheckbox';
+import Input from '@utils/Input';
+import TableRow from '@utils/TableRow';
+import AddButton from '@specializations/AddButton';
+import PreferencesButton from '@specializations/PreferencesButton';
+import PrivatesOnlyCheckbox from '@specializations/PrivatesOnlyCheckbox';
 
 
 class AddRow extends React.Component {

@@ -11,9 +11,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Tutorial from 'specializations/Tutorial';
-import InstructorTable from 'specializations/InstructorTable';
-import SectionDescription from 'specializations/SectionDescription';
+import Tutorial from '@specializations/Tutorial';
+import InstructorTable from '@specializations/InstructorTable';
+import SectionDescription from '@specializations/SectionDescription';
 
 
 class Instructors extends React.Component {

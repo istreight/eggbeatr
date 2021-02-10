@@ -10,8 +10,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TableCell from 'utils/TableCell';
-import TableHeader from 'utils/TableHeader';
+import TableCell from '@utils/TableCell';
+import TableHeader from '@utils/TableHeader';
 
 
 class TableRow extends React.Component {

@@ -9,9 +9,9 @@
 
 import PureCSS from 'pure-css';
 
-import 'css/pure.css';
-import 'css/style.css';
-import Controller from 'components/Controller';
+import '@css/pure.css';
+import '@css/style.css';
+import Controller from '@components/Controller';
 
 
 const controller = new Controller({

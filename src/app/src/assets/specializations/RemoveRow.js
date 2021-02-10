@@ -10,9 +10,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Input from 'utils/Input';
-import TableRow from 'utils/TableRow';
-import RemoveButton from 'specializations/RemoveButton';
+import Input from '@utils/Input';
+import TableRow from '@utils/TableRow';
+import RemoveButton from '@specializations/RemoveButton';
 
 
 class RemoveRow extends React.Component {

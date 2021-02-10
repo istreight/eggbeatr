@@ -14,16 +14,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import Table from 'utils/Table';
-import Input from 'utils/Input';
-import Modal from 'utils/Modal';
-import Anchor from 'utils/Anchor';
-import Tutorial from 'specializations/Tutorial';
-import ExportToPDF from 'functions/ExportToPDF';
-import UnorderedList from 'utils/UnorderedList';
-import WaitIndicator from 'specializations/WaitIndicator';
-import DurationButton from 'specializations/DurationButton';
-import SectionDescription from 'specializations/SectionDescription';
+import Table from '@utils/Table';
+import Input from '@utils/Input';
+import Modal from '@utils/Modal';
+import Anchor from '@utils/Anchor';
+import Tutorial from '@specializations/Tutorial';
+import ExportToPDF from '@functions/ExportToPDF';
+import UnorderedList from '@utils/UnorderedList';
+import WaitIndicator from '@specializations/WaitIndicator';
+import DurationButton from '@specializations/DurationButton';
+import SectionDescription from '@specializations/SectionDescription';
 
 
 class Grid extends React.Component {

@@ -11,7 +11,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Checkbox from 'utils/Checkbox';
+import Checkbox from '@utils/Checkbox';
 
 
 class PrivatesOnlyCheckbox extends React.Component {

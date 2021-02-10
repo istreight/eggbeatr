@@ -9,7 +9,7 @@
 
 import React from 'react';
 
-import Animator from 'functions/Animator';
+import Animator from '@functions/Animator';
 
 
 class FnScroll extends React.Component {

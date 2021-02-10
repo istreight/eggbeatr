@@ -11,8 +11,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import Anchor from 'utils/Anchor';
-import FnScroll from 'functions/FnScroll';
+import Anchor from '@utils/Anchor';
+import FnScroll from '@functions/FnScroll';
 
 
 class Tutorial extends React.Component {
