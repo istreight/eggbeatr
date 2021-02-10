@@ -6,7 +6,7 @@ module.exports = {
     target: 'web',
     mode: 'development',
     context: path.resolve(__dirname, contentBase),
-    entry: ['@babel/polyfill', './index.app.js'],
+    entry: ['./index.app.js'],
     output: {
         path: path.resolve(__dirname, contentBase, 'build'),
         publicPath: '/',

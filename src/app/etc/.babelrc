@@ -1,7 +1,9 @@
 {
     "presets": [
         "@babel/preset-react",
-        "@babel/preset-env",
-        "@babel/preset-stage-0"
+        "@babel/preset-env", {
+            "useBuiltIns": "usage",
+            "corejs": 3
+        }
     ]
 }

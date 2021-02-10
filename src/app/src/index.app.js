@@ -7,7 +7,9 @@
  */
 
 
+import "core-js/stable";
 import PureCSS from 'purecss';
+import "regenerator-runtime/runtime";
 
 import '@css/pure.css';
 import '@css/style.css';
