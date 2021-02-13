@@ -1,22 +1,18 @@
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 
-const contentBase = '../src';
+const testBase = "../";
+const contentBase = '../../app/src';
 
 module.exports = {
-    target: 'web',
+    target: 'node',
     mode: 'development',
-    context: path.resolve(__dirname, contentBase),
-    entry: ['./index.app.js'],
+    context: path.resolve(__dirname, testBase),
+    entry: ['./index.test.js'],
+    externals: [nodeExternals()],
     output: {
-        path: path.resolve(__dirname, contentBase, 'build'),
-        publicPath: '/',
-        filename: './bundle.app.js'
-    },
-    //devtool: 'nosources-source-map', // Production
-    devtool: 'eval-source-map', // Development only!
-    devServer: {
-        contentBase: path.resolve(__dirname, contentBase),
-        hot: true
+        path: path.resolve(__dirname, testBase, 'build'),
+        filename: './bundle.test.js'
     },
     resolve: {
         alias: {
@@ -32,21 +28,19 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.m?jsx?$/,
                 exclude: [/node_modules/, /defaults/],
                 use: {
                     loader:  'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env', '@babel/preset-react']
+                        presets: [
+                            ['@babel/preset-env', {
+                                'targets': { 'node': true }
+                            }],
+                            '@babel/preset-react'
+                        ]
                     }
-                },
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    { loader: 'style-loader' },
-                    { loader: 'css-loader' }
-                ]
+                }
             }
         ]
     }
