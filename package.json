@@ -10,7 +10,7 @@
         "install-app": "bash $(pwd)/bin/install",
         "packages:build": "cd $(pwd)/src/app; npm run build; cd ../server; npm run build",
         "packages:clean": "bash $(pwd)/bin/clean",
-        "packages:install": "npm install; cd $(pwd)/src/app; npm install; cd ../server; npm install; cd ../test; npm install",
+        "packages:install": "npm install; cd $(pwd)/src/app; npm install; cd ../server; npm install",
         "packages:upgrade": "bash $(pwd)/bin/upgrade_packages"
     },
     "repository": {
