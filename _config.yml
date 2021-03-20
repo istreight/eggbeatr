@@ -1,3 +1,3 @@
-theme: jekyll-theme-minimal
-title: The Homepage of eggbeatr
-description: Checkout the GitHub page and wiki, too!
+remote_theme: dracula/gh-pages
+title: eggbeatr
+description: a lifesaving scheduler for aquatics programmers 

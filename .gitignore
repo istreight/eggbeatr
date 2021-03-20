@@ -1,3 +1,5 @@
+vendor/
+.bundle/
 default/
 node_modules/
 
