@@ -1,10 +1,10 @@
 # eggbeatr
 
-eggbeatr is a web application to schedule instructors with lessons. It does the tedious work, leaving you with creative control.
+eggbeatr is a web application to schedule your swim instructors with the lessons they want to teach. By carrying the heavy weight of tedious tasks, it stabilizes your workflow, leaving you with creative control.
 
 ### Goal
 
-The goal of this project is to improve the schedule generating process, automating the repetitive aspects.
+The goal of this project is to improve the schedule generating process by automating the mundane and repetitive aspects. With fewer draining operations, you can focus on delivering quality lessons to swim instructors who will love both their swimmers and you.
 
 ### Hosting
 
@@ -12,9 +12,13 @@ Currently, eggbeatr is not hosted on a public domain.
 
 ## Getting Started
 
-First off, clone the project:
+First off, clone or [download the project](https://github.com/istreight/eggbeatr/archive/refs/heads/main.zip):
 ```
+# Using git
 git clone https://github.com/istreight/eggbeatr.git
+
+#Or, using the GitHub CLI
+gh repo clone istreight/eggbeatr
 ```
 
 ### Dependencies
