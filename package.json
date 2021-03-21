@@ -25,6 +25,8 @@
     },
     "homepage": "https://github.com/istreight/eggbeatr#readme",
     "devDependencies": {
+        "@types/app-root-path": "^1.2.4",
+        "app-root-path": "^3.0.0",
         "npm-check-updates": "^11.1.1"
     }
 }

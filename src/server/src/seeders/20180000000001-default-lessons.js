@@ -1,14 +1,12 @@
 'use strict';
 
-const path = require('path');
-const ComponentData = require(
-    path.resolve(process.env.INIT_CWD, 'etc/defaults/ComponentData.js')
-);
-const defaultData = (new ComponentData).getDefaultData();
+const appRoot = require('app-root-path');
+const ComponentData = require(appRoot + '/etc/defaults/ComponentData.js');
+const defaultData = (new ComponentData).getDefaultData('Lessons');
 
 module.exports = {
     up: (queryInterface) => {
-        return queryInterface.bulkInsert('Lessons', defaultData.Lessons, {});
+        return queryInterface.bulkInsert('Lessons', defaultData, {});
     },
     down: (queryInterface) => {
         return queryInterface.bulkDelete('Lessons', null, {});

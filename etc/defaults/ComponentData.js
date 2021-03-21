@@ -1,6 +1,6 @@
 class ComponentData {
-    getDefaultData() {
-        return {
+    constructor() {
+        this.defaultData = {
             "Grids": [{
                 "headerId": 1,
                 "duration": 1.5,
@@ -214,6 +214,17 @@ class ComponentData {
                 }
             ]
         };
+    }
+
+    // It would make a lot of sense to have this as a static method.
+    // However, until tc39 proposal-class-fields makes it into the ECMA standard, static (and private) properties are not permitted.
+    // This isn't transpiled by Babel because it is outside of src/app.
+    getDefaultData(key) {
+        if (key) {
+            return this.defaultData[key];
+        } else {
+            return this.defaultData;
+        }
     }
 }
 

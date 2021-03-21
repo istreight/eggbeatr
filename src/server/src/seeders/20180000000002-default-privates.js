@@ -1,14 +1,12 @@
 'use strict';
 
-const path = require('path');
-const ComponentData = require(
-    path.resolve(process.env.INIT_CWD, 'etc/defaults/ComponentData.js')
-);
-const defaultData = (new ComponentData).getDefaultData();
+const appRoot = require('app-root-path');
+const ComponentData = require(appRoot + '/etc/defaults/ComponentData.js');
+const defaultData = (new ComponentData).getDefaultData('Privates');
 
 module.exports = {
     up: (queryInterface) => {
-        return queryInterface.bulkInsert('Privates', defaultData.Privates, {});
+        return queryInterface.bulkInsert('Privates', defaultData, {});
     },
 
     down: (queryInterface) => {
