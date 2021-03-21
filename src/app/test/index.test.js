@@ -1,6 +1,7 @@
 import test from 'ava';
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+
 import Animator from '@functions/Animator';
 
 

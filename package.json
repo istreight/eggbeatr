@@ -7,9 +7,9 @@
         "db:init": "cd $(pwd)/src/server/bin; bash dbinit",
         "db:empty": "cd $(pwd)/src/server/bin; bash dbinit empty",
         "db:setup": "cd $(pwd)/src/server/bin; bash dbsetup",
-        "install-app": "bash $(pwd)/bin/install",
-        "packages:build": "cd $(pwd)/src/app; npm run build; cd ../server; npm run build",
+        "install-app": "bash $(pwd)/bin/install-app",
         "packages:clean": "bash $(pwd)/bin/clean",
+        "packages:fresh": "npm run packages:clean; npm run packages:install",
         "packages:install": "npm install; cd $(pwd)/src/app; npm install; cd ../server; npm install",
         "packages:upgrade": "bash $(pwd)/bin/upgrade_packages"
     },

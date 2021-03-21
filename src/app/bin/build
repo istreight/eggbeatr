@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+while [ "${1:-}" != "" ]; do
+    case "$1" in
+        "-t" | "--test")
+        test=1
+        ;;
+        "-w" | "--watch")
+        watch="--watch"
+        ;;
+    esac
+    shift
+done
+
+if [[ $test -eq 1 ]]
+then
+    config="etc/webpack.config.test.js"
+else
+    config="etc/webpack.config.app.js"
+fi
+
+cmd="npx webpack --progress --config ${config} ${watch}"
+
+echo $cmd
+eval $cmd

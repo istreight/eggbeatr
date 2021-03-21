@@ -95,11 +95,11 @@ By default, the eggbeatr UI is hosted at localhost:8080 and the eggbeatr API is 
 `install-app`
 * Clean the project, drop the database and user, install and update npm packages, set up the database, and run the application.
 
-`packages:build`
-* Using Webpack, the project is built to `bundle.app.js` and `bundle.server.js`.
-
 `packages:clean`
 * Via the [`/bin/clean`](https://github.com/istreight/eggbeatr/blob/master/bin/clean) script, all the files and directories listed in [`.gitignore`](https://github.com/istreight/eggbeatr/blob/master/.gitignore) are removed from the [`root`](https://github.com/istreight/eggbeatr), [`app`](https://github.com/istreight/eggbeatr/tree/master/src/app), and [`server`](https://github.com/istreight/eggbeatr/tree/master/src/server) directories.
+
+`packages:fresh`
+* An easy way to remove and re-install npm packages: `packages:clean` followed by `packages:install`.
 
 `packages:install`
 * Installs the npm dependencies in the root, app, and server directories.

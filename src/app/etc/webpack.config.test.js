@@ -11,7 +11,7 @@ module.exports = {
     entry: ['./index.test.js'],
     externals: [nodeExternals()],
     output: {
-        path: path.resolve(__dirname, '../build'),
+        path: path.resolve(__dirname, testBase, 'dist'),
         filename: './bundle.test.js'
     },
     resolve: appConfig.resolve,

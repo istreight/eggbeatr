@@ -9,7 +9,7 @@ module.exports = {
     context: path.resolve(__dirname, contentBase),
     entry: './index.server.js',
     output: {
-        path: path.resolve(__dirname, contentBase, 'build'),
+        path: path.resolve(__dirname, contentBase, 'dist'),
         publicPath: '/',
         filename: './bundle.server.js'
     },

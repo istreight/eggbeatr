@@ -6,7 +6,7 @@ module.exports = ({projectDir}) => {
 
 	return {
 		"files": [
-			"./build/**/*"
+			"./test/dist/**/*"
 		],
 		"environmentVariables": {},
 		"verbose": true
