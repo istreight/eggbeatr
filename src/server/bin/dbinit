@@ -15,7 +15,7 @@ npx sequelize db:migrate
 if [[ "$1" == "empty" ]]
 then
     # Seed the database with only the header (minimum requirement).
-    npx sequelize db:seed --seed ../seeders/20180000000000-default-header.js
+    npx sequelize db:seed --seed ../seeders/1-default-header.js
 else
     # Seed database with default data.
     npx sequelize db:seed:all
