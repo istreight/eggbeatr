@@ -254,7 +254,6 @@ class Controller extends React.Component {
             if (this.state.components[name] !== undefined) {
                 /*
                  * Updated InstructorPreferences to store class members in state and use utility and specialized components.
-                 * Eliminated jQuery from InstructorPreferences.
                  * Update Controller and Connector to reflect changes in InstructorPreferences.
                  */
                 if (name === "instructorPreferences") {

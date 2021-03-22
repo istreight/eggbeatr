@@ -898,7 +898,7 @@ class Grid extends React.Component {
     exportToPDF() {
         var header = this.props.getSetTitle();
         var exporter = new ExportToPDF();
-        exporter.pdf(header, this.state.data.lessonTimes);
+        exporter.pdf(header);
     }
 
     /**

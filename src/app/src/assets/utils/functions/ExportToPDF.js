@@ -8,10 +8,8 @@
  *  web application.
  */
 
-import $ from 'jquery';
 import React from 'react';
 import jsPDF from 'jspdf';
-import PropTypes from 'prop-types';
 import autoTable from 'jspdf-autotable';
 
 
@@ -21,29 +19,24 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-     * Export a Grid to a PDF document.
-     */
-    pdf(setTitle, lessonTimes) {
-        var columns;
-        var prevCell;
-        var numColumns;
-        var dateCreated;
-        var tableCoordinates;
+    * Export a Grid to a PDF document.
+    */
+    pdf(setTitle) {
+        let dateCreated, prevCell, numColumns;
 
-        var rows = [];
-        var isRowOdd = false;
-        var instructors = [];
-        var lineCoordinates = [];
-        var newDate = new Date();
-        var splitCellIndices = [];
-        var doc = new jsPDF("l", "pt");
-        var tableCells = $("#dynamicGrid .modal td");
-        var tableRows = $("#dynamicGrid .modal tbody tr");
-        var quarterActivities = [
+        let newDate = new Date();
+        let lineCoordinates = [];
+        let tableCoordinates = [];
+        let splitCellIndices = [];
+        let doc = new jsPDF("landscape", "pt");
+        let tableXPath = "#dynamicGrid .modal .pure-menu-link table";
+        let tableCells = document.querySelectorAll(tableXPath + " td");
+        let tableRows = document.querySelectorAll(tableXPath + " tbody tr");
+        let quarterActivities = [
             "",
             "Work"
         ];
-        var threeQuarterLessons = [
+        let threeQuarterLessons = [
             "Level 6",
             "Level 7",
             "Level 8",
@@ -61,87 +54,75 @@ class ExportToPDF extends React.Component {
             newDate.getDate()
         ].join("-");
 
-        columns = [
-            { "dataKey": "id", "title": "Instructor" },
-            { "dataKey": "start", "title": lessonTimes[0] },
-            { "dataKey": "startPlusHalf", "title": lessonTimes[1] },
-            { "dataKey": "startPlusOne", "title": lessonTimes[2]  },
-            { "dataKey": "startPlusOneAndHalf", "title": lessonTimes[3] },
-            { "dataKey": "startPlusTwo", "title": lessonTimes[4] }
-        ];
-
         numColumns = tableCells.length / tableRows.length;
-        columns = columns.slice(0, numColumns);
 
-        tableRows.each((rowIndex, element) => {
-            var rowsKey;
-            var newCell = {};
-
-            $(element).find("td").each((cellIndex, element) => {
-                var cellText = $(element).text();
-                var reName = new RegExp(/[A-Za-z\s]+/);
-
-                if (cellIndex === 0 && reName.test(cellText)) {
-                    instructors.push(cellText);
-                }
-
-                rowsKey = columns[cellIndex].dataKey;
-
-                if (threeQuarterLessons.includes(cellText)) {
+        tableRows.forEach((row, rowIndex) => {
+            row.querySelectorAll("td").forEach((cell, cellIndex) => {
+                if (threeQuarterLessons.includes(cell.textContent)) {
                     let index = (rowIndex * numColumns) + cellIndex;
 
-                    if ($(element).prev().children().length > 0) {
-                        splitCellIndices.push(index - 1);
+                    if (cell.previousElementSibling) {
+                        let pText = cell.previousElementSibling.textContent;
+
+                        if (quarterActivities.includes(pText)) {
+                            splitCellIndices.push(index - 1);
+                        }
                     }
 
                     splitCellIndices.push(index);
 
-                    if ($(element).next().children().length > 0) {
-                        splitCellIndices.push(index + 1);
+                    if (cell.nextElementSibling) {
+                        let nText = cell.nextElementSibling.textContent;
+
+                        if (quarterActivities.includes(nText)) {
+                            splitCellIndices.push(index + 1);
+                        }
                     }
                 }
-
-                newCell[rowsKey] = cellText;
             });
-
-            rows.push(newCell);
         });
 
-        // jsPDF Auto-Table: github.com/simonbengtsson/jsPDF-AutoTable
-        doc.autoTable(columns, rows, {
+        autoTable(doc, {
+            "html": tableXPath,
             "bodyStyles": {
                 "fillColor": [45, 62, 80],
                 "textColor": [255, 255, 255]
             },
-            "headerStyles": {
+            "headStyles": {
                 "fillColor": 224,
                 "textColor": 0
             },
             "styles": {
                 "fontSize": 24,
                 "lineColor": 200,
-                "lineWidth": 0.5
+                "lineWidth": 0.5,
+                "halign": "center",
+                "cellPadding": 16
+            },
+            "alternateRowStyles" : {
+                "fillColor": [255, 255, 255],
+                "textColor": [45, 62, 80]
             },
             "startY": 60,
-            "addPageContent": (data) => {
-                tableCoordinates = this.addPageContent(doc, data, setTitle);
+            "didDrawPage": (cellHookData) => {
+                tableCoordinates = this.didDrawPage(cellHookData, setTitle);
             },
-            "createdCell": (cell, data) => {
-                if (instructors.includes(cell.text[0])) {
-                    isRowOdd = !isRowOdd;
-                }
-
-                cell = this.createdCell(cell,
-                    data,
-                    isRowOdd,
+            "didParseCell": (cellHookData) => {
+                cellHookData.cell = this.didParseCell(
+                    cellHookData,
+                    prevCell,
                     numColumns,
-                    splitCellIndices
+                    splitCellIndices,
+                    threeQuarterLessons,
+                    quarterActivities
                 );
+
+                prevCell = cellHookData.cell;
             },
-            "drawCell": (cell, data) => {
-                lineCoordinates = this.drawCell(
-                    cell,
-                    data,
+            "didDrawCell": (cellHookData) => {
+                lineCoordinates = this.didDrawCell(
+                    cellHookData.cell,
+                    cellHookData,
                     prevCell,
                     numColumns,
                     lineCoordinates,
@@ -150,7 +131,7 @@ class ExportToPDF extends React.Component {
                     threeQuarterLessons
                 );
 
-                prevCell = cell;
+                prevCell = cellHookData.cell;
             }
         });
 
@@ -163,84 +144,86 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-     * Opertions performed as page is created.
-     */
-     addPageContent(doc, data, setTitle) {
-         doc.text("Grid - " + setTitle, 40, 30);
+    * Opertions performed as page is created.
+    */
+    didDrawPage(data, setTitle) {
+        data.doc.text("Grid - " + setTitle, 40, 30);
 
-         return [
-             data.table.pageStartX,
-             data.table.pageStartY,
-             data.table.width  + data.table.pageStartX,
-             data.table.height + data.table.pageStartY
-         ];
-     }
-
-    /**
-     * Operations performed on the cell as it is created.
-     */
-     createdCell(cell, data, isRowOdd, numColumns, splitCellIndices) {
-         var cellIndex = (data.row.index * numColumns) + data.column.index;
-
-         if (splitCellIndices.includes(cellIndex)) {
-             cell.styles.lineColor = cell.styles.fillColor;
-             cell.styles.lineWidth = 0.001;
-         }
-
-         if (isRowOdd) {
-             cell.styles.fillColor = [255, 255, 255];
-             cell.styles.textColor = [45, 62, 80];
-         }
-
-         if (cell.text[0] === "Private") {
-             cell.styles.fillColor = [118, 118, 118];
-             cell.styles.textColor = [255, 255, 255];
-         }
-
-         return cell;
-     }
+        return [
+            data.settings.startY,
+            data.settings.startY,
+            data.cursor.x,
+            data.cursor.y
+        ];
+    }
 
     /**
-     * Draws the individual table cells in the PDF document.
-     */
-     drawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
-         var cellIndex = (data.row.index * numColumns) + data.column.index;
+    * Operations performed on the cell as it is created.
+    */
+    didParseCell(data, prevCell, numColumns, splitCellIndices, threeQuarterLessons, quarterActivities) {
+        let cell = data.cell;
+        let cellIndex = (data.row.index * numColumns) + data.column.index;
 
-         if (splitCellIndices.includes(cellIndex) && prevCell) {
-             if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
-                 // Place Work on the right side of cell divider.
-                 cell.textPos.x += cell.width / 2;
+        if (splitCellIndices.includes(cellIndex)) {
+            if (prevCell) {
+                // halign is set to default to "center", which doesn't work for any of the quarterActivities.
+                if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
+                    // Place Work on the right side of cell divider.
+                    cell.styles.halign = "right";
+                } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
+                    // Place Work on the left side of cell divider.
+                    prevCell.styles.halign = "left";
+                }
+            }
 
-                 lineCoordinates.push([
-                     cell.x + (cell.width / 2),
-                     cell.y,
-                     cell.x + (cell.width / 2),
-                     cell.y + cell.height
-                 ]);
-             } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
-                 lineCoordinates.push([
-                     prevCell.x + (prevCell.width / 2),
-                     prevCell.y,
-                     prevCell.x + (prevCell.width / 2),
-                     prevCell.y + prevCell.height
-                 ]);
-             }
-         }
+            cell.styles.lineColor = cell.styles.fillColor;
+            cell.styles.lineWidth = 0.001;
+        }
 
-         return lineCoordinates;
-     }
+        if (cell.text[0] === "Private") {
+            cell.styles.fillColor = [118, 118, 118];
+            cell.styles.textColor = [255, 255, 255];
+        }
+
+        return cell;
+    }
 
     /**
-     * Draws cell splitting lines and table borders in PDF document.
-     */
+    * Draws the individual table cells in the PDF document.
+    */
+    didDrawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
+        let cellIndex = (data.row.index * numColumns) + data.column.index;
+
+        if (splitCellIndices.includes(cellIndex) && prevCell) {
+            if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
+                lineCoordinates.push([
+                    cell.x + (cell.width / 2),
+                    cell.y,
+                    cell.x + (cell.width / 2),
+                    cell.y + cell.height
+                ]);
+            } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
+                lineCoordinates.push([
+                    prevCell.x + (prevCell.width / 2),
+                    prevCell.y,
+                    prevCell.x + (prevCell.width / 2),
+                    prevCell.y + prevCell.height
+                ]);
+            }
+        }
+
+        return lineCoordinates;
+    }
+
+    /**
+    * Draws cell splitting lines and table borders in PDF document.
+    */
     drawLines(doc, lineCoordinates, tableCoordinates) {
-        var [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
+        let [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
 
-        // Draw table border lines (to compensate for removing cell borders on edge of table).
-        doc.line(tableX1, tableY1, tableX1, tableY2);
-        doc.line(tableX2, tableY1, tableX2, tableY2);
-        doc.line(tableX1, tableY1, tableX2, tableY1);
-        doc.line(tableX1, tableY2, tableX2, tableY2);
+        // Draw table border lines (to compensate for removing cell borders on edge of table). Skip left-most and top-most border because they aren't removed.
+        doc.line(tableX2, tableY1, tableX2, tableY2); // Right border
+        doc.line(tableX1, tableY2, tableX2, tableY2); // Bottom border
 
         // Draw split cell lines.
         for (let line = 0; line < lineCoordinates.length; line++) {
