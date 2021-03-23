@@ -52,6 +52,10 @@ async function macroTickFade(t, input, expected) {
     } else if (/\[duration.*\]/.test(t.title)) {
         duration = input;
         watcher = t.context.stubDateNow;
+    } else if (/\[last.*\]/.test(t.title)) {
+        last = input;
+        watcher = t.context.stubDateNow;
+        watcher.onFirstCall().returns(Date.now.wrappedMethod());
     } else if (/\[opacity.*\]/.test(t.title)) {
         // This breaks with the Date.now watcher.
         Date.now.restore();
@@ -99,3 +103,9 @@ test.serial('_tickFade [opacity < 1]', macroTickFade, .5, 1);
 test.serial('_tickFade [duration > 0]', macroTickFade, 1, 2);
 test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
 test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
+
+// These are too fast, they stack wrapping 'Date.now'.
+let n = Date.now() || Date.now.wrappedMethod();
+test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * n, 1);
+test.serial('_tickFade [last = Date.now()]', macroTickFade, n, 2);
+test.serial('_tickFade [last < Date.now()]', macroTickFade, 0, 2);
