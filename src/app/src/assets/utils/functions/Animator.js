@@ -15,30 +15,41 @@ class Animator extends React.Component {
         super(props);
     }
 
+    static _tickFade(element, duration, delay = 0, callback = () => null, last = Date.now()) {
+        let delta, now = Date.now();
+        if (duration <= 0 || last > now) return;
+
+        delta = (now - last) / duration;
+
+        // Don't allow opacity to be greater than 1.
+        last = Date.now();
+        element.style.opacity = Math.min(+element.style.opacity + delta, 1);
+
+        if (+element.style.opacity < 1) {
+            window.requestAnimationFrame(() => {
+                this._tickFade(element, duration, delay, callback, last);
+            });
+        } else {
+            window.setTimeout(() => {
+                if (callback) {
+                    callback();
+                }
+            }, delay);
+        }
+    }
+
     /**
     * Custom function to smoothly fade a target element in.
      */
     static fadeIn(element, duration, delay, callback) {
         element.style.opacity = 0;
 
-        let last = Date.now();
-        let tick = () => {
-            let delta = (Date.now() - last) / duration;
-            element.style.opacity = +element.style.opacity + delta;
-            last = Date.now();
-
-            if (+element.style.opacity < 1) {
-                requestAnimationFrame(tick);
-            } else {
-                setTimeout(() => {
-                    if (callback) {
-                        callback();
-                    }
-                }, delay || 0);
-            }
-        };
-
-        tick();
+        this._tickFade(
+            element,
+            duration,
+            delay,
+            callback
+        );
     }
 
     /**
