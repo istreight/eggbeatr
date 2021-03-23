@@ -1,15 +1,15 @@
-import test from 'ava';
+/**
+ * FILENAME:    test.js
+ * AUTHOR:      Isaac Streight
+ * START DATE:  February 4th, 2021
+ *
+ * This file is the entry point for the test suite of the lesson calendar web application.
+ */
+
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import Animator from '@functions/Animator';
 
-
-test('foo', t => {
-	t.pass();
-});
-
-test('bar', async t => {
-	const bar = Promise.resolve('bar');
-	t.is(await bar, 'bar');
-});
+const req = require.context('./', true, /^.*\Spec.js$/);
+console.log(req.keys());
+req.keys().forEach(req);
