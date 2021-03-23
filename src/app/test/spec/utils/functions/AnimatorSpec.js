@@ -5,12 +5,20 @@ import Animator from '@functions/Animator.js';
 
 
 test.before(t => {
+    Object.assign(window, { requestAnimationFrame: () => null });
+
     t.context = {
         "ele": document.createElement('div')
     };
 });
 
-test.beforeEach(t => {});
+test.beforeEach(t => {
+    let newContext = {
+        "stubRAF": sinon.stub(window, 'requestAnimationFrame')
+    };
+
+    t.context = {...t.context, ...newContext }
+});
 
 test.afterEach.always(t => {
     // Restore the default Sinon sandbox.
@@ -40,6 +48,12 @@ async function macroTickFade(t, input, expected) {
 
         // Pass the spied-on function, not the original.
         callback = watcher;
+    } else if (/\[opacity.*\]/.test(t.title)) {
+        // So that [opactity < 1] isn't min'd to 1, (Date.now() - last) must be less than duration.
+        last = Date.now();
+
+        watcher = t.context.stubRAF;
+        t.context.ele.style.opacity = input;
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -49,6 +63,10 @@ async function macroTickFade(t, input, expected) {
         await Animator._tickFade(
             t.context.ele, duration, 0, callback, last
         );
+
+        if (t.title.includes('opacity')) {
+            t.assert(parseFloat(t.context.ele.style.opacity) <= 1);
+        }
 
         return watcher.callCount;
     };
@@ -63,3 +81,8 @@ async function macroTickFade(t, input, expected) {
 \* ========================================================================== */
 
 test('_tickFade [callback]', macroTickFade, () => null, 1);
+
+// These are too fast, they stack wrapping 'window.requestAnimationFrame'.
+test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
+test.serial('_tickFade [opacity = 1]', macroTickFade, 1, 0);
+test.serial('_tickFade [opacity < 1]', macroTickFade, .5, 1);
