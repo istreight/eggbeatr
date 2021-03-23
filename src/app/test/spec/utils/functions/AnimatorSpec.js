@@ -14,6 +14,7 @@ test.before(t => {
 
 test.beforeEach(t => {
     let newContext = {
+        "stubDateNow": sinon.stub(Date, 'now'),
         "stubRAF": sinon.stub(window, 'requestAnimationFrame')
     };
 
@@ -48,8 +49,15 @@ async function macroTickFade(t, input, expected) {
 
         // Pass the spied-on function, not the original.
         callback = watcher;
+    } else if (/\[duration.*\]/.test(t.title)) {
+        duration = input;
+        watcher = t.context.stubDateNow;
     } else if (/\[opacity.*\]/.test(t.title)) {
+        // This breaks with the Date.now watcher.
+        Date.now.restore();
+
         // So that [opactity < 1] isn't min'd to 1, (Date.now() - last) must be less than duration.
+        // This produces an automatic pass while watching Date.now.
         last = Date.now();
 
         watcher = t.context.stubRAF;
@@ -86,3 +94,8 @@ test('_tickFade [callback]', macroTickFade, () => null, 1);
 test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
 test.serial('_tickFade [opacity = 1]', macroTickFade, 1, 0);
 test.serial('_tickFade [opacity < 1]', macroTickFade, .5, 1);
+
+// These are too fast, they stack wrapping 'Date.now'.
+test.serial('_tickFade [duration > 0]', macroTickFade, 1, 2);
+test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
+test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
