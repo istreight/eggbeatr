@@ -94,6 +94,40 @@ async function macroTickFade(t, input, expected) {
     t.is(await wrapper(), expected);
 };
 
+async function macroTickSlide(t, input, expected) {
+    let watcher, callback;
+
+    let start = 0;
+    let duration = 10;
+    let display = () => null;
+
+    t.context.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
+
+    if (/\[callback.*\]/.test(t.title)) {
+        watcher = sinon.spy(input);
+
+        // Pass the spied-on function, not the original.
+        callback = watcher;
+    } else {
+        // No configuration for unrecognized title.
+        t.fail();
+    }
+
+    let wrapper = async () => {
+        await Animator._tickSlide(
+            duration, display, callback, start
+        );
+
+        if (t.title.includes('opacity')) {
+            t.assert(parseFloat(t.context.ele.style.opacity) <= 1);
+        }
+
+        return watcher.callCount;
+    };
+
+    t.is(await wrapper(), expected);
+}
+
 async function macroFade(t, input, expected) {
     if (input === 'In') {
         await Animator.fadeIn(
@@ -115,6 +149,7 @@ async function macroFade(t, input, expected) {
 \* ========================================================================== */
 
 test('_tickFade [callback]', macroTickFade, () => null, 1);
+test('_tickSlide [callback]', macroTickSlide, () => null, 1);
 
 // These are too fast, they stack wrapping 'window.requestAnimationFrame'.
 test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
