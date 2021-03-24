@@ -122,6 +122,9 @@ async function macroTickSlide(t, input, expected) {
     } else if (/\[duration.*\]/.test(t.title)) {
         duration = input;
         watcher = t.context.mathMin;
+    } else if (/\[start.*\]/.test(t.title)) {
+        start = input;
+        watcher = t.context.mathMin;
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -162,6 +165,8 @@ async function macroFade(t, input, expected) {
 |*                                                                            *|
 \* ========================================================================== */
 
+let now;
+
 test('_tickFade [callback]', macroTickFade, () => null, 1);
 test('_tickSlide [callback]', macroTickSlide, () => null, 1);
 
@@ -176,9 +181,9 @@ test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
 test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
 
 // These are too fast, they stack wrapping 'Date.now'.
-let n = Date.now() || Date.now.wrappedMethod();
-test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * n, 1);
-test.serial('_tickFade [last = Date.now()]', macroTickFade, n, 2);
+now = Date.now();
+test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * now, 1);
+test.serial('_tickFade [last = Date.now()]', macroTickFade, now, 2);
 test.serial('_tickFade [last < Date.now()]', macroTickFade, 0, 2);
 
 // These are too fast, they stack wrapping 'Date.now'.
@@ -196,3 +201,8 @@ test.serial('_tickSlide [display is not a function]', macroTickSlide, '() => nul
 test.serial('_tickSlide [duration < 0]', macroTickSlide, -1, 0);
 test.serial('_tickSlide [duration = 0]', macroTickSlide, 0, 0);
 test.serial('_tickSlide [duration > 0]', macroTickSlide, 1, 1);
+
+now = Date.now();
+test.serial('_tickSlide [start < Date.now()]', macroTickSlide, 0, 1);
+test.serial('_tickSlide [start = Date.now()]', macroTickSlide, now, 1);
+test.serial('_tickSlide [start > Date.now()]', macroTickSlide, 2 * now, 0);
