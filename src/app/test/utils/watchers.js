@@ -90,5 +90,4 @@ class Watchers {
     }
 }
 
-// Export a singleton instance of Watcher for a pseudo-static effect.
 export default Watchers;

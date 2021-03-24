@@ -7,23 +7,23 @@ import Animator from '@functions/Animator.js';
 
 const w = new Watchers();
 
-test.before(t => {
+test.before((t) => {
     t.context = {
         ...w.getAllWatchers('Animator'),
         "ele": document.createElement('div')
     };
 });
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
     t.log('utils/functions/AnimatorSpec.js');
 });
 
-test.afterEach.always(t => {
+test.afterEach.always(() => {
     // Reset the state of all fakes in the Watchers instance.
     w.reset();
 });
 
-test.after.always(t => {
+test.after.always(() => {
     // Restore the Watchers instance sandbox.
     w.restore();
 });
@@ -38,7 +38,7 @@ async function macroTickFade(t, input, expected) {
     let watcher, callback;
 
     let last = 0;
-    let duration = 10;
+    let duration = 100;
     let direction = 'In';
 
     // Set opacity to 1 to avoid calling 'requestAnimationFrame'.
@@ -70,10 +70,11 @@ async function macroTickFade(t, input, expected) {
         watcher = t.context.dateNow;
     } else if (/\[opacity.*\]/.test(t.title)) {
         // So that [opactity < 1] isn't min'd to 1, (Date.now() - last) must be less than duration; doesn't increase call count.
-        last = Date.now.wrappedMethod();
+        last = Date.now.wrappedMethod() - 10;
 
         t.context.ele.style.opacity = input;
         watcher = t.context.windowRequestAnimationFrame;
+        t.context.dateNow.onSecondCall().returns(Date.now.wrappedMethod());
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -155,7 +156,7 @@ async function macroFade(t, input, expected) {
     t.is(t.context.animatorTickFade.callCount, expected);
 }
 
-async function macroSlide(t, input, expected) {
+async function macroSlide(t, expected) {
     await Animator.slide(
         0, () => null, () => null
     );
@@ -193,9 +194,9 @@ test.serial('slide [_tickSlide called on slide]', macroSlide, 1);
 /* -------------------------------------------------------------------------- *\
 |* ----------------------------    _tickFade    ----------------------------- *|
 \* -------------------------------------------------------------------------- */
-test.serial.only('_tickFade [opacity < 1]', macroTickFade, 0, 1);
-test.serial.only('_tickFade [opacity = 1]', macroTickFade, 1, 0);
-test.serial.only('_tickFade [opacity > 1]', macroTickFade, 2, 0);
+test.serial('_tickFade [opacity < 1]', macroTickFade, 0, 1);
+test.serial('_tickFade [opacity = 1]', macroTickFade, 1, 0);
+test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
 
 test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
 test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
