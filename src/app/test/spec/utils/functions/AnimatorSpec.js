@@ -174,35 +174,47 @@ let now;
 test('_tickFade [callback]', macroTickFade, () => null, 1);
 test('_tickSlide [callback]', macroTickSlide, () => null, 1);
 
-/*
+/**
  * Tests are run serially because they compete for details of the fakes, and verifying those details concurrently while they're all using one fake is hard.
  * Multiple fake instances of a method, commonly monitored, is not allowed.
  */
 
-test.serial('slide [_tickSlide called on slide]', macroSlide, undefined, 1);
+/* -------------------------------------------------------------------------- *\
+|* ---------------------------- fadeIn / fadeOut ---------------------------- *|
+\* -------------------------------------------------------------------------- */
+test.serial('fade [_tickFade called on fadeIn]', macroFade, 'In', 1);
+test.serial('fade [_tickFade called on fadeOut]', macroFade, 'Out', 1);
 
-test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
-test.serial('_tickFade [opacity = 1]', macroTickFade, 1, 0);
-test.serial('_tickFade [opacity < 1]', macroTickFade, .1, 1);
+/* -------------------------------------------------------------------------- *\
+|* ----------------------------      slide      ----------------------------- *|
+\* -------------------------------------------------------------------------- */
+test.serial('slide [_tickSlide called on slide]', macroSlide, 1);
 
-test.serial('_tickFade [duration > 0]', macroTickFade, 1, 2);
-test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
+/* -------------------------------------------------------------------------- *\
+|* ----------------------------    _tickFade    ----------------------------- *|
+\* -------------------------------------------------------------------------- */
+test.serial.only('_tickFade [opacity < 1]', macroTickFade, 0, 1);
+test.serial.only('_tickFade [opacity = 1]', macroTickFade, 1, 0);
+test.serial.only('_tickFade [opacity > 1]', macroTickFade, 2, 0);
+
 test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
+test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
+test.serial('_tickFade [duration > 0]', macroTickFade, 1, 2);
 
 now = Date.now();
-test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * now, 1);
-test.serial('_tickFade [last = Date.now()]', macroTickFade, now, 2);
 test.serial('_tickFade [last < Date.now()]', macroTickFade, 0, 2);
+test.serial('_tickFade [last = Date.now()]', macroTickFade, now, 2);
+test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * now, 1);
 
 test.serial('_tickFade [fade = "In"]', macroTickFade, 'In', 1);
 test.serial('_tickFade [fade = "Out"]', macroTickFade, 'Out', 1);
 test.serial('_tickFade [fade = "Garbage"]', macroTickFade, 'Garbage', 1);
 
-test.serial('fade [_tickFade called on fadeIn]', macroFade, 'In', 1);
-test.serial('fade [_tickFade called on fadeOut]', macroFade, 'Out', 1);
-
-test.serial('_tickSlide [display is a function]', macroTickSlide, () => null, 1);
-test.serial('_tickSlide [display is not a function]', macroTickSlide, '() => null', 0);
+/* -------------------------------------------------------------------------- *\
+|* ----------------------------    _tickSlide    ---------------------------- *|
+\* -------------------------------------------------------------------------- */
+test.serial('_tickSlide [display = fn()]', macroTickSlide, () => null, 1);
+test.serial('_tickSlide [display != fn()]', macroTickSlide, '() => null', 0);
 
 test.serial('_tickSlide [duration < 0]', macroTickSlide, -1, 0);
 test.serial('_tickSlide [duration = 0]', macroTickSlide, 0, 0);
