@@ -108,6 +108,17 @@ async function macroTickSlide(t, input, expected) {
 
         // Pass the spied-on function, not the original.
         callback = watcher;
+    } else if (/\[display.*\]/.test(t.title)) {
+        if (input instanceof Function) {
+            watcher = sinon.spy(input);
+
+            // Pass the spied-on function, not the original.
+            display = watcher;
+        } else {
+            watcher = t.context.mathMin;
+
+            display = input;
+        }
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -175,3 +186,6 @@ test.serial('_tickFade [fade = "Garbage"]', macroTickFade, 'Garbage', 1);
 test.serial('fade [_tickFade called on fadeIn]', macroFade, 'In', 1);
 test.serial('fade [_tickFade called on fadeOut]', macroFade, 'Out', 1);
 test.serial('fade [_tickFade not called]', macroFade, 'In&Out', 0);
+
+test.serial('_tickSlide [display is a function]', macroTickSlide, () => null, 1);
+test.serial('_tickSlide [display is not a function]', macroTickSlide, '() => null', 0);
