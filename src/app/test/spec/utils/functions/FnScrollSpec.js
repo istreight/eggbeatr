@@ -35,9 +35,10 @@ test.after.always(() => {
 \* ========================================================================== */
 
 async function macroScroll(t, input, expected) {
-    let watcher;
+    let watcher = t.context.fnScroll;
 
-    if (/\[regex.*\]/.test(t.title)) {
+    if (/\[next.*\]/.test(t.title)) {
+        // No config required.
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -45,8 +46,9 @@ async function macroScroll(t, input, expected) {
 
     await FnScroll.scroll(input);
 
-    t.is(window.onwheel, null);
-    t.is(watcher.callCount, expected);
+    t.is(window.onwheel, null); // Reset (HTML input) or not set (invalid input)
+    t.is(watcher.animatorSlide.callCount, expected);
+    t.is(watcher.windowScrollTo.callCount, expected);
 }
 
 /* ========================================================================== *\
@@ -57,9 +59,12 @@ async function macroScroll(t, input, expected) {
 
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------------     fn1      ------------------------------ *|
+|* -----------------------------     scroll     ----------------------------- *|
 \* -------------------------------------------------------------------------- */
+test.serial('scroll [next = HTML object]', macroScroll, document.createElement('div'), 1);
+test.serial('scroll [next != HTML object]', macroScroll, 'Garbage', 0);
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------     fn2      ------------------------------ *|
 \* -------------------------------------------------------------------------- */
+//test.serial('fn2 [fn2 = expected]', macro, 'input', 'expected');

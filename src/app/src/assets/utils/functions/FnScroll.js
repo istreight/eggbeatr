@@ -18,12 +18,12 @@ class FnScroll extends React.Component {
     }
 
     static scroll(next) {
+        if (!(next instanceof HTMLElement)) return;
+
         let initial = +window.pageYOffset;
         let deltaView = next.getBoundingClientRect();
 
-        window.onwheel = (e) => {
-            e.preventDefault()
-        };
+        window.onwheel = (e) => e.preventDefault;
 
         Animator.slide(2000, (progress) => {
             window.scrollTo(0, initial + progress * (deltaView.top - 58));

@@ -1,1 +1,1 @@
-require('browser-env')(['window', 'document']);
+require('browser-env')(['window', 'document', 'HTMLElement']);

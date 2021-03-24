@@ -17,6 +17,7 @@ class Watchers {
             "mathMax": [Math, 'max'],
             "mathMin": [Math, 'min'],
             "windowOnWheel": [window, 'onwheel'],
+            "windowScrollTo": [window, 'scrollTo'],
             "windowSetTimeout": [window, 'setTimeout'],
             "windowRequestAnimationFrame": [window, 'requestAnimationFrame']
         };
@@ -40,7 +41,7 @@ class Watchers {
             },
             "FnScroll": {
                 "mocks": [],
-                "spies": ["animatorSlide"],
+                "spies": ["animatorSlide", "windowScrollTo"],
                 "stubs": []
             }
         };
