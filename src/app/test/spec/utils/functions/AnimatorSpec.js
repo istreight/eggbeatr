@@ -14,7 +14,9 @@ test.before(t => {
     };
 });
 
-test.beforeEach(t => {});
+test.beforeEach(t => {
+    t.log('utils/functions/AnimatorSpec.js');
+});
 
 test.afterEach.always(t => {
     // Reset the state of all fakes in the Watchers instance.
