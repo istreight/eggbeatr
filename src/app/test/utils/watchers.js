@@ -11,6 +11,7 @@ class Watchers {
     static watchersList() {
         return {
             "animatorTickFade": [Animator, '_tickFade'],
+            "animatorTickSlide": [Animator, '_tickSlide'],
             "dateNow": [Date, 'now'],
             "mathMax": [Math, 'max'],
             "mathMin": [Math, 'min'],
@@ -23,7 +24,7 @@ class Watchers {
         return {
             "Animator": {
                 "mocks": [],
-                "spies": ["animatorTickFade", "mathMax", "mathMin"],
+                "spies": ["animatorTickFade", "animatorTickSlide", "mathMax", "mathMin"],
                 "stubs": [
                     "dateNow",
                     "windowRequestAnimationFrame",

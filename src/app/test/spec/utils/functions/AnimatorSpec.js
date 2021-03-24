@@ -135,10 +135,6 @@ async function macroTickSlide(t, input, expected) {
             duration, display, callback, start
         );
 
-        if (t.title.includes('opacity')) {
-            t.assert(parseFloat(t.context.ele.style.opacity) <= 1);
-        }
-
         return watcher.callCount;
     };
 
@@ -159,6 +155,14 @@ async function macroFade(t, input, expected) {
     t.is(t.context.animatorTickFade.callCount, expected);
 }
 
+async function macroSlide(t, input, expected) {
+    await Animator.slide(
+        0, () => null, () => null
+    );
+
+    t.is(t.context.animatorTickSlide.callCount, expected);
+}
+
 /* ========================================================================== *\
 |*                                                                            *|
 |*                                  TESTS                                     *|
@@ -170,30 +174,32 @@ let now;
 test('_tickFade [callback]', macroTickFade, () => null, 1);
 test('_tickSlide [callback]', macroTickSlide, () => null, 1);
 
-// These are too fast, they stack wrapping 'window.requestAnimationFrame'.
+/*
+ * Tests are run serially because they compete for details of the fakes, and verifying those details concurrently while they're all using one fake is hard.
+ * Multiple fake instances of a method, commonly monitored, is not allowed.
+ */
+
+test.serial('slide [_tickSlide called on slide]', macroSlide, undefined, 1);
+
 test.serial('_tickFade [opacity > 1]', macroTickFade, 2, 0);
 test.serial('_tickFade [opacity = 1]', macroTickFade, 1, 0);
 test.serial('_tickFade [opacity < 1]', macroTickFade, .1, 1);
 
-// These are too fast, they stack wrapping 'Date.now'.
 test.serial('_tickFade [duration > 0]', macroTickFade, 1, 2);
 test.serial('_tickFade [duration = 0]', macroTickFade, 0, 1);
 test.serial('_tickFade [duration < 0]', macroTickFade, -1, 1);
 
-// These are too fast, they stack wrapping 'Date.now'.
 now = Date.now();
 test.serial('_tickFade [last > Date.now()]', macroTickFade, 2 * now, 1);
 test.serial('_tickFade [last = Date.now()]', macroTickFade, now, 2);
 test.serial('_tickFade [last < Date.now()]', macroTickFade, 0, 2);
 
-// These are too fast, they stack wrapping 'Date.now'.
 test.serial('_tickFade [fade = "In"]', macroTickFade, 'In', 1);
 test.serial('_tickFade [fade = "Out"]', macroTickFade, 'Out', 1);
 test.serial('_tickFade [fade = "Garbage"]', macroTickFade, 'Garbage', 1);
 
 test.serial('fade [_tickFade called on fadeIn]', macroFade, 'In', 1);
 test.serial('fade [_tickFade called on fadeOut]', macroFade, 'Out', 1);
-test.serial('fade [_tickFade not called]', macroFade, 'In&Out', 0);
 
 test.serial('_tickSlide [display is a function]', macroTickSlide, () => null, 1);
 test.serial('_tickSlide [display is not a function]', macroTickSlide, '() => null', 0);
