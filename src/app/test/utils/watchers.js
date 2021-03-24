@@ -12,7 +12,8 @@ class Watchers {
         return {
             "animatorTickFade": [Animator, '_tickFade'],
             "dateNow": [Date, 'now'],
-            "math": [Math],
+            "mathMax": [Math, 'max'],
+            "mathMin": [Math, 'min'],
             "windowSetTimeout": [window, 'setTimeout'],
             "windowRequestAnimationFrame": [window, 'requestAnimationFrame']
         };
@@ -22,7 +23,7 @@ class Watchers {
         return {
             "Animator": {
                 "mocks": [],
-                "spies": ["math", "animatorTickFade"],
+                "spies": ["animatorTickFade", "mathMax", "mathMin"],
                 "stubs": [
                     "dateNow",
                     "windowRequestAnimationFrame",

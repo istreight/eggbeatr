@@ -44,6 +44,8 @@ async function macroTickFade(t, input, expected) {
     // Set opacity to 1 to avoid calling 'requestAnimationFrame'.
     t.context.ele.style.opacity = 1;
 
+    t.context.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
+
     if (/\[callback.*\]/.test(t.title)) {
         watcher = sinon.spy(input);
         t.context.windowSetTimeout.callsArg(0);
@@ -57,23 +59,21 @@ async function macroTickFade(t, input, expected) {
         direction = input;
 
         if (input === 'In') {
-            watcher = t.context.math.min;
+            watcher = t.context.mathMin;
         } else if (input === 'Out') {
-            watcher = t.context.math.max;
+            watcher = t.context.mathMax;
         } else {
             watcher = t.context.dateNow;
         }
     } else if (/\[last.*\]/.test(t.title)) {
         last = input;
         watcher = t.context.dateNow;
-        watcher.onFirstCall().returns(Date.now.wrappedMethod());
     } else if (/\[opacity.*\]/.test(t.title)) {
         // So that [opactity < 1] isn't min'd to 1, (Date.now() - last) must be less than duration; doesn't increase call count.
         last = Date.now.wrappedMethod();
 
         t.context.ele.style.opacity = input;
         watcher = t.context.windowRequestAnimationFrame;
-        t.context.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
     } else {
         // No configuration for unrecognized title.
         t.fail();
