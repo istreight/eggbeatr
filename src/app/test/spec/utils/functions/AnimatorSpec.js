@@ -8,7 +8,7 @@ import Animator from '@functions/Animator.js';
 const w = new Watchers();
 
 test.before((t) => {
-    t.context = {
+    t.context.animator = {
         ...w.getAllWatchers('Animator'),
         "ele": document.createElement('div')
     };
@@ -42,39 +42,39 @@ async function macroTickFade(t, input, expected) {
     let direction = 'In';
 
     // Set opacity to 1 to avoid calling 'requestAnimationFrame'.
-    t.context.ele.style.opacity = 1;
+    t.context.animator.ele.style.opacity = 1;
 
-    t.context.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
+    t.context.animator.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
 
     if (/\[callback.*\]/.test(t.title)) {
         watcher = sinon.spy(input);
-        t.context.windowSetTimeout.callsArg(0);
+        t.context.animator.windowSetTimeout.callsArg(0);
 
         // Pass the spied-on function, not the original.
         callback = watcher;
     } else if (/\[duration.*\]/.test(t.title)) {
         duration = input;
-        watcher = t.context.dateNow;
+        watcher = t.context.animator.dateNow;
     } else if (/\[fade.*\]/.test(t.title)) {
         direction = input;
 
         if (input === 'In') {
-            watcher = t.context.mathMin;
+            watcher = t.context.animator.mathMin;
         } else if (input === 'Out') {
-            watcher = t.context.mathMax;
+            watcher = t.context.animator.mathMax;
         } else {
-            watcher = t.context.dateNow;
+            watcher = t.context.animator.dateNow;
         }
     } else if (/\[last.*\]/.test(t.title)) {
         last = input;
-        watcher = t.context.dateNow;
+        watcher = t.context.animator.dateNow;
     } else if (/\[opacity.*\]/.test(t.title)) {
         // So that [opactity < 1] isn't min'd to 1, (Date.now() - last) must be less than duration; doesn't increase call count.
         last = Date.now.wrappedMethod() - 10;
 
-        t.context.ele.style.opacity = input;
-        watcher = t.context.windowRequestAnimationFrame;
-        t.context.dateNow.onSecondCall().returns(Date.now.wrappedMethod());
+        t.context.animator.ele.style.opacity = input;
+        watcher = t.context.animator.windowRequestAnimationFrame;
+        t.context.animator.dateNow.onSecondCall().returns(Date.now.wrappedMethod());
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -82,11 +82,11 @@ async function macroTickFade(t, input, expected) {
 
     let wrapper = async () => {
         await Animator._tickFade(
-            direction, t.context.ele, duration, 0, callback, last
+            direction, t.context.animator.ele, duration, 0, callback, last
         );
 
         if (t.title.includes('opacity')) {
-            t.assert(parseFloat(t.context.ele.style.opacity) <= 1);
+            t.assert(parseFloat(t.context.animator.ele.style.opacity) <= 1);
         }
 
         return watcher.callCount;
@@ -102,7 +102,7 @@ async function macroTickSlide(t, input, expected) {
     let duration = 10;
     let display = () => null;
 
-    t.context.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
+    t.context.animator.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
 
     if (/\[callback.*\]/.test(t.title)) {
         watcher = sinon.spy(input);
@@ -116,16 +116,16 @@ async function macroTickSlide(t, input, expected) {
             // Pass the spied-on function, not the original.
             display = watcher;
         } else {
-            watcher = t.context.mathMin;
+            watcher = t.context.animator.mathMin;
 
             display = input;
         }
     } else if (/\[duration.*\]/.test(t.title)) {
         duration = input;
-        watcher = t.context.mathMin;
+        watcher = t.context.animator.mathMin;
     } else if (/\[start.*\]/.test(t.title)) {
         start = input;
-        watcher = t.context.mathMin;
+        watcher = t.context.animator.mathMin;
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -145,15 +145,15 @@ async function macroTickSlide(t, input, expected) {
 async function macroFade(t, input, expected) {
     if (input === 'In') {
         await Animator.fadeIn(
-            t.context.ele, 1
+            t.context.animator.ele, 1
         );
     } else if (input === 'Out') {
         await Animator.fadeOut(
-            t.context.ele, 1
+            t.context.animator.ele, 1
         );
     }
 
-    t.is(t.context.animatorTickFade.callCount, expected);
+    t.is(t.context.animator.animatorTickFade.callCount, expected);
 }
 
 async function macroSlide(t, expected) {
@@ -161,7 +161,7 @@ async function macroSlide(t, expected) {
         0, () => null, () => null
     );
 
-    t.is(t.context.animatorTickSlide.callCount, expected);
+    t.is(t.context.animator.animatorTickSlide.callCount, expected);
 }
 
 /* ========================================================================== *\
@@ -172,8 +172,8 @@ async function macroSlide(t, expected) {
 
 let now;
 
-test('_tickFade [callback]', macroTickFade, () => null, 1);
-test('_tickSlide [callback]', macroTickSlide, () => null, 1);
+test.serial('_tickFade [callback]', macroTickFade, () => null, 1);
+test.serial('_tickSlide [callback]', macroTickSlide, () => null, 1);
 
 /**
  * Tests are run serially because they compete for details of the fakes, and verifying those details concurrently while they're all using one fake is hard.

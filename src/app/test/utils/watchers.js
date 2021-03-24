@@ -10,11 +10,13 @@ class Watchers {
 
     static watchersList() {
         return {
+            "animatorSlide": [Animator, 'slide'],
             "animatorTickFade": [Animator, '_tickFade'],
             "animatorTickSlide": [Animator, '_tickSlide'],
             "dateNow": [Date, 'now'],
             "mathMax": [Math, 'max'],
             "mathMin": [Math, 'min'],
+            "windowOnWheel": [window, 'onwheel'],
             "windowSetTimeout": [window, 'setTimeout'],
             "windowRequestAnimationFrame": [window, 'requestAnimationFrame']
         };
@@ -24,12 +26,22 @@ class Watchers {
         return {
             "Animator": {
                 "mocks": [],
-                "spies": ["animatorTickFade", "animatorTickSlide", "mathMax", "mathMin"],
+                "spies": [
+                    "animatorTickFade",
+                    "animatorTickSlide",
+                    "mathMax",
+                    "mathMin"
+                ],
                 "stubs": [
                     "dateNow",
                     "windowRequestAnimationFrame",
                     "windowSetTimeout"
                 ]
+            },
+            "FnScroll": {
+                "mocks": [],
+                "spies": ["animatorSlide"],
+                "stubs": []
             }
         };
     }
