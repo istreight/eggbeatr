@@ -50,20 +50,21 @@ class Animator extends React.Component {
         }
     }
 
-    static _tickSlide(duration, display, callback, start = Date.now()) {
+    static _tickSlide(duration, displace, callback = () => null, start = Date.now()) {
+        let now = Date.now();
         let progress, timeFraction;
 
-        if (duration <= 0) return;
+        if (duration <= 0 || (start > now) || !(displace instanceof Function)) return;
 
         // Accelerates until the half-way point, then decelerates.
-        timeFraction = Math.min((Date.now() - start) / duration, 1);
+        timeFraction = Math.min((now - start) / duration, 1);
         if (timeFraction < 0.5) {
             progress = Math.pow(2 * timeFraction, 2) / 2;
         } else {
             progress = (2 - Math.pow(2 * (1 - timeFraction), 2)) / 2;
         }
 
-        display(progress);
+        displace(progress);
 
         if (progress < 1) {
             window.requestAnimationFrame(() => this._tickSlide(
