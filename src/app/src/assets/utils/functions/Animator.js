@@ -15,20 +15,32 @@ class Animator extends React.Component {
         super(props);
     }
 
-    static _tickFade(element, duration, delay = 0, callback = () => null, last = Date.now()) {
-        let delta, now = Date.now();
+    static _tickFade(fadeDirection, element, duration, delay = 0, callback = () => null, last = Date.now()) {
+        let reqFrame, opacity, delta, now = Date.now();
+
         if (duration <= 0 || last > now) return;
+        if (!['In', 'Out'].includes(fadeDirection)) return;
 
         delta = (now - last) / duration;
 
-        // Don't allow opacity to be greater than 1.
         last = Date.now();
-        element.style.opacity = Math.min(+element.style.opacity + delta, 1);
+        opacity = parseFloat(element.style.opacity);
 
-        if (+element.style.opacity < 1) {
-            window.requestAnimationFrame(() => {
-                this._tickFade(element, duration, delay, callback, last);
-            });
+        if (fadeDirection === 'In') {
+            opacity = Math.min(opacity + delta, 1);
+            reqFrame = opacity < 1;
+        } else if (fadeDirection === 'Out') {
+            opacity = Math.max(opacity - delta, 0);
+            reqFrame = opacity > 0;
+        }
+
+        // Don't allow opacity to be greater than 1.
+        element.style.opacity = opacity;
+
+        if (reqFrame) {
+            window.requestAnimationFrame(() => this._tickFade(
+                fadeDirection, element, duration, delay, callback, last
+            ));
         } else {
             window.setTimeout(() => {
                 if (callback) {
@@ -38,6 +50,10 @@ class Animator extends React.Component {
         }
     }
 
+    static _tickSlide() {
+
+    }
+
     /**
     * Custom function to smoothly fade a target element in.
      */
@@ -45,6 +61,7 @@ class Animator extends React.Component {
         element.style.opacity = 0;
 
         this._tickFade(
+            'In',
             element,
             duration,
             delay,
@@ -58,24 +75,13 @@ class Animator extends React.Component {
     static fadeOut(element, duration, delay, callback) {
         element.style.opacity = 1;
 
-        let last = Date.now();
-        let tick = () => {
-            let delta = (Date.now() - last) / duration;
-            element.style.opacity = +element.style.opacity - delta;
-            last = Date.now();
-
-            if (+element.style.opacity > 0) {
-                requestAnimationFrame(tick);
-            } else {
-                setTimeout(() => {
-                    if (callback) {
-                        callback();
-                    }
-                }, delay || 0);
-            }
-        };
-
-        tick();
+        this._tickFade(
+            'Out',
+            element,
+            duration,
+            delay,
+            callback
+        );
     }
 
     /**
