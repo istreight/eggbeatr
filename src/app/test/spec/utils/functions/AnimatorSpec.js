@@ -92,6 +92,20 @@ async function macroTickFade(t, input, expected) {
     t.is(await wrapper(), expected);
 };
 
+async function macroFade(t, input, expected) {
+    if (input === 'In') {
+        await Animator.fadeIn(
+            t.context.ele, 1
+        );
+    } else if (input === 'Out') {
+        await Animator.fadeOut(
+            t.context.ele, 1
+        );
+    }
+
+    t.is(t.context.animatorTickFade.callCount, expected);
+}
+
 /* ========================================================================== *\
 |*                                                                            *|
 |*                                  TESTS                                     *|
@@ -121,24 +135,6 @@ test.serial('_tickFade [fade = "In"]', macroTickFade, 'In', 1);
 test.serial('_tickFade [fade = "Out"]', macroTickFade, 'Out', 1);
 test.serial('_tickFade [fade = "Garbage"]', macroTickFade, 'Garbage', 1);
 
-/*
-test.skip('fadeIn [no delay, no callback]', t => {
-    let ele = document.createElement('div');
-    ele.style.opacity = 0.789;
-
-    //console.log(t.context);
-
-    Animator.fadeIn(ele, 1000, 0, () => console.log('here2', ele.style.opacity));
-    console.log('here1', ele.style.opacity);
-
-    // Immediately, the opacity should be 0.
-    t.is(ele.style.opacity, '0', 'Immediate element opacity');
-
-    // Recall 'tick' from requestAnimationFrame.
-    let callbackRAF = t.context.stubRAF.getCall(0).args[0];
-    console.log(t.context.stubRAF.getCall(0).args[0], callbackRAF);
-    t.context.stubRAF.restore();
-    console.log(t.context.stubRAF.getCall(0).args[0], callbackRAF);
-    t.context.stubRAF = sinon.stub(window, 'requestAnimationFrame').callFake(callbackRAF);
-});
-*/
+test.serial('fade [_tickFade called on fadeIn]', macroFade, 'In', 1);
+test.serial('fade [_tickFade called on fadeOut]', macroFade, 'Out', 1);
+test.serial('fade [_tickFade not called]', macroFade, 'In&Out', 0);

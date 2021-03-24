@@ -50,8 +50,28 @@ class Animator extends React.Component {
         }
     }
 
-    static _tickSlide() {
+    static _tickSlide(duration, display, callback, start = Date.now()) {
+        let progress, timeFraction;
 
+        if (duration <= 0) return;
+
+        // Accelerates until the half-way point, then decelerates.
+        timeFraction = Math.min((Date.now() - start) / duration, 1);
+        if (timeFraction < 0.5) {
+            progress = Math.pow(2 * timeFraction, 2) / 2;
+        } else {
+            progress = (2 - Math.pow(2 * (1 - timeFraction), 2)) / 2;
+        }
+
+        display(progress);
+
+        if (progress < 1) {
+            window.requestAnimationFrame(() => this._tickSlide(
+                duration, display, callback, start
+            ));
+        } else if (callback) {
+            callback();
+        }
     }
 
     /**
@@ -59,14 +79,7 @@ class Animator extends React.Component {
      */
     static fadeIn(element, duration, delay, callback) {
         element.style.opacity = 0;
-
-        this._tickFade(
-            'In',
-            element,
-            duration,
-            delay,
-            callback
-        );
+        this._tickFade('In', element, duration, delay, callback);
     }
 
     /**
@@ -74,42 +87,14 @@ class Animator extends React.Component {
      */
     static fadeOut(element, duration, delay, callback) {
         element.style.opacity = 1;
-
-        this._tickFade(
-            'Out',
-            element,
-            duration,
-            delay,
-            callback
-        );
+        this._tickFade('Out', element, duration, delay, callback);
     }
 
     /**
      * Custom function to slide an object in a cardinal direction.
      */
     static slide(duration, display, callback) {
-        let start = Date.now();
-        let tick = () => {
-            let progress;
-            let timeFraction = Math.min((Date.now() - start) / duration, 1);
-
-            // Accelerates until the half-way point, then decelerates.
-            if (timeFraction < 0.5) {
-                progress = Math.pow(2 * timeFraction, 2) / 2;
-            } else {
-                progress = (2 - Math.pow(2 * (1 - timeFraction), 2)) / 2;
-            }
-
-            display(progress);
-
-            if (progress < 1) {
-                requestAnimationFrame(tick);
-            } else if (callback) {
-                callback();
-            }
-        };
-
-        tick();
+        this._tickSlide(duration, display, callback);
     }
 }
 

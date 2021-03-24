@@ -1,5 +1,7 @@
 import sinon from 'sinon';
 
+import Animator from  '@functions/Animator.js';
+
 
 class Watchers {
     constructor() {
@@ -8,6 +10,7 @@ class Watchers {
 
     static watchersList() {
         return {
+            "animatorTickFade": [Animator, '_tickFade'],
             "dateNow": [Date, 'now'],
             "math": [Math],
             "windowSetTimeout": [window, 'setTimeout'],
@@ -19,7 +22,7 @@ class Watchers {
         return {
             "Animator": {
                 "mocks": [],
-                "spies": ["math"],
+                "spies": ["math", "animatorTickFade"],
                 "stubs": [
                     "dateNow",
                     "windowRequestAnimationFrame",
