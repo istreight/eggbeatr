@@ -36,6 +36,8 @@ class FnScroll extends React.Component {
      * Modification of the scroll function for Tutorial related buttons.
      */
     static tutorialScroll(current, next) {
+        if (!(current instanceof HTMLElement) || !(next instanceof HTMLElement)) return;
+
         let initial = +window.pageYOffset;
         let deltaView = next.getBoundingClientRect();
         let nextFoot = next.querySelector("[class*='section-footer']");

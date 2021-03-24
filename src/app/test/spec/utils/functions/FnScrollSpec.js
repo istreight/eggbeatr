@@ -51,6 +51,36 @@ async function macroScroll(t, input, expected) {
     t.is(watcher.windowScrollTo.callCount, expected);
 }
 
+async function macroTutorialScroll(t, input, expected) {
+    let current, next;
+    let watcher = t.context.fnScroll;
+    let ele = document.createElement('div');
+
+    if (/\[current.*\]/.test(t.title)) {
+        current = input;
+        next = ele;
+    } else if (/\[next.*\]/.test(t.title)) {
+        current = ele;
+        next = input;
+    } else {
+        // No configuration for unrecognized title.
+        t.fail();
+    }
+
+    await FnScroll.tutorialScroll(current, next);
+
+    if (input instanceof HTMLElement) {
+        //console.log('classList', input);
+        //console.log(input.classList.value);
+        //console.log(input.classList.contains('hide'));
+        //t.assert(input.classList.contains('hide'));
+    }
+
+    t.is(window.onwheel, null); // Reset (HTML input) or not set (invalid input)
+    t.is(watcher.animatorSlide.callCount, expected);
+    t.is(watcher.windowScrollTo.callCount, expected);
+}
+
 /* ========================================================================== *\
 |*                                                                            *|
 |*                                  TESTS                                     *|
@@ -65,6 +95,7 @@ test.serial('scroll [next = HTML object]', macroScroll, document.createElement('
 test.serial('scroll [next != HTML object]', macroScroll, 'Garbage', 0);
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------------     fn2      ------------------------------ *|
+|* ----------------------------- tutorialScroll ----------------------------- *|
 \* -------------------------------------------------------------------------- */
-//test.serial('fn2 [fn2 = expected]', macro, 'input', 'expected');
+test.serial('tutorialScroll [current != HTML object]', macroTutorialScroll, 'Garbage', 0);
+test.serial('tutorialScroll [next != HTML object]', macroTutorialScroll, 'Garbage', 0);
