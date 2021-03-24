@@ -119,6 +119,9 @@ async function macroTickSlide(t, input, expected) {
 
             display = input;
         }
+    } else if (/\[duration.*\]/.test(t.title)) {
+        duration = input;
+        watcher = t.context.mathMin;
     } else {
         // No configuration for unrecognized title.
         t.fail();
@@ -189,3 +192,7 @@ test.serial('fade [_tickFade not called]', macroFade, 'In&Out', 0);
 
 test.serial('_tickSlide [display is a function]', macroTickSlide, () => null, 1);
 test.serial('_tickSlide [display is not a function]', macroTickSlide, '() => null', 0);
+
+test.serial('_tickSlide [duration < 0]', macroTickSlide, -1, 0);
+test.serial('_tickSlide [duration = 0]', macroTickSlide, 0, 0);
+test.serial('_tickSlide [duration > 0]', macroTickSlide, 1, 1);
