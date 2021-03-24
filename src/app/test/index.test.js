@@ -10,6 +10,6 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 
-const req = require.context('./', true, /^.*\Spec.js$/);
+const req = require.context('./spec', true, /^.*\Spec.js$/);
 console.log(req.keys());
 req.keys().forEach(req);
