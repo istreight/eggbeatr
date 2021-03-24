@@ -68,7 +68,7 @@ class Animator extends React.Component {
 
         if (progress < 1) {
             window.requestAnimationFrame(() => this._tickSlide(
-                duration, display, callback, start
+                duration, displace, callback, start
             ));
         } else if (callback) {
             callback();
