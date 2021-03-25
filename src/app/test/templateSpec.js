@@ -7,7 +7,7 @@ import Watchers from '@utils/watchers.js';
 const w = new Watchers();
 
 test.before(t => {
-    t.context = {
+    t.context.module = {
         ...w.getAllWatchers('module')
     };
 });
@@ -27,30 +27,49 @@ test.after.always(() => {
     w.restore();
 });
 
+
+
 /* ========================================================================== *\
 |*                                                                            *|
 |*                                  MACROS                                    *|
 |*                                                                            *|
 \* ========================================================================== */
 
-async function macro(t, input, expected) {
-    let watcher;
-
-    if (/\[regex.*\]/.test(t.title)) {
-        // Configure based on title...
-    } else {
-        // No configuration for unrecognized title.
-        t.fail();
-    }
+async function macro({ t, expected, watcher,
+    fnParam = 'default'
+}) {
 
     let wrapper = async () => {
-        await File.fn(input);
+        await File.fn(input, fnParam);
 
         return watcher.watchedAttribute;
     };
 
     t.is(await wrapper(), expected);
 }
+
+
+
+/* ========================================================================== *\
+|*                                                                            *|
+|*                              MINI MACROS                                   *|
+|*       Mini-macros set up similar tests, but don't run any assertions       *|
+\* ========================================================================== */
+
+
+
+function minimacro(t, input) {
+    let w;
+
+    // More set up specific to the module method...
+
+    return {
+        "watcher": w,
+        "fnParam": 'not-the-default'
+    };
+}
+
+
 
 /* ========================================================================== *\
 |*                                                                            *|
@@ -62,9 +81,29 @@ async function macro(t, input, expected) {
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------     fn1      ------------------------------ *|
 \* -------------------------------------------------------------------------- */
-test.serial('fn1 [fn1 = expected]', macro, 'input', 'expected');
+test.serial('fn1 [fn1 = expected]', async (t) => {
+    let input = 'input';
+    let expected = 'expected';
+
+    let args = minimacro(t, input);
+    macro({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------     fn2      ------------------------------ *|
 \* -------------------------------------------------------------------------- */
-test.serial('fn2 [fn2 = expected]', macro, 'input', 'expected');
+test.serial('fn2 [fn2 = expected]', async (t) => {
+    let input = 'input';
+    let expected = 'expected';
+
+    let args = minimacro(t, input);
+    macro({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});

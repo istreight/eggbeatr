@@ -54,7 +54,8 @@ class Animator extends React.Component {
         let now = Date.now();
         let progress, timeFraction;
 
-        if (duration <= 0 || (start > now) || !(displace instanceof Function)) return;
+        if (duration <= 0 || (start > now)) return;
+        if (!(displace instanceof Function)) return;
 
         // Accelerates until the half-way point, then decelerates.
         timeFraction = Math.min((now - start) / duration, 1);
