@@ -42,7 +42,7 @@ class Watchers {
             "FnScroll": {
                 "mocks": [],
                 "spies": ["animatorSlide", "windowScrollTo"],
-                "stubs": []
+                "stubs": ["animatorTickSlide"]
             }
         };
     }
