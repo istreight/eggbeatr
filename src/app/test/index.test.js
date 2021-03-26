@@ -10,7 +10,7 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 
-// Add the non-existent requestAnimationFrame method to window
+// Add the non-existent methods to window.
 Object.assign(window, {
     "scrollTo": () => null,
     "requestAnimationFrame": () => null

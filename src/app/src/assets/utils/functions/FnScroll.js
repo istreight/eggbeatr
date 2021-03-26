@@ -42,6 +42,8 @@ class FnScroll extends React.Component {
         let deltaView = next.getBoundingClientRect();
         let nextFoot = next.querySelector("[class*='section-footer']");
 
+        if (!nextFoot) return;
+
         nextFoot.classList.remove("hide");
         window.onwheel = (e) => e.preventDefault();
 

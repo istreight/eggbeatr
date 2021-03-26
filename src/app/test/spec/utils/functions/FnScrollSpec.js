@@ -1,12 +1,9 @@
 import test from 'ava';
-import jsdom from 'jsdom';
-import sinon from 'sinon';
 
 import Watchers from '@utils/watchers.js';
 import FnScroll from '@functions/FnScroll.js';
 
 
-const { JSDOM } = jsdom;
 const w = new Watchers();
 
 test.before(t => {
@@ -37,7 +34,6 @@ test.after.always(() => {
 \* ========================================================================== */
 
 async function macroScroll({ t, expected,
-        current = window.document.createElement('div'),
         next = window.document.createElement('div')
 }) {
     let watcher = t.context.fnScroll;
@@ -60,47 +56,20 @@ async function macroTutorialScroll({ t, expected,
         next = window.document.createElement('div')
 }) {
     let watcher = t.context.fnScroll;
-    const { window } = new JSDOM(`...`);
 
     await FnScroll.tutorialScroll(current, next);
+
+    if (![current, next].includes('Garbage')) {
+        watcher.animatorTickSlide.callArg(1);
+        watcher.animatorTickSlide.callArg(2);
+
+        t.not(next.classList.contains('hide'));
+    }
 
     // Reset (HTML input) or don't set (invalid input) window.onwheel.
     t.is(window.onwheel, null);
     t.is(watcher.animatorSlide.callCount, expected);
     t.is(watcher.windowScrollTo.callCount, expected);
-}
-
-async function _macroTutorialScroll(t, input, expected) {
-    let current, next;
-    let watcher = t.context.fnScroll;
-    const { window } = new JSDOM(`...`);
-
-    if (/\[current.*\]/.test(t.title)) {
-        current = input;
-        next = ele;
-    } else if (/\[next.*\]/.test(t.title)) {
-        current = ele;
-        next = input;
-    } else {
-        // No configuration for unrecognized title.
-        t.fail();
-    }
-
-    await FnScroll.tutorialScroll(current, next);
-
-    if (input instanceof HTMLElement) {
-        //console.log('classList', input);
-        //console.log(input.classList.value);
-        //console.log(input.classList.contains('hide'));
-        //t.assert(input.classList.contains('hide'));
-    }
-
-    t.pass();
-    /*
-    t.is(window.onwheel, null); // Reset (HTML input) or not set (invalid input)
-    t.is(watcher.animatorSlide.callCount, expected);
-    t.is(watcher.windowScrollTo.callCount, expected);
-    */
 }
 
 
@@ -111,16 +80,33 @@ async function _macroTutorialScroll(t, input, expected) {
 |*       Mini-macros set up similar tests, but don't run any assertions       *|
 \* ========================================================================== */
 
+function minimacroWrap(child, wrapper, className) {
+    child.classList.add(className, 'hide');
+    wrapper.appendChild(child);
 
+    return wrapper;
+}
 
-function minimacroCurrent(t, input) {
+function minimacroCurrent(input) {
+    let w = window.document.createElement('div');
+
+    if (input !== 'Garbage') {
+        w = minimacroWrap(input, w, 'section-footer');
+    }
+
     return {
         "current": input,
-        "next": window.document.createElement('div')
+        "next": w
     };
 }
 
-function minimacroNext(t, input) {
+function minimacroNext(input) {
+    let c = window.document.createElement('div');
+
+    if (input !== 'Garbage') {
+        input = minimacroWrap(c, input, 'content-section-footer');
+    }
+
     return {
         "current": window.document.createElement('div'),
         "next": input
@@ -144,7 +130,7 @@ test.serial('scroll [next = HTML object]', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
-    let args = minimacroNext(t, input);
+    let args = minimacroNext(input);
     macroScroll({
         "t": t,
         "expected": expected,
@@ -156,7 +142,7 @@ test.serial('scroll [next != HTML object]', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
-    let args = minimacroNext(t, input);
+    let args = minimacroNext(input);
     macroScroll({
         "t": t,
         "expected": expected,
@@ -169,11 +155,23 @@ test.serial('scroll [next != HTML object]', async (t) => {
 |* ----------------------------- tutorialScroll ----------------------------- *|
 \* -------------------------------------------------------------------------- */
 
+test.serial('tutorialScroll [current = HTML object]', async (t) => {
+    let input = document.createElement('div');
+    let expected = 1;
+
+    let args = minimacroCurrent(input);
+    macroTutorialScroll({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
 test.serial('tutorialScroll [current != HTML object]', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
-    let args = minimacroCurrent(t, input);
+    let args = minimacroCurrent(input);
     macroTutorialScroll({
         "t": t,
         "expected": expected,
@@ -182,11 +180,35 @@ test.serial('tutorialScroll [current != HTML object]', async (t) => {
 });
 
 
+test.serial('tutorialScroll [next = ribbon-section-footer]', async (t) => {
+    let input = document.createElement('div');
+    let expected = 1;
+
+    let args = minimacroNext(input);
+    macroTutorialScroll({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('tutorialScroll [next = content-section-footer]', async (t) => {
+    let input = document.createElement('div');
+    let expected = 1;
+
+    let args = minimacroNext(input);
+    macroTutorialScroll({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
 test.serial('tutorialScroll [next != HTML object]', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
-    let args = minimacroNext(t, input);
+    let args = minimacroNext(input);
     macroTutorialScroll({
         "t": t,
         "expected": expected,
