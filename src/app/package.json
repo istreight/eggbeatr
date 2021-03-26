@@ -39,8 +39,8 @@
         "start": "npx webpack serve --config etc/webpack.config.app.js --open --progress",
         "build": "bash $(pwd)/bin/build",
         "build:watch": "bash $(pwd)/bin/build --watch",
-        "test": "npm run build -- --test && npx ava",
-        "test:watch": "npx ava --watch"
+        "test": "npm run build -- --test && bash $(pwd)/bin/test",
+        "test:watch": "bash $(pwd)/bin/test --watch"
     },
     "keywords": [],
     "author": "",

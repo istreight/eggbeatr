@@ -1,7 +1,15 @@
+/**
+ * FILENAME:    AnimatorSpec.js
+ * AUTHOR:      Isaac Streight
+ * START DATE:  March 23rd, 2021
+ *
+ * This file contains the test specification for the Animator function class.
+ */
+
 import test from 'ava';
 import sinon from 'sinon';
 
-import Watchers from '@utils/watchers.js';
+import Watchers from '@utils/Watchers.js';
 import Animator from '@functions/Animator.js';
 
 
@@ -174,15 +182,15 @@ test.serial('slide [_tickSlide called on slide]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 test.serial('_tickFade [callback]', async (t) => {
-    let w, cb;
+    let cb;
     let input = () => null;
     let expected = 1;
+    let w = sinon.spy(input);
 
-    w = sinon.spy(input);
-    t.context.animator.windowSetTimeout.callsArg(0);
 
     // Pass the spied-on function, not the original.
     cb = w;
+    t.context.animator.windowSetTimeout.callsArg(0);
 
     macroTickFade({
         "t": t,

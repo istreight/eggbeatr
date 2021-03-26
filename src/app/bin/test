@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+while [ "${1:-}" != "" ]; do
+    case "$1" in
+        "-f" | "--file")
+        file="$2"
+        shift
+        ;;
+        "-w" | "--watch")
+        watch="--watch"
+        ;;
+    esac
+    shift
+done
+
+cmd="AVA_SPEC=$file npx ava --progress ${watch}"
+
+echo $cmd
+eval $cmd

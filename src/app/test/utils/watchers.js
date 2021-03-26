@@ -1,3 +1,11 @@
+/**
+ * FILENAME:    Watchers.js
+ * AUTHOR:      Isaac Streight
+ * START DATE:  March 23rd, 2021
+ *
+ * This file contains the utility class for the test suite of the lesson calendar application.
+ */
+
 import sinon from 'sinon';
 
 import Animator from  '@functions/Animator.js';
@@ -47,10 +55,22 @@ class Watchers {
         };
     }
 
+    _create(createFake, fake) {
+        let f, [object, property] = fake;
+
+        f = object[property];
+        if (f.wrappedMethod) {
+            return f;
+        }
+
+        return createFake(fake);
+    }
+
     _createMock(mock) {
         return this.sandbox.mock(...mock);
     }
 
+    // Doesn't work with Counter.js (no callsFake method)
     _createSpy(spy) {
         return this.sandbox.spy(...spy);
     }
@@ -83,7 +103,7 @@ class Watchers {
             typeObject = typeList.reduce(
                 (acc, fake) => ({
                     ...acc,
-                    [fake]: fnCreate(watcherList[fake])
+                    [fake]: this._create(fnCreate, watcherList[fake])
                 }),
                 {}
             );

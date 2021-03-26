@@ -1,3 +1,11 @@
+/**
+ * FILENAME:    templateSpec.js
+ * AUTHOR:      Isaac Streight
+ * START DATE:  March 24th, 2021
+ *
+ * This file is a skeleton of the specification files for the lesson calendar application. The intent of this file is to act as a starting point for new specifications.
+ */
+
 import test from 'ava';
 import sinon from 'sinon';
 
@@ -6,7 +14,7 @@ import Watchers from '@utils/watchers.js';
 
 const w = new Watchers();
 
-test.before(t => {
+test.before((t) => {
     t.context.module = {
         ...w.getAllWatchers('module')
     };

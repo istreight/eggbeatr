@@ -1,5 +1,5 @@
 /**
- * FILENAME:    test.js
+ * FILENAME:    index.test.js
  * AUTHOR:      Isaac Streight
  * START DATE:  February 4th, 2021
  *
@@ -16,6 +16,14 @@ Object.assign(window, {
     "requestAnimationFrame": () => null
 });
 
+const specPath = process.env.AVA_SPEC;
 const req = require.context('./spec', true, /^.*\Spec.js$/);
-console.log(req.keys());
-req.keys().forEach(req);
+
+console.log('AVA_SPEC' + specPath);
+
+if (specPath) {
+    req(specPath);
+} else {
+    console.log(req.keys());
+    req.keys().forEach(req);
+}

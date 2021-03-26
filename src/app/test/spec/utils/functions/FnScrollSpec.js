@@ -1,19 +1,26 @@
+/**
+ * FILENAME:    FnScrollSpec.js
+ * AUTHOR:      Isaac Streight
+ * START DATE:  March 23rd, 2021
+ *
+ * This file contains the test specification for the FnScroll function class.
+ */
+
 import test from 'ava';
 
-import Watchers from '@utils/watchers.js';
+import Watchers from '@utils/Watchers.js';
 import FnScroll from '@functions/FnScroll.js';
 
 
 const w = new Watchers();
 
-test.before(t => {
+test.before((t) => {
     t.context.fnScroll = {
         ...w.getAllWatchers('FnScroll')
     };
 });
 
 test.beforeEach((t) => {
-    // [root: test/spec] e.g., 'components/componentSpec.js'
     t.log('utils/functions/FnScrollSpec.js');
 });
 
