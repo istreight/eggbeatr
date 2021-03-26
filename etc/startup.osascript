@@ -47,9 +47,9 @@ on run {eggbeatrPath}
 			if answer is "Yes" then
 				do script ("npm run packages:upgrade -- --upgrade") in setupTab
 				my wait(setupTab)
+                do script ("npm run packages:install") in setupTab
 			end if
 
-			do script ("npm run packages:install") in setupTab
 			my wait(setupTab)
 		end try
 
