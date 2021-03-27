@@ -105,10 +105,10 @@ class ExportToPDF extends React.Component {
             },
             "startY": 60,
             "didDrawPage": (cellHookData) => {
-                tableCoordinates = this.didDrawPage(cellHookData, setTitle);
+                tableCoordinates = this._didDrawPage(cellHookData, setTitle);
             },
             "didParseCell": (cellHookData) => {
-                cellHookData.cell = this.didParseCell(
+                cellHookData.cell = this._didParseCell(
                     cellHookData,
                     prevCell,
                     numColumns,
@@ -120,7 +120,7 @@ class ExportToPDF extends React.Component {
                 prevCell = cellHookData.cell;
             },
             "didDrawCell": (cellHookData) => {
-                lineCoordinates = this.didDrawCell(
+                lineCoordinates = this._didDrawCell(
                     cellHookData.cell,
                     cellHookData,
                     prevCell,
@@ -138,15 +138,17 @@ class ExportToPDF extends React.Component {
         doc.setDrawColor(200);
         doc.setLineWidth(0.5);
 
-        this.drawLines(doc, lineCoordinates, tableCoordinates);
+        this._drawLines(doc, lineCoordinates, tableCoordinates);
 
-        doc.save("grid-" + dateCreated + ".egbtr.pdf");
+        return doc.output("dataurlnewwindow", {
+            "filename":  "grid-" + dateCreated + ".egbtr.pdf"
+        });
     }
 
     /**
     * Opertions performed as page is created.
     */
-    didDrawPage(data, setTitle) {
+    _didDrawPage(data, setTitle) {
         data.doc.text("Grid - " + setTitle, 40, 30);
 
         return [
@@ -160,7 +162,7 @@ class ExportToPDF extends React.Component {
     /**
     * Operations performed on the cell as it is created.
     */
-    didParseCell(data, prevCell, numColumns, splitCellIndices, threeQuarterLessons, quarterActivities) {
+    _didParseCell(data, prevCell, numColumns, splitCellIndices, threeQuarterLessons, quarterActivities) {
         let cell = data.cell;
         let cellIndex = (data.row.index * numColumns) + data.column.index;
 
@@ -191,7 +193,7 @@ class ExportToPDF extends React.Component {
     /**
     * Draws the individual table cells in the PDF document.
     */
-    didDrawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
+    _didDrawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
         let cellIndex = (data.row.index * numColumns) + data.column.index;
 
         if (splitCellIndices.includes(cellIndex) && prevCell) {
@@ -218,7 +220,7 @@ class ExportToPDF extends React.Component {
     /**
     * Draws cell splitting lines and table borders in PDF document.
     */
-    drawLines(doc, lineCoordinates, tableCoordinates) {
+    _drawLines(doc, lineCoordinates, tableCoordinates) {
         let [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
 
         // Draw table border lines (to compensate for removing cell borders on edge of table). Skip left-most and top-most border because they aren't removed.
