@@ -9,7 +9,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 
-import Watchers from '@utils/watchers.js';
+import Watchers from '@utils/Watchers.js';
 
 
 const w = new Watchers();

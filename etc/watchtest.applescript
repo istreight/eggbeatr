@@ -5,7 +5,6 @@ on run {eggbeatrPath}
 	tell application "Terminal"
         activate
 
-        set sWait to eggbeatrPath & "/etc/utils/wait.applescript"
 		set testTab to do script ("cd " & eggbeatrPath & "/src/app")
         set buildTab to do script ("cd " & eggbeatrPath & "/src/app")
 

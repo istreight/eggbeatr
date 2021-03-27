@@ -9,7 +9,8 @@ module.exports = ({projectDir}) => {
 		"environmentVariables": {},
 		"verbose": true,
         "require": [
-			"./test/loaders/_setup-browser-env.js"
+            "./test/loaders/_setup-browser-env.js",
+			"./test/loaders/_method-overwrites.js"
 		]
 	}
 }

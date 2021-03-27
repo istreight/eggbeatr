@@ -182,14 +182,12 @@ test.serial('slide [_tickSlide called on slide]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 test.serial('_tickFade [callback]', async (t) => {
-    let cb;
     let input = () => null;
     let expected = 1;
-    let w = sinon.spy(input);
+    let w, cb = w = sinon.spy(input);
 
 
     // Pass the spied-on function, not the original.
-    cb = w;
     t.context.animator.windowSetTimeout.callsArg(0);
 
     macroTickFade({
@@ -354,15 +352,10 @@ test.serial('_tickFade [fade = "Garbage"]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 test.serial('_tickSlide [callback]', async (t) => {
-    let cb;
     let expected = 1;
     let input = () => null;
-    let w = sinon.spy(input);
+    let w, cb = w = sinon.spy(input);
 
-    // Pass the spied-on function, not the original.
-    cb = w;
-
-    //{ t, expected, watcher, callback = () => null, displace = () => null, duration = 100, start = 0 }
     macroTickSlide({
         "t": t,
         "expected": expected,

@@ -33,9 +33,7 @@ on run {eggbeatrPath}
 		on error err
 			-- Connected to Wi-Fi.
 
-			do script ("npm run packages:clean") in setupTab
-			my wait(setupTab)
-			do script ("npm run packages:install") in setupTab
+			do script ("npm run packages:fresh") in setupTab
 			my wait(setupTab)
 			do script ("npm run packages:upgrade -- --dryrun") in setupTab
 			my wait(setupTab)
