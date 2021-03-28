@@ -70,6 +70,14 @@ async function macroDrawLines({ t, expected,
     t.deepEqual(res, undefined);
 }
 
+async function macroDidDrawCell({ t, expected,
+    cell = {}, prevCell = {}, splitCellLines = [], isSplitCell = true
+}) {
+    let res = e._didDrawCell(cell, prevCell, splitCellLines, isSplitCell);
+
+    t.deepEqual(res, expected);
+}
+
 
 
 /* ========================================================================== *\
@@ -79,6 +87,13 @@ async function macroDrawLines({ t, expected,
 \* ========================================================================== */
 
 
+
+function minimacroCell(t, input) {
+    return {
+        "cell": input,
+        "prevCell": { "text": ["Level 10"] }
+    };
+}
 
 function minimacroData(t, input) {
     return {
@@ -92,11 +107,32 @@ function minimacroDoc(t, input) {
     };
 }
 
+function minimacroIsSplitCell(t, input) {
+    return {
+        "cell": {
+            "text": ['Work'],
+            "x": 0,
+            "y": 1,
+            "width": 2,
+            "height": 3
+        },
+        "isSplitCell": input,
+        "prevCell": { "text": ["Level 10"] }
+    };
+}
+
 function minimacroLineCoordinates(t, input) {
     return {
         "doc": { "line": sinon.stub() },
         "tableCoordinates": [0, 0, 0, 0],
         "lineCoordinates": input
+    };
+}
+
+function minimacroPrevCell(t, input) {
+    return {
+        "cell": { "text": ["Level 10"] },
+        "prevCell": input
     };
 }
 
@@ -116,6 +152,20 @@ function minimacroSetTitle(t, input) {
     };
 }
 
+function minimacroSplitCellLines(t, input) {
+    return {
+        "cell": {
+            "text": ['Work'],
+            "x": 0,
+            "y": 1,
+            "width": 2,
+            "height": 3
+        },
+        "splitCellLines": input,
+        "prevCell": { "text": ["Level 10"] }
+    };
+}
+
 
 
 /* ========================================================================== *\
@@ -127,6 +177,7 @@ function minimacroSetTitle(t, input) {
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------ _didDrawPage ------------------------------ *|
+|* -                             data, setTitle                             - *|
 \* -------------------------------------------------------------------------- */
 
 test.serial('_didDrawPage [data = object]', async (t) => {
@@ -214,6 +265,7 @@ test.serial('_didDrawPage [setTitle]', async (t) => {
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------  _drawLines  ------------------------------ *|
+|* -                 doc, lineCoordinates, tableCoordinates                 - *|
 \* -------------------------------------------------------------------------- */
 
 test.serial('_drawLines [doc = object]', async (t) => {
@@ -344,6 +396,232 @@ test.serial('_drawLines [lineCoordinates subarray.values != number]', async (t) 
 
     let args = minimacroLineCoordinates(t, input);
     macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+/* -------------------------------------------------------------------------- *\
+|* ------------------------------ _didDrawCell ------------------------------ *|
+|* -              cell, prevCell, lineCoordinates, isSplitCell              - *|
+\* -------------------------------------------------------------------------- */
+
+
+test.serial('_didDrawCell [cell = object]', async (t) => {
+    let input = {};
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell != object]', async (t) => {
+    let input = '{}';
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell.text = array]', async (t) => {
+    let input = { "text": ['Garbage'] };
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
+    let input = { "text": ['Work'] };
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell.text != array]', async (t) => {
+    let input = { "text": { "property": 'Garbage' } };
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell = valid]', async (t) => {
+    let input = {
+        "text": ['Work'],
+        "x": 0,
+        "y": 1,
+        "width": 2,
+        "height": 3
+    };
+    let expected = [[1, 1, 1, 4]];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_didDrawCell [prevCell = object]', async (t) => {
+    let input = {};
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell != object]', async (t) => {
+    let input = '{}';
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell.text = array]', async (t) => {
+    let input = { "text": ['Garbage'] };
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
+    let input = { "text": ['Work'] };
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell.text != array]', async (t) => {
+    let input = { "text": { "property": 'Garbage' } };
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell = valid]', async (t) => {
+    let input = {
+        "text": ['Work'],
+        "x": 0,
+        "y": 1,
+        "width": 2,
+        "height": 3
+    };
+    let expected = [[1, 1, 1, 4]];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_didDrawCell [splitCellLines = array]', async (t) => {
+    let input = [];
+    let expected = [[1, 1, 1, 4]];
+
+    let args = minimacroSplitCellLines(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [splitCellLines != array]', async (t) => {
+    let input = '[]';
+    let expected = input;
+
+    let args = minimacroSplitCellLines(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_didDrawCell [isSplitCell = true]', async (t) => {
+    let input = true;
+    let expected = [[1, 1, 1, 4]];
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [isSplitCell = truthy]', async (t) => {
+    let input = 'true';
+    let expected = [[1, 1, 1, 4]];
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [isSplitCell != true]', async (t) => {
+    let input = false;
+    let expected = [];
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidDrawCell({
         "t": t,
         "expected": expected,
         ...args
