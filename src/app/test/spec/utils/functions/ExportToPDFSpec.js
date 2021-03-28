@@ -516,6 +516,31 @@ test.serial('_didDrawCell [cell.text != array]', async (t) => {
     });
 });
 
+test.serial('_didDrawCell [cell.styles = object]', async (t) => {
+    let input = { "styles": {} };
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [cell.styles = x, y, height, width]', async (t) => {
+    let input = { "styles": { "x": 1, "y": 2, "height": 3, "width": 4 } };
+    let expected = [];
+
+    let args = minimacroCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
 test.serial('_didDrawCell [cell = valid]', async (t) => {
     let input = {
         "text": ['Work'],
@@ -585,6 +610,30 @@ test.serial('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
 
 test.serial('_didDrawCell [prevCell.text != array]', async (t) => {
     let input = { "text": 'Garbage' };
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell.styles = object]', async (t) => {
+    let input = { "styles": {} };
+    let expected = [];
+
+    let args = minimacroPrevCell(t, input);
+    macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didDrawCell [prevCell.styles = x]', async (t) => {
+    let input = { "styles": { "x": 1, "y": 2, "height": 3, "width": 4 } };
     let expected = [];
 
     let args = minimacroPrevCell(t, input);
