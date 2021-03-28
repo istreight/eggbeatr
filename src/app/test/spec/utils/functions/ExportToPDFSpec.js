@@ -79,7 +79,7 @@ async function macroDidDrawCell({ t, expected,
 }
 
 async function macroDidParseCell({ t, expected,
-    cell = {}, prevCell = {}, isSplitCell = true
+    cell, prevCell = {}, isSplitCell = true
 }) {
     let res = e._didParseCell(cell, prevCell, isSplitCell);
 
@@ -755,6 +755,18 @@ test.serial('_didParseCell [cell != object]', async (t) => {
     });
 });
 
+test.serial('_didParseCell [cell = undefined]', async (t) => {
+    let input = undefined;
+    let expected = undefined;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
 test.serial('_didParseCell [cell.text = array]', async (t) => {
     let input = { "text": ['Garbage'] };
     let expected = input;
@@ -799,6 +811,42 @@ test.serial('_didParseCell [cell.text = "Private"]', async (t) => {
 
 test.serial('_didParseCell [cell.text != array]', async (t) => {
     let input = { "text": 'Garbage' };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.styles = object]', async (t) => {
+    let input = { "styles": {} };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.styles = color, width]', async (t) => {
+    let input = { "styles": { "lineColor": 1, "lineWidth": 2 } };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.styles != object]', async (t) => {
+    let input = { "styles": 'Garbage' };
     let expected = input;
 
     let args = minimacroCell(t, input);
@@ -871,16 +919,33 @@ test.serial('_didParseCell [prevCell != object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell.text = array]', async (t) => {
-    let input = { "text": ['Garbage'] };
+test.serial('_didParseCell [prevCell = undefined]', async (t) => {
+    let input = undefined;
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
         "text": ["Level 8"]
     };
-
     let args = minimacroPrevCell(t, input, {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
         "text": ["Level 8"]
+     });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell.text = array]', async (t) => {
+    let input = { "text": ['Garbage'] };
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 9"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 9"]
      });
     macroDidParseCell({
         "t": t,
@@ -893,12 +958,12 @@ test.serial('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
     let input = { "text": ['Work'] };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
-        "text": ["Level 9"]
+        "text": ["Level 10"]
     };
 
     let args = minimacroPrevCell(t, input, {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
-        "text": ["Level 9"]
+        "text": ["Level 10"]
     });
     macroDidParseCell({
         "t": t,
@@ -911,12 +976,12 @@ test.serial('_didParseCell [prevCell.text != array]', async (t) => {
     let input = { "text": { "property": 'Garbage' } };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
-        "text": ["Level 10"]
+        "text": ["Basics I"]
      };
 
     let args = minimacroPrevCell(t, input, {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
-        "text": ["Level 10"]
+        "text": ["Basics I"]
      });
     macroDidParseCell({
         "t": t,
@@ -932,12 +997,12 @@ test.serial('_didParseCell [prevCell = valid]', async (t) => {
     };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
-        "text": ["Basics I"]
+        "text": ["Basics II"]
     };
 
     let args = minimacroPrevCell(t, input, {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
-        "text": ["Basics I"]
+        "text": ["Basics II"]
     });
     macroDidParseCell({
         "t": t,

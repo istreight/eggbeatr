@@ -167,8 +167,8 @@ class ExportToPDF extends React.Component {
     */
     _didParseCell(cell, prevCell, isSplitCell) {
         if (isSplitCell) {
-            if (!( cell.styles
-                && (cell && cell.text)
+            if (!( (cell && cell.text)
+                && cell.styles
                 && cell.styles.lineColor
                 && cell.styles.lineWidth)
             ) return cell;
