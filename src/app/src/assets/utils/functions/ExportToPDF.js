@@ -149,6 +149,11 @@ class ExportToPDF extends React.Component {
     * Opertions performed as page is created.
     */
     _didDrawPage(data, setTitle) {
+        let keys = ['doc', 'settings', 'cursor'];
+        let intersection = Object.keys(data).filter(k => keys.includes(k));
+
+        if (intersection.length < 3 || !data.doc.text) return;
+
         data.doc.text("Grid - " + setTitle, 40, 30);
 
         return [
