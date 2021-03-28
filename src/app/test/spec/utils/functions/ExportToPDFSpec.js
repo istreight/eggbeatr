@@ -78,6 +78,14 @@ async function macroDidDrawCell({ t, expected,
     t.deepEqual(res, expected);
 }
 
+async function macroDidParseCell({ t, expected,
+    cell = {}, prevCell = {}, isSplitCell = true
+}) {
+    let res = e._didParseCell(cell, prevCell, isSplitCell);
+
+    t.deepEqual(res, expected);
+}
+
 
 
 /* ========================================================================== *\
@@ -91,7 +99,7 @@ async function macroDidDrawCell({ t, expected,
 function minimacroCell(t, input) {
     return {
         "cell": input,
-        "prevCell": { "text": ["Level 10"] }
+        "prevCell": { "text": ["Strokes"] }
     };
 }
 
@@ -114,10 +122,11 @@ function minimacroIsSplitCell(t, input) {
             "x": 0,
             "y": 1,
             "width": 2,
-            "height": 3
+            "height": 3,
+            "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 }
         },
         "isSplitCell": input,
-        "prevCell": { "text": ["Level 10"] }
+        "prevCell": { "text": ["Strokes"] }
     };
 }
 
@@ -129,9 +138,9 @@ function minimacroLineCoordinates(t, input) {
     };
 }
 
-function minimacroPrevCell(t, input) {
+function minimacroPrevCell(t, input, c =  { "text": ["Strokes"] }) {
     return {
-        "cell": { "text": ["Level 10"] },
+        "cell": c,
         "prevCell": input
     };
 }
@@ -162,7 +171,7 @@ function minimacroSplitCellLines(t, input) {
             "height": 3
         },
         "splitCellLines": input,
-        "prevCell": { "text": ["Level 10"] }
+        "prevCell": { "text": ["Strokes"] }
     };
 }
 
@@ -176,7 +185,7 @@ function minimacroSplitCellLines(t, input) {
 
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------------ _didDrawPage ------------------------------ *|
+|* -----------------------------  _didDrawPage  ----------------------------- *|
 |* -                             data, setTitle                             - *|
 \* -------------------------------------------------------------------------- */
 
@@ -264,7 +273,7 @@ test.serial('_didDrawPage [setTitle]', async (t) => {
 
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------------  _drawLines  ------------------------------ *|
+|* -----------------------------   _drawLines   ----------------------------- *|
 |* -                 doc, lineCoordinates, tableCoordinates                 - *|
 \* -------------------------------------------------------------------------- */
 
@@ -404,7 +413,7 @@ test.serial('_drawLines [lineCoordinates subarray.values != number]', async (t) 
 
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------------ _didDrawCell ------------------------------ *|
+|* -----------------------------  _didDrawCell  ----------------------------- *|
 |* -              cell, prevCell, lineCoordinates, isSplitCell              - *|
 \* -------------------------------------------------------------------------- */
 
@@ -458,7 +467,7 @@ test.serial('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
 });
 
 test.serial('_didDrawCell [cell.text != array]', async (t) => {
-    let input = { "text": { "property": 'Garbage' } };
+    let input = { "text": 'Garbage' };
     let expected = [];
 
     let args = minimacroCell(t, input);
@@ -537,7 +546,7 @@ test.serial('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
 });
 
 test.serial('_didDrawCell [prevCell.text != array]', async (t) => {
-    let input = { "text": { "property": 'Garbage' } };
+    let input = { "text": 'Garbage' };
     let expected = [];
 
     let args = minimacroPrevCell(t, input);
@@ -622,6 +631,306 @@ test.serial('_didDrawCell [isSplitCell != true]', async (t) => {
 
     let args = minimacroIsSplitCell(t, input);
     macroDidDrawCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+/* -------------------------------------------------------------------------- *\
+|* -----------------------------  _didParseCell ----------------------------- *|
+|* -                       cell, prevCell, isSplitCell                      - *|
+\* -------------------------------------------------------------------------- */
+
+
+test.serial('_didParseCell [cell = object]', async (t) => {
+    let input = {};
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell != object]', async (t) => {
+    let input = '{}';
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.text = array]', async (t) => {
+    let input = { "text": ['Garbage'] };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.text = 1/4 activity]', async (t) => {
+    let input = { "text": ['Work'] };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.text = "Private"]', async (t) => {
+    let input = {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ['Private']
+    };
+    let expected = {
+        "styles": { "fillColor": [118, 118, 118], "lineColor": 1, "lineWidth": 0.001, "textColor": [255, 255, 255] },
+        "text": ['Private']
+    };
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell.text != array]', async (t) => {
+    let input = { "text": 'Garbage' };
+    let expected = input;
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [cell = valid]', async (t) => {
+    let input = {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ['Work']
+    };
+    let expected = {
+        "styles": {
+            "fillColor": 1,
+            "halign": 'right',
+            "lineColor": 1,
+            "lineWidth": 0.001,
+        },
+        "text": [
+            'Work',
+        ]
+    };
+
+    let args = minimacroCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_didParseCell [prevCell = object]', async (t) => {
+    let input = {};
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 6"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 6"]
+     });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell != object]', async (t) => {
+    let input = '{}';
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 7"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 7"]
+     });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell.text = array]', async (t) => {
+    let input = { "text": ['Garbage'] };
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 8"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 8"]
+     });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
+    let input = { "text": ['Work'] };
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 9"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 9"]
+    });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell.text != array]', async (t) => {
+    let input = { "text": { "property": 'Garbage' } };
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Level 10"]
+     };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Level 10"]
+     });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [prevCell = valid]', async (t) => {
+    let input = {
+        "text": ['Work'],
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+    };
+    let expected = {
+        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "text": ["Basics I"]
+    };
+
+    let args = minimacroPrevCell(t, input, {
+        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": ["Basics I"]
+    });
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_didParseCell [isSplitCell = true]', async (t) => {
+    let input = true;
+    let expected = {
+        "height": 3,
+        "styles": {
+            "fillColor": 1,
+            "halign": 'right',
+            "lineColor": 1,
+            "lineWidth": 0.001,
+        },
+        "text": [
+            'Work',
+        ],
+        "width": 2,
+        "x": 0,
+        "y": 1
+    };
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [isSplitCell = truthy]', async (t) => {
+    let input = 'true';
+    let expected = {
+        "height": 3,
+        "styles": {
+            "fillColor": 1,
+            "halign": 'right',
+            "lineColor": 1,
+            "lineWidth": 0.001,
+        },
+        "text": [
+            'Work',
+        ],
+        "width": 2,
+        "x": 0,
+        "y": 1
+    };
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_didParseCell [isSplitCell != true]', async (t) => {
+    let input = false;
+    let expected = {
+        "height": 3,
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3,
+        },
+        "text": [
+            'Work',
+        ],
+        "width": 2,
+        "x": 0,
+        "y": 1
+    };
+
+    let args = minimacroIsSplitCell(t, input);
+    macroDidParseCell({
         "t": t,
         "expected": expected,
         ...args

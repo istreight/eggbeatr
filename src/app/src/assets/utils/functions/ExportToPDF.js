@@ -109,11 +109,12 @@ class ExportToPDF extends React.Component {
                 tableCoordinates = this._didDrawPage(cellHookData, setTitle);
             },
             "didParseCell": (cellHookData) => {
+                let cellIndex = (cellHookData.row.index * numColumns) + cellHookData.column.index;
+
                 cellHookData.cell = this._didParseCell(
-                    cellHookData,
+                    cellHookData.cell,
                     prevCell,
-                    numColumns,
-                    splitCellIndices
+                    splitCellIndices.includes(cellIndex)
                 );
 
                 prevCell = cellHookData.cell;
@@ -164,24 +165,27 @@ class ExportToPDF extends React.Component {
     /**
     * Operations performed on the cell as it is created.
     */
-    _didParseCell(data, prevCell, numColumns, splitCellIndices) {
-        let cell = data.cell;
-        let cellIndex = (data.row.index * numColumns) + data.column.index;
+    _didParseCell(cell, prevCell, isSplitCell) {
+        if (isSplitCell) {
+            if (!( cell.styles
+                && (cell && cell.text)
+                && cell.styles.lineColor
+                && cell.styles.lineWidth)
+            ) return cell;
 
-        if (splitCellIndices.includes(cellIndex)) {
-            if (prevCell) {
+            if (prevCell && prevCell.text) {
                 // halign is set to default to "center", which doesn't work for any of the quarterActivities.
                 if (this.threeQuarterLessons.includes(prevCell.text[0]) && this.quarterActivities.includes(cell.text[0])) {
                     // Place Work on the right side of cell divider.
                     cell.styles.halign = "right";
-                } else if (this.threeQuarterLessons.includes(cell.text[0]) && this.quarterActivities.includes(prevCell.text[0])) {
+                } else if (this.threeQuarterLessons.includes(cell.text[0]) && this.quarterActivities.includes(prevCell.text[0]) && prevCell.styles) {
                     // Place Work on the left side of cell divider.
                     prevCell.styles.halign = "left";
                 }
             }
 
-            cell.styles.lineColor = cell.styles.fillColor;
             cell.styles.lineWidth = 0.001;
+            cell.styles.lineColor = cell.styles.fillColor;
         }
 
         if (cell.text[0] === "Private") {
