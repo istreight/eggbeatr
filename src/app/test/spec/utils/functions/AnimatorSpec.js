@@ -365,7 +365,7 @@ test.serial('_tickSlide [callback]', async (t) => {
 });
 
 
-test.serial('_tickSlide [displace = fn()]', async (t) => {
+test.serial('_tickSlide [displace = fn]', async (t) => {
     let input = () => null;
     let expected = 1;
 
@@ -378,7 +378,7 @@ test.serial('_tickSlide [displace = fn()]', async (t) => {
     });
 });
 
-test.serial('_tickSlide [displace != fn()]', async (t) => {
+test.serial('_tickSlide [displace != fn]', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 

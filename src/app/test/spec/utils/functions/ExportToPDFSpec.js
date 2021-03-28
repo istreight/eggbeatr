@@ -111,7 +111,9 @@ function minimacroData(t, input) {
 
 function minimacroDoc(t, input) {
     return {
-        "doc": input
+        "doc": input,
+        "tableCoordinates": [0, 0, 0, 0],
+        "lineCoordinates": []
     };
 }
 
@@ -301,6 +303,42 @@ test.serial('_drawLines [doc != object]', async (t) => {
     });
 });
 
+test.serial('_drawLines [doc.line = fn]', async (t) => {
+    let input = { "line": sinon.stub() };
+    let expected = 2;
+
+    let args = minimacroDoc(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [doc.line != fn]', async (t) => {
+    let input = { "line": '() => null' };
+    let expected = undefined;
+
+    let args = minimacroDoc(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_drawLines [tableCoordinates = undefined]', async (t) => {
+    let input = undefined;
+    let expected = 0;
+
+    let args = minimacroTableCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
 
 test.serial('_drawLines [tableCoordinates.length = 0]', async (t) => {
     let input = [];

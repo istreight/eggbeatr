@@ -241,8 +241,16 @@ class ExportToPDF extends React.Component {
     * Draws cell splitting lines and table borders in PDF document.
     */
     _drawLines(doc, lineCoordinates, tableCoordinates) {
-        if (!doc.line) return;
-        if (tableCoordinates.length !== 4 || tableCoordinates.some(isNaN)) return;
+        if (!( doc
+            && typeof doc.line === 'function')
+        ) return;
+        if (!( Array.isArray(tableCoordinates)
+            && tableCoordinates.length === 4
+            && !tableCoordinates.some(isNaN))
+        ) return;
+        if (!( Array.isArray(lineCoordinates)
+            && lineCoordinates.every(Array.isArray))
+        ) return;
 
         let [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
 
