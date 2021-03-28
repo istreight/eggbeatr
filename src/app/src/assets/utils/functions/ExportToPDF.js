@@ -16,6 +16,22 @@ import autoTable from 'jspdf-autotable';
 class ExportToPDF extends React.Component {
     constructor(props) {
         super(props);
+
+        this.quarterActivities = [
+            "",
+            "Work"
+        ];
+        this.threeQuarterLessons = [
+            "Level 6",
+            "Level 7",
+            "Level 8",
+            "Level 9",
+            "Level 10",
+            "Basics I",
+            "Basics II",
+            "Strokes",
+            "Schoolboard"
+        ];
     }
 
     /**
@@ -32,21 +48,6 @@ class ExportToPDF extends React.Component {
         let tableXPath = "#dynamicGrid .modal .pure-menu-link table";
         let tableCells = document.querySelectorAll(tableXPath + " td");
         let tableRows = document.querySelectorAll(tableXPath + " tbody tr");
-        let quarterActivities = [
-            "",
-            "Work"
-        ];
-        let threeQuarterLessons = [
-            "Level 6",
-            "Level 7",
-            "Level 8",
-            "Level 9",
-            "Level 10",
-            "Basics I",
-            "Basics II",
-            "Strokes",
-            "Schoolboard"
-        ];
 
         dateCreated = [
             newDate.getFullYear(),
@@ -58,13 +59,13 @@ class ExportToPDF extends React.Component {
 
         tableRows.forEach((row, rowIndex) => {
             row.querySelectorAll("td").forEach((cell, cellIndex) => {
-                if (threeQuarterLessons.includes(cell.textContent)) {
+                if (this.threeQuarterLessons.includes(cell.textContent)) {
                     let index = (rowIndex * numColumns) + cellIndex;
 
                     if (cell.previousElementSibling) {
                         let pText = cell.previousElementSibling.textContent;
 
-                        if (quarterActivities.includes(pText)) {
+                        if (this.quarterActivities.includes(pText)) {
                             splitCellIndices.push(index - 1);
                         }
                     }
@@ -74,7 +75,7 @@ class ExportToPDF extends React.Component {
                     if (cell.nextElementSibling) {
                         let nText = cell.nextElementSibling.textContent;
 
-                        if (quarterActivities.includes(nText)) {
+                        if (this.quarterActivities.includes(nText)) {
                             splitCellIndices.push(index + 1);
                         }
                     }
@@ -112,23 +113,19 @@ class ExportToPDF extends React.Component {
                     cellHookData,
                     prevCell,
                     numColumns,
-                    splitCellIndices,
-                    threeQuarterLessons,
-                    quarterActivities
+                    splitCellIndices
                 );
 
                 prevCell = cellHookData.cell;
             },
             "didDrawCell": (cellHookData) => {
+                let cellIndex = (cellHookData.row.index * numColumns) + cellHookData.column.index;
+
                 lineCoordinates = this._didDrawCell(
                     cellHookData.cell,
-                    cellHookData,
                     prevCell,
-                    numColumns,
                     lineCoordinates,
-                    splitCellIndices,
-                    quarterActivities,
-                    threeQuarterLessons
+                    splitCellIndices.includes(cellIndex)
                 );
 
                 prevCell = cellHookData.cell;
@@ -167,17 +164,17 @@ class ExportToPDF extends React.Component {
     /**
     * Operations performed on the cell as it is created.
     */
-    _didParseCell(data, prevCell, numColumns, splitCellIndices, threeQuarterLessons, quarterActivities) {
+    _didParseCell(data, prevCell, numColumns, splitCellIndices) {
         let cell = data.cell;
         let cellIndex = (data.row.index * numColumns) + data.column.index;
 
         if (splitCellIndices.includes(cellIndex)) {
             if (prevCell) {
                 // halign is set to default to "center", which doesn't work for any of the quarterActivities.
-                if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
+                if (this.threeQuarterLessons.includes(prevCell.text[0]) && this.quarterActivities.includes(cell.text[0])) {
                     // Place Work on the right side of cell divider.
                     cell.styles.halign = "right";
-                } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
+                } else if (this.threeQuarterLessons.includes(cell.text[0]) && this.quarterActivities.includes(prevCell.text[0])) {
                     // Place Work on the left side of cell divider.
                     prevCell.styles.halign = "left";
                 }
@@ -198,28 +195,42 @@ class ExportToPDF extends React.Component {
     /**
     * Draws the individual table cells in the PDF document.
     */
-    _didDrawCell(cell, data, prevCell, numColumns, lineCoordinates, splitCellIndices, quarterActivities, threeQuarterLessons) {
-        let cellIndex = (data.row.index * numColumns) + data.column.index;
+    _didDrawCell(cell, prevCell, splitCellLines, isSplitCell) {
+        let intersection, keys = ['x', 'y', 'width', 'height'];
 
-        if (splitCellIndices.includes(cellIndex) && prevCell) {
-            if (threeQuarterLessons.includes(prevCell.text[0]) && quarterActivities.includes(cell.text[0])) {
-                lineCoordinates.push([
-                    cell.x + (cell.width / 2),
-                    cell.y,
-                    cell.x + (cell.width / 2),
-                    cell.y + cell.height
-                ]);
-            } else if (threeQuarterLessons.includes(cell.text[0]) && quarterActivities.includes(prevCell.text[0])) {
-                lineCoordinates.push([
-                    prevCell.x + (prevCell.width / 2),
-                    prevCell.y,
-                    prevCell.x + (prevCell.width / 2),
-                    prevCell.y + prevCell.height
-                ]);
-            }
+        if (!( isSplitCell
+            && (cell && cell.text)
+            && (prevCell && prevCell.text)
+            && Array.isArray(splitCellLines))
+        ) {
+            return splitCellLines;
         }
 
-        return lineCoordinates;
+        if (this.threeQuarterLessons.includes(prevCell.text[0]) && this.quarterActivities.includes(cell.text[0])) {
+            intersection = Object.keys(cell).filter(k => keys.includes(k));
+
+            if (intersection.length < 4) return splitCellLines;
+
+            splitCellLines.push([
+                cell.x + (cell.width / 2),
+                cell.y,
+                cell.x + (cell.width / 2),
+                cell.y + cell.height
+            ]);
+        } else if (this.threeQuarterLessons.includes(cell.text[0]) && this.quarterActivities.includes(prevCell.text[0])) {
+            intersection = Object.keys(prevCell).filter(k => keys.includes(k));
+
+            if (intersection.length < 4) return splitCellLines;
+
+            splitCellLines.push([
+                prevCell.x + (prevCell.width / 2),
+                prevCell.y,
+                prevCell.x + (prevCell.width / 2),
+                prevCell.y + prevCell.height
+            ]);
+        }
+
+        return splitCellLines;
     }
 
     /**
