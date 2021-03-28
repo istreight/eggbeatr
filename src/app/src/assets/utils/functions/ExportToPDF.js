@@ -141,7 +141,7 @@ class ExportToPDF extends React.Component {
         this._drawLines(doc, lineCoordinates, tableCoordinates);
 
         return doc.output("dataurlnewwindow", {
-            "filename":  "grid-" + dateCreated + ".egbtr.pdf"
+            "filename":  "grid-" + setTitle.replace(/\s/g, '') + "-" + dateCreated + ".egbtr.pdf"
         });
     }
 
