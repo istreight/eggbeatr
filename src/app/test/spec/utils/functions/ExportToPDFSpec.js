@@ -86,6 +86,27 @@ function minimacroData(t, input) {
     };
 }
 
+function minimacroDoc(t, input) {
+    return {
+        "doc": input
+    };
+}
+
+function minimacroLineCoordinates(t, input) {
+    return {
+        "doc": { "line": sinon.stub() },
+        "tableCoordinates": [0, 0, 0, 0],
+        "lineCoordinates": input
+    };
+}
+
+function minimacroTableCoordinates(t, input) {
+    return {
+        "doc": { "line": sinon.stub() },
+        "tableCoordinates": input
+    };
+}
+
 function minimacroSetTitle(t, input) {
     return {
         "data": { "doc": {
@@ -184,6 +205,145 @@ test.serial('_didDrawPage [setTitle]', async (t) => {
 
     let args = minimacroSetTitle(t, input);
     macroDidDrawPage({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+/* -------------------------------------------------------------------------- *\
+|* ------------------------------  _drawLines  ------------------------------ *|
+\* -------------------------------------------------------------------------- */
+
+test.serial('_drawLines [doc = object]', async (t) => {
+    let input = {};
+    let expected = undefined;
+
+    let args = minimacroDoc(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [doc != object]', async (t) => {
+    let input = '{}';
+    let expected = undefined;
+
+    let args = minimacroDoc(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_drawLines [tableCoordinates.length = 0]', async (t) => {
+    let input = [];
+    let expected = 0;
+
+    let args = minimacroTableCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [tableCoordinates.length < 4]', async (t) => {
+    let input = [0, 1, 2];
+    let expected = 0;
+
+    let args = minimacroTableCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [tableCoordinates.length = 4]', async (t) => {
+    let input = [0, 1, 2, 3];
+    let expected = 2;
+
+    let args = minimacroTableCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [tableCoordinates.values != number]', async (t) => {
+    let input = [0, '1', [], {}];
+    let expected = 0;
+
+    let args = minimacroTableCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+
+test.serial('_drawLines [lineCoordinates.length = 0]', async (t) => {
+    let input = [];
+    let expected = 2;
+
+    let args = minimacroLineCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [lineCoordinates.length > 1]', async (t) => {
+    let input = [[0, 1, 2, 3], [4, 5, 6, 7]];
+    let expected = input.length + 2;
+
+    let args = minimacroLineCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
+    let input = [[0, 1, 2], [4, 5, 6, 7]];
+    let expected = 3; // tableCoordinates: 2, valid inputs: 1
+
+    let args = minimacroLineCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
+    let input = [[0, 1, 2, 3]];
+    let expected = input.length + 2;
+
+    let args = minimacroLineCoordinates(t, input);
+    macroDrawLines({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test.serial('_drawLines [lineCoordinates subarray.values != number]', async (t) => {
+    let input = [[0, '1', [], {}]];
+    let expected = 2;
+
+    let args = minimacroLineCoordinates(t, input);
+    macroDrawLines({
         "t": t,
         "expected": expected,
         ...args
