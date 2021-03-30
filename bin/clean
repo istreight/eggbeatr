@@ -4,7 +4,7 @@ root=$(pwd)
 echo "$root"
 
 # Refine scope to specific directories.
-dir=("" "src/app" "src/server")
+dir=("" "src/app" "src/app/test" "src/server")
 for i in "${dir[@]}"
 do
     cd $root/$i
