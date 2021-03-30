@@ -11,6 +11,7 @@ module.exports = ({projectDir}) => {
         "require": [
             "./test/loaders/_setup-browser-env.js",
 			"./test/loaders/_method-overwrites.js"
-		]
+		],
+        "snapshotDir": path.resolve(projectDir, 'test/snapshots')
 	}
 }

@@ -82,6 +82,18 @@ async function macroDidParseCell({ t, expected,
     t.deepEqual(res, expected);
 }
 
+async function macroSnapshot(t) {
+    // Return base64 string, instead of displaying PDF.
+    e.setPDFOutput('dataurlstring');
+
+    // This is definitely something to be improved.
+    // The base64 string returned by 'doc.output' varies slightly with the same input (~80 bits) each export, with the earliest variation around 8000th byte (discovered experimentally).
+    // Differences across different inputs vary much sooner and in much greater quantity.
+    // In addition, multiple snapshots will not function alongside webpack bundling.
+    let pdf = e.pdf('Test Grid');
+    t.snapshot(pdf.slice(0, 8100));
+}
+
 
 
 /* ========================================================================== *\
@@ -188,6 +200,64 @@ function minimacroTableCoordinates(input) {
 |*                                  TESTS                                     *|
 |*                                                                            *|
 \* ========================================================================== */
+
+
+/* -------------------------------------------------------------------------- *\
+|* -----------------------------    snapshot    ----------------------------- *|
+|* -                                                                        - *|
+\* -------------------------------------------------------------------------- */
+
+test.serial('pdf [snapshot = 90% match]', async (t) => {
+    document.body.innerHTML = `
+    <div id="dynamicGrid">
+    <div class="modal">
+    <div class="pure-menu-link">
+        <div id="dynamicGrid" class="modal pure-menu-link">
+            <table class="pure-table">
+                <thead>
+                    <tr>
+                        <th>Instructor</th>
+                        <th>9:00</th>
+                        <th>9:30</th>
+                        <th>10:00</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-odd">
+                        <td class="first-column">Alfa</td>
+                        <td class="privates-cell no-border is-left">Private</td>
+                        <td class="">Basics I</td>
+                        <td class="no-border">
+                            <div class="line line-right">
+                                <p>Work</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="table-even">
+                        <td class="first-column">Beta</td>
+                        <td class="">Starfish</td>
+                        <td class="privates-cell no-border is-left">Private</td>
+                        <td class="">Sea Otter</td>
+                    </tr>
+                    <tr class="table-odd">
+                        <td class="first-column">Charlie</td>
+                        <td class="">Level 6</td>
+                        <td class="no-border">
+                            <div class="line line-right">
+                                <p>Work</p>
+                            </div>
+                        </td>
+                        <td class="privates-cell no-border is-left">Private</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            </div>
+        </div>
+    `;
+
+    await macroSnapshot(t);
+});
 
 
 /* -------------------------------------------------------------------------- *\

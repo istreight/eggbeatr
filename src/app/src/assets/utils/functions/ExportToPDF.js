@@ -17,6 +17,7 @@ class ExportToPDF extends React.Component {
     constructor(props) {
         super(props);
 
+        this.pdfOutput = "dataurlnewwindow";
         this.quarterActivities = [
             "",
             "Work"
@@ -32,6 +33,13 @@ class ExportToPDF extends React.Component {
             "Strokes",
             "Schoolboard"
         ];
+    }
+
+    /**
+    * Set the output location of the generated PDF.
+    */
+    setPDFOutput(output) {
+        this.pdfOutput = output;
     }
 
     /**
@@ -135,8 +143,10 @@ class ExportToPDF extends React.Component {
 
         this._drawLines(doc, lineCoordinates, tableCoordinates);
 
-        return doc.output("dataurlnewwindow", {
-            "filename":  "grid-" + setTitle.replace(/\s/g, '') + "-" + dateCreated + ".egbtr.pdf"
+        let filename = "grid-" + setTitle.replace(/\s/g, '') + "-" + dateCreated + ".egbtr.pdf";
+
+        return doc.output(this.pdfOutput, {
+            "filename":  filename
         });
     }
 
