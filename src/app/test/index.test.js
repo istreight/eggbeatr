@@ -10,10 +10,10 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 
-const specPath = process.env.AVA_SPEC;
+const specPath = process.env.TEST_SPEC;
 const req = require.context('./spec', true, /^.*\Spec.js$/);
 
-console.log('AVA_SPEC' + specPath);
+console.log('TEST_SPEC:', specPath);
 
 if (specPath) {
     req(specPath);

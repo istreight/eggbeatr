@@ -13,7 +13,7 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-cmd="AVA_SPEC=$file npx ava --progress ${watch}"
+cmd="TEST_SPEC=$file npx ava --progress ${watch}"
 
 echo $cmd
 eval $cmd
