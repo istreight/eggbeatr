@@ -51,8 +51,16 @@ async function macroDrawLines({ t, expected,
 }) {
     let res = e._drawLines(doc, lineCoordinates, tableCoordinates);
 
-    if (doc && doc.line) {
+    let isValidDoc = (Object.keys(doc) > 0)
+        && Object.keys(doc).every((e) =>
+            ['line', 'setDrawColor', 'setLineWidth'].includes(e)
+                && (typeof doc[e] === 'function')
+    );
+
+    if (doc  && isValidDoc) {
         t.is(doc.line.callCount, expected);
+        t.is(doc.setDrawColor.callCount, Math.min(expected, 1));
+        t.is(doc.setLineWidth.callCount, Math.min(expected, 1));
     }
 
     t.deepEqual(res, undefined);
@@ -122,7 +130,11 @@ function minimacroIsSplitCell(input) {
 
 function minimacroLineCoordinates(input) {
     return {
-        "doc": { "line": sinon.stub() },
+        "doc": {
+            "line": sinon.stub(),
+            "setDrawColor": sinon.stub(),
+            "setLineWidth": sinon.stub()
+        },
         "tableCoordinates": [0, 0, 0, 0],
         "lineCoordinates": input
     };
@@ -132,13 +144,6 @@ function minimacroPrevCell(input, c =  { "text": ["Strokes"] }) {
     return {
         "cell": c,
         "prevCell": input
-    };
-}
-
-function minimacroTableCoordinates(t, input) {
-    return {
-        "doc": { "line": sinon.stub() },
-        "tableCoordinates": input
     };
 }
 
@@ -162,6 +167,17 @@ function minimacroSplitCellLines(input) {
         },
         "splitCellLines": input,
         "prevCell": { "text": ["Strokes"] }
+    };
+}
+
+function minimacroTableCoordinates(input) {
+    return {
+        "doc": {
+            "line": sinon.stub(),
+            "setDrawColor": sinon.stub(),
+            "setLineWidth": sinon.stub()
+        },
+        "tableCoordinates": input
     };
 }
 
@@ -291,8 +307,12 @@ test.serial('_drawLines [doc != object]', async (t) => {
     });
 });
 
-test.serial('_drawLines [doc.line = fn]', async (t) => {
-    let input = { "line": sinon.stub() };
+test.serial('_drawLines [doc keys = fn]', async (t) => {
+    let input = {
+        "line": sinon.stub(),
+        "setDrawColor": sinon.stub(),
+        "setLineWidth": sinon.stub()
+    };
     let expected = 2;
 
     let args = minimacroDoc(input);
@@ -303,8 +323,12 @@ test.serial('_drawLines [doc.line = fn]', async (t) => {
     });
 });
 
-test.serial('_drawLines [doc.line != fn]', async (t) => {
-    let input = { "line": '() => null' };
+test.serial('_drawLines [doc keys != fn]', async (t) => {
+    let input = {
+        "line": '() => null',
+        "setDrawColor": '() => null',
+        "setLineWidth": '() => null'
+    };
     let expected = undefined;
 
     let args = minimacroDoc(input);

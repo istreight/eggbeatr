@@ -133,9 +133,6 @@ class ExportToPDF extends React.Component {
             }
         });
 
-        doc.setDrawColor(200);
-        doc.setLineWidth(0.5);
-
         this._drawLines(doc, lineCoordinates, tableCoordinates);
 
         return doc.output("dataurlnewwindow", {
@@ -253,6 +250,9 @@ class ExportToPDF extends React.Component {
         ) return;
 
         let [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
+
+        doc.setDrawColor(200);
+        doc.setLineWidth(0.5);
 
         // Draw table border lines (to compensate for removing cell borders on edge of table). Skip left-most and top-most border because they aren't removed.
         doc.line(tableX2, tableY1, tableX2, tableY2); // Right border
