@@ -208,7 +208,12 @@ class ExportToPDF extends React.Component {
         }
 
         if (this.threeQuarterLessons.includes(prevCell.text[0]) && this.quarterActivities.includes(cell.text[0])) {
-            intersection = Object.keys(cell).filter(k => keys.includes(k));
+            intersection = Object.keys(cell).filter(k => {
+                let v = cell[k];
+                cell[k] = Number(v);
+
+                return keys.includes(k) && !isNaN(v);
+            });
 
             if (intersection.length < 4) return splitCellLines;
 
@@ -219,7 +224,12 @@ class ExportToPDF extends React.Component {
                 cell.y + cell.height
             ]);
         } else if (this.threeQuarterLessons.includes(cell.text[0]) && this.quarterActivities.includes(prevCell.text[0])) {
-            intersection = Object.keys(prevCell).filter(k => keys.includes(k));
+            intersection = Object.keys(prevCell).filter(k => {
+                let v = prevCell[k];
+                prevCell[k] = Number(v);
+
+                return keys.includes(k) && !isNaN(v);
+            });
 
             if (intersection.length < 4) return splitCellLines;
 
