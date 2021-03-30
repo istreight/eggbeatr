@@ -18,7 +18,7 @@ class FnScroll extends React.Component {
     }
 
     static scroll(next) {
-        if (!(next instanceof HTMLElement)) return;
+        if (!next.nodeName) return;
 
         let initial = +window.pageYOffset;
         let deltaView = next.getBoundingClientRect();
@@ -36,7 +36,7 @@ class FnScroll extends React.Component {
      * Modification of the scroll function for Tutorial related buttons.
      */
     static tutorialScroll(current, next) {
-        if (!(current instanceof HTMLElement) || !(next instanceof HTMLElement)) return;
+        if (!(current.nodeName && next.nodeName)) return;
 
         let initial = +window.pageYOffset;
         let deltaView = next.getBoundingClientRect();

@@ -52,7 +52,7 @@ async function macroScroll({ t, expected,
         watcher.animatorTickSlide.callArg(2);
     }
 
-    // Reset (HTML input) or don't set (invalid input) window.onwheel.
+    // Reset (HTML input) or don't set (invalid input) window.onwheel
     t.is(window.onwheel, null);
     t.is(watcher.animatorSlide.callCount, expected);
     t.is(watcher.windowScrollTo.callCount, expected);
