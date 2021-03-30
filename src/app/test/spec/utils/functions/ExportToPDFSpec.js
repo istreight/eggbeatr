@@ -207,7 +207,7 @@ function minimacroTableCoordinates(input) {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('pdf [snapshot = 90% match]', async (t) => {
+test.skip('pdf [snapshot = 90% match]', async (t) => {
     document.body.innerHTML = `
     <div id="dynamicGrid">
     <div class="modal">
@@ -265,7 +265,7 @@ test.serial('pdf [snapshot = 90% match]', async (t) => {
 |* -                             data, setTitle                             - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('_didDrawPage [data = object]', async (t) => {
+test('_didDrawPage [data = object]', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -277,7 +277,7 @@ test.serial('_didDrawPage [data = object]', async (t) => {
     });
 });
 
-test.serial('_didDrawPage [data != object]', async (t) => {
+test('_didDrawPage [data != object]', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -289,7 +289,7 @@ test.serial('_didDrawPage [data != object]', async (t) => {
     });
 });
 
-test.serial('_didDrawPage [data keys w/ sub-keys]', async (t) => {
+test('_didDrawPage [data keys w/ sub-keys]', async (t) => {
     let input = { "doc": {
         "text": sinon.stub()
     }, "cursor": {
@@ -308,7 +308,7 @@ test.serial('_didDrawPage [data keys w/ sub-keys]', async (t) => {
     });
 });
 
-test.serial('_didDrawPage [data keys w/o sub-keys]', async (t) => {
+test('_didDrawPage [data keys w/o sub-keys]', async (t) => {
     let input = { "doc": {}, "cursor": {}, "settings": {} };
     let expected = undefined;
 
@@ -320,7 +320,7 @@ test.serial('_didDrawPage [data keys w/o sub-keys]', async (t) => {
     });
 });
 
-test.serial('_didDrawPage [data keys w/ only doc.text]', async (t) => {
+test('_didDrawPage [data keys w/ only doc.text]', async (t) => {
     let input = { "doc": {
         "text": sinon.stub()
     }, "cursor": {}, "settings": {} };
@@ -335,7 +335,7 @@ test.serial('_didDrawPage [data keys w/ only doc.text]', async (t) => {
 });
 
 
-test.serial('_didDrawPage [setTitle]', async (t) => {
+test('_didDrawPage [setTitle]', async (t) => {
     let input = 'set title';
     let expected = [undefined, undefined, undefined, undefined];
 
@@ -353,7 +353,7 @@ test.serial('_didDrawPage [setTitle]', async (t) => {
 |* -                 doc, lineCoordinates, tableCoordinates                 - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('_drawLines [doc = object]', async (t) => {
+test('_drawLines [doc = object]', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -365,7 +365,7 @@ test.serial('_drawLines [doc = object]', async (t) => {
     });
 });
 
-test.serial('_drawLines [doc != object]', async (t) => {
+test('_drawLines [doc != object]', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -377,7 +377,7 @@ test.serial('_drawLines [doc != object]', async (t) => {
     });
 });
 
-test.serial('_drawLines [doc keys = fn]', async (t) => {
+test('_drawLines [doc keys = fn]', async (t) => {
     let input = {
         "line": sinon.stub(),
         "setDrawColor": sinon.stub(),
@@ -393,7 +393,7 @@ test.serial('_drawLines [doc keys = fn]', async (t) => {
     });
 });
 
-test.serial('_drawLines [doc keys != fn]', async (t) => {
+test('_drawLines [doc keys != fn]', async (t) => {
     let input = {
         "line": '() => null',
         "setDrawColor": '() => null',
@@ -410,7 +410,7 @@ test.serial('_drawLines [doc keys != fn]', async (t) => {
 });
 
 
-test.serial('_drawLines [tableCoordinates = undefined]', async (t) => {
+test('_drawLines [tableCoordinates = undefined]', async (t) => {
     let input = undefined;
     let expected = 0;
 
@@ -422,7 +422,7 @@ test.serial('_drawLines [tableCoordinates = undefined]', async (t) => {
     });
 });
 
-test.serial('_drawLines [tableCoordinates.length = 0]', async (t) => {
+test('_drawLines [tableCoordinates.length = 0]', async (t) => {
     let input = [];
     let expected = 0;
 
@@ -434,7 +434,7 @@ test.serial('_drawLines [tableCoordinates.length = 0]', async (t) => {
     });
 });
 
-test.serial('_drawLines [tableCoordinates.length < 4]', async (t) => {
+test('_drawLines [tableCoordinates.length < 4]', async (t) => {
     let input = [0, 1, 2];
     let expected = 0;
 
@@ -446,7 +446,7 @@ test.serial('_drawLines [tableCoordinates.length < 4]', async (t) => {
     });
 });
 
-test.serial('_drawLines [tableCoordinates.length = 4]', async (t) => {
+test('_drawLines [tableCoordinates.length = 4]', async (t) => {
     let input = [0, 1, 2, 3];
     let expected = 2;
 
@@ -458,7 +458,7 @@ test.serial('_drawLines [tableCoordinates.length = 4]', async (t) => {
     });
 });
 
-test.serial('_drawLines [tableCoordinates.values != number]', async (t) => {
+test('_drawLines [tableCoordinates.values != number]', async (t) => {
     let input = [0, '1', [], {}];
     let expected = 0;
 
@@ -471,7 +471,7 @@ test.serial('_drawLines [tableCoordinates.values != number]', async (t) => {
 });
 
 
-test.serial('_drawLines [lineCoordinates.length = 0]', async (t) => {
+test('_drawLines [lineCoordinates.length = 0]', async (t) => {
     let input = [];
     let expected = 2;
 
@@ -483,7 +483,7 @@ test.serial('_drawLines [lineCoordinates.length = 0]', async (t) => {
     });
 });
 
-test.serial('_drawLines [lineCoordinates.length > 1]', async (t) => {
+test('_drawLines [lineCoordinates.length > 1]', async (t) => {
     let input = [[0, 1, 2, 3], [4, 5, 6, 7]];
     let expected = input.length + 2;
 
@@ -495,7 +495,7 @@ test.serial('_drawLines [lineCoordinates.length > 1]', async (t) => {
     });
 });
 
-test.serial('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
+test('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
     let input = [[0, 1, 2], [4, 5, 6, 7]];
     let expected = 3; // tableCoordinates: 2, valid inputs: 1
 
@@ -507,7 +507,7 @@ test.serial('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
     });
 });
 
-test.serial('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
+test('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
     let input = [[0, 1, 2, 3]];
     let expected = input.length + 2;
 
@@ -519,7 +519,7 @@ test.serial('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
     });
 });
 
-test.serial('_drawLines [lineCoordinates subarray.values != number]', async (t) => {
+test('_drawLines [lineCoordinates subarray.values != number]', async (t) => {
     let input = [[0, '1', [], {}]];
     let expected = 2;
 
@@ -538,7 +538,7 @@ test.serial('_drawLines [lineCoordinates subarray.values != number]', async (t) 
 \* -------------------------------------------------------------------------- */
 
 
-test.serial('_didDrawCell [cell = object]', async (t) => {
+test('_didDrawCell [cell = object]', async (t) => {
     let input = {};
     let expected = [];
 
@@ -550,7 +550,7 @@ test.serial('_didDrawCell [cell = object]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell != object]', async (t) => {
+test('_didDrawCell [cell != object]', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -562,7 +562,7 @@ test.serial('_didDrawCell [cell != object]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell.text = array]', async (t) => {
+test('_didDrawCell [cell.text = array]', async (t) => {
     let input = { "text": ['Garbage'] };
     let expected = [];
 
@@ -574,7 +574,7 @@ test.serial('_didDrawCell [cell.text = array]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
+test('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
     let input = { "text": ['Work'] };
     let expected = [];
 
@@ -586,7 +586,7 @@ test.serial('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell.text != array]', async (t) => {
+test('_didDrawCell [cell.text != array]', async (t) => {
     let input = { "text": 'Garbage' };
     let expected = [];
 
@@ -599,7 +599,7 @@ test.serial('_didDrawCell [cell.text != array]', async (t) => {
 });
 
 
-test.serial('_didDrawCell [cell = x, y, height, width]', async (t) => {
+test('_didDrawCell [cell = x, y, height, width]', async (t) => {
     let input = { "x": 1, "y": 2, "height": 3, "width": 4  };
     let expected = [];
 
@@ -611,7 +611,7 @@ test.serial('_didDrawCell [cell = x, y, height, width]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
+test('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -629,7 +629,7 @@ test.serial('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [cell values = non-numeric values]', async (t) => {
+test('_didDrawCell [cell values = non-numeric values]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -648,7 +648,7 @@ test.serial('_didDrawCell [cell values = non-numeric values]', async (t) => {
 });
 
 
-test.serial('_didDrawCell [cell = valid]', async (t) => {
+test('_didDrawCell [cell = valid]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -667,7 +667,7 @@ test.serial('_didDrawCell [cell = valid]', async (t) => {
 });
 
 
-test.serial('_didDrawCell [prevCell = object]', async (t) => {
+test('_didDrawCell [prevCell = object]', async (t) => {
     let input = {};
     let expected = [];
 
@@ -679,7 +679,7 @@ test.serial('_didDrawCell [prevCell = object]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell != object]', async (t) => {
+test('_didDrawCell [prevCell != object]', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -691,7 +691,7 @@ test.serial('_didDrawCell [prevCell != object]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell.text = array]', async (t) => {
+test('_didDrawCell [prevCell.text = array]', async (t) => {
     let input = { "text": ['Garbage'] };
     let expected = [];
 
@@ -703,7 +703,7 @@ test.serial('_didDrawCell [prevCell.text = array]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
+test('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
     let input = { "text": ['Work'] };
     let expected = [];
 
@@ -715,7 +715,7 @@ test.serial('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell.text != array]', async (t) => {
+test('_didDrawCell [prevCell.text != array]', async (t) => {
     let input = { "text": 'Garbage' };
     let expected = [];
 
@@ -727,7 +727,7 @@ test.serial('_didDrawCell [prevCell.text != array]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell = x, y, height, width]', async (t) => {
+test('_didDrawCell [prevCell = x, y, height, width]', async (t) => {
     let input = { "x": 1, "y": 2, "height": 3, "width": 4 };
     let expected = [];
 
@@ -739,7 +739,7 @@ test.serial('_didDrawCell [prevCell = x, y, height, width]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [prevCell values = non-numeric numbers]', async (t) => {
+test('_didDrawCell [prevCell values = non-numeric numbers]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -757,7 +757,7 @@ test.serial('_didDrawCell [prevCell values = non-numeric numbers]', async (t) =>
     });
 });
 
-test.serial('_didDrawCell [prevCell values = non-numeric values]', async (t) => {
+test('_didDrawCell [prevCell values = non-numeric values]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -775,7 +775,7 @@ test.serial('_didDrawCell [prevCell values = non-numeric values]', async (t) => 
     });
 });
 
-test.serial('_didDrawCell [prevCell = valid]', async (t) => {
+test('_didDrawCell [prevCell = valid]', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -794,7 +794,7 @@ test.serial('_didDrawCell [prevCell = valid]', async (t) => {
 });
 
 
-test.serial('_didDrawCell [splitCellLines = array]', async (t) => {
+test('_didDrawCell [splitCellLines = array]', async (t) => {
     let input = [];
     let expected = [[1, 1, 1, 4]];
 
@@ -806,7 +806,7 @@ test.serial('_didDrawCell [splitCellLines = array]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [splitCellLines != array]', async (t) => {
+test('_didDrawCell [splitCellLines != array]', async (t) => {
     let input = '[]';
     let expected = input;
 
@@ -819,7 +819,7 @@ test.serial('_didDrawCell [splitCellLines != array]', async (t) => {
 });
 
 
-test.serial('_didDrawCell [isSplitCell = true]', async (t) => {
+test('_didDrawCell [isSplitCell = true]', async (t) => {
     let input = true;
     let expected = [[1, 1, 1, 4]];
 
@@ -831,7 +831,7 @@ test.serial('_didDrawCell [isSplitCell = true]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [isSplitCell = truthy]', async (t) => {
+test('_didDrawCell [isSplitCell = truthy]', async (t) => {
     let input = 'true';
     let expected = [[1, 1, 1, 4]];
 
@@ -843,7 +843,7 @@ test.serial('_didDrawCell [isSplitCell = truthy]', async (t) => {
     });
 });
 
-test.serial('_didDrawCell [isSplitCell != true]', async (t) => {
+test('_didDrawCell [isSplitCell != true]', async (t) => {
     let input = false;
     let expected = [];
 
@@ -862,7 +862,7 @@ test.serial('_didDrawCell [isSplitCell != true]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 
-test.serial('_didParseCell [cell = object]', async (t) => {
+test('_didParseCell [cell = object]', async (t) => {
     let input = {};
     let expected = input;
 
@@ -874,7 +874,7 @@ test.serial('_didParseCell [cell = object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell != object]', async (t) => {
+test('_didParseCell [cell != object]', async (t) => {
     let input = '{}';
     let expected = input;
 
@@ -886,7 +886,7 @@ test.serial('_didParseCell [cell != object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell = undefined]', async (t) => {
+test('_didParseCell [cell = undefined]', async (t) => {
     let input = undefined;
     let expected = undefined;
 
@@ -898,7 +898,7 @@ test.serial('_didParseCell [cell = undefined]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.text = array]', async (t) => {
+test('_didParseCell [cell.text = array]', async (t) => {
     let input = { "text": ['Garbage'] };
     let expected = input;
 
@@ -910,7 +910,7 @@ test.serial('_didParseCell [cell.text = array]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.text = 1/4 activity]', async (t) => {
+test('_didParseCell [cell.text = 1/4 activity]', async (t) => {
     let input = { "text": ['Work'] };
     let expected = input;
 
@@ -922,7 +922,7 @@ test.serial('_didParseCell [cell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.text = "Private"]', async (t) => {
+test('_didParseCell [cell.text = "Private"]', async (t) => {
     let input = {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
         "text": ['Private']
@@ -940,7 +940,7 @@ test.serial('_didParseCell [cell.text = "Private"]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.text != array]', async (t) => {
+test('_didParseCell [cell.text != array]', async (t) => {
     let input = { "text": 'Garbage' };
     let expected = input;
 
@@ -952,7 +952,7 @@ test.serial('_didParseCell [cell.text != array]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.styles = object]', async (t) => {
+test('_didParseCell [cell.styles = object]', async (t) => {
     let input = { "styles": {} };
     let expected = input;
 
@@ -964,7 +964,7 @@ test.serial('_didParseCell [cell.styles = object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.styles = color, width]', async (t) => {
+test('_didParseCell [cell.styles = color, width]', async (t) => {
     let input = { "styles": { "lineColor": 1, "lineWidth": 2 } };
     let expected = input;
 
@@ -976,7 +976,7 @@ test.serial('_didParseCell [cell.styles = color, width]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell.styles != object]', async (t) => {
+test('_didParseCell [cell.styles != object]', async (t) => {
     let input = { "styles": 'Garbage' };
     let expected = input;
 
@@ -988,7 +988,7 @@ test.serial('_didParseCell [cell.styles != object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [cell = valid]', async (t) => {
+test('_didParseCell [cell = valid]', async (t) => {
     let input = {
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
         "text": ['Work']
@@ -1014,7 +1014,7 @@ test.serial('_didParseCell [cell = valid]', async (t) => {
 });
 
 
-test.serial('_didParseCell [prevCell = object]', async (t) => {
+test('_didParseCell [prevCell = object]', async (t) => {
     let input = {};
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1032,7 +1032,7 @@ test.serial('_didParseCell [prevCell = object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell != object]', async (t) => {
+test('_didParseCell [prevCell != object]', async (t) => {
     let input = '{}';
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1050,7 +1050,7 @@ test.serial('_didParseCell [prevCell != object]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell = undefined]', async (t) => {
+test('_didParseCell [prevCell = undefined]', async (t) => {
     let input = undefined;
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1067,7 +1067,7 @@ test.serial('_didParseCell [prevCell = undefined]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell.text = array]', async (t) => {
+test('_didParseCell [prevCell.text = array]', async (t) => {
     let input = { "text": ['Garbage'] };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1085,7 +1085,7 @@ test.serial('_didParseCell [prevCell.text = array]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
+test('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
     let input = { "text": ['Work'] };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1103,7 +1103,7 @@ test.serial('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell.text != array]', async (t) => {
+test('_didParseCell [prevCell.text != array]', async (t) => {
     let input = { "text": { "property": 'Garbage' } };
     let expected = {
         "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
@@ -1121,7 +1121,7 @@ test.serial('_didParseCell [prevCell.text != array]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [prevCell = valid]', async (t) => {
+test('_didParseCell [prevCell = valid]', async (t) => {
     let input = {
         "text": ['Work'],
         "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
@@ -1143,7 +1143,7 @@ test.serial('_didParseCell [prevCell = valid]', async (t) => {
 });
 
 
-test.serial('_didParseCell [isSplitCell = true]', async (t) => {
+test('_didParseCell [isSplitCell = true]', async (t) => {
     let input = true;
     let expected = {
         "height": 3,
@@ -1169,7 +1169,7 @@ test.serial('_didParseCell [isSplitCell = true]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [isSplitCell = truthy]', async (t) => {
+test('_didParseCell [isSplitCell = truthy]', async (t) => {
     let input = 'true';
     let expected = {
         "height": 3,
@@ -1195,7 +1195,7 @@ test.serial('_didParseCell [isSplitCell = truthy]', async (t) => {
     });
 });
 
-test.serial('_didParseCell [isSplitCell != true]', async (t) => {
+test('_didParseCell [isSplitCell != true]', async (t) => {
     let input = false;
     let expected = {
         "height": 3,
