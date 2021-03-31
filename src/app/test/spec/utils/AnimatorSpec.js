@@ -184,7 +184,7 @@ function minimacroCurrent(input) {
     };
 }
 
-function minimacroNext(input) {
+function minimacroNext(input, current = window.document.createElement('div')) {
     let c = window.document.createElement('div');
 
     if (input !== 'Garbage') {
@@ -192,7 +192,7 @@ function minimacroNext(input) {
     }
 
     return {
-        "current": window.document.createElement('div'),
+        "current": current,
         "next": input
     };
 }
@@ -622,7 +622,7 @@ test.serial('tutorialScroll [next != HTML object]', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
-    let args = minimacroNext(input);
+    let args = minimacroNext(input, 'GarbageCurrent');
     macroTutorialScroll({
         "t": t,
         "expected": expected,

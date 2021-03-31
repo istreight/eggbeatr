@@ -118,7 +118,7 @@ class Animator extends React.Component {
      * Modification of the scroll function for Tutorial related buttons.
      */
     static tutorialScroll(current, next) {
-        if (!(current.nodeName && next.nodeName)) return;
+        if (!((current && current.nodeName) || (next && next.nodeName))) return;
 
         let initial = +window.pageYOffset;
         let deltaView = next.getBoundingClientRect();
