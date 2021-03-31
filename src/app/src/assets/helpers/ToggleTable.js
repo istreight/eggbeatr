@@ -11,8 +11,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import TableRow from '@utils/TableRow';
-import AddRow from '@specializations/AddRow';
-import RemoveRow from '@specializations/RemoveRow';
+import AddRow from '@helpers/AddRow';
+import RemoveRow from '@helpers/RemoveRow';
 
 
 class ToggleTable extends React.Component {

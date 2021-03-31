@@ -11,7 +11,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Anchor from '@utils/Anchor';
-import FnScroll from '@functions/FnScroll';
+import Animator from '@utils/Animator';
 
 
 class ScrollingAnchor extends React.Component {
@@ -32,7 +32,7 @@ class ScrollingAnchor extends React.Component {
             target = "dynamicHeader";
         }
 
-        FnScroll.scroll(document.getElementById(target));
+        Animator.scroll(document.getElementById(target));
     }
 
     render() {

@@ -6,12 +6,11 @@ module.exports = ({projectDir}) => {
 		"files": [
 			"./test/dist/**/*"
 		],
-		"environmentVariables": {},
-		"verbose": true,
         "require": [
             "./test/loaders/_setup-browser-env.js",
 			"./test/loaders/_method-overwrites.js"
 		],
-        "snapshotDir": path.resolve(projectDir, 'test/snapshots')
+        "snapshotDir": path.resolve(projectDir, 'test/snapshots'),
+        "verbose": true
 	}
 }

@@ -98,6 +98,47 @@ class Animator extends React.Component {
     static slide(duration, display, callback) {
         this._tickSlide(duration, display, callback);
     }
+
+    static scroll(next) {
+        if (!next.nodeName) return;
+
+        let initial = +window.pageYOffset;
+        let deltaView = next.getBoundingClientRect();
+
+        window.onwheel = (e) => e.preventDefault;
+
+        Animator.slide(2000, (progress) => {
+            window.scrollTo(0, initial + progress * (deltaView.top - 58));
+        }, () => {
+            window.onwheel = null;
+        });
+    }
+
+    /**
+     * Modification of the scroll function for Tutorial related buttons.
+     */
+    static tutorialScroll(current, next) {
+        if (!(current.nodeName && next.nodeName)) return;
+
+        let initial = +window.pageYOffset;
+        let deltaView = next.getBoundingClientRect();
+        let nextFoot = next.querySelector("[class*='section-footer']");
+
+        if (!nextFoot) return;
+
+        nextFoot.classList.remove("hide");
+        window.onwheel = (e) => e.preventDefault();
+
+        Animator.slide(2000, (progress) => {
+            window.scrollTo(0, initial + progress * (deltaView.top - 58));
+        }, () => {
+            window.onwheel = null;
+
+            if (current) {
+                current.classList.add("hide");
+            }
+        });
+    }
 }
 
 export default Animator;

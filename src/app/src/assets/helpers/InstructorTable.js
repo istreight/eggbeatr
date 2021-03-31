@@ -10,9 +10,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ToggleTable from '@specializations/ToggleTable';
-import PreferencesButton from '@specializations/PreferencesButton';
-import PrivatesOnlyCheckbox from '@specializations/PrivatesOnlyCheckbox';
+import ToggleTable from '@helpers/ToggleTable';
+import PreferencesButton from '@helpers/PreferencesButton';
+import PrivatesOnlyCheckbox from '@helpers/PrivatesOnlyCheckbox';
 
 
 class InstructorTable extends React.Component {

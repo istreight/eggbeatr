@@ -22,9 +22,8 @@ module.exports = {
         alias: {
             '@components': path.resolve(__dirname, contentBase, 'components'),
             '@css': path.resolve(__dirname, contentBase, 'assets/css'),
-            '@functions': path.resolve(__dirname, contentBase, 'assets/utils/functions'),
             '@root': path.resolve(__dirname, '../../../'),
-            '@specializations': path.resolve(__dirname, contentBase, 'assets/specializations'),
+            '@helpers': path.resolve(__dirname, contentBase, 'assets/helpers'),
             '@utils': path.resolve(__dirname, contentBase, 'assets/utils')
         },
         extensions: ['.js']

@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 
 import Modal from '@utils/Modal';
 import Anchor from '@utils/Anchor';
-import EditButton from '@specializations/EditButton';
+import EditButton from '@helpers/EditButton';
 
 
 class InstructorPreferences extends React.Component {

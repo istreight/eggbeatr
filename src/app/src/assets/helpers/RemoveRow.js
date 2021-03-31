@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 
 import Input from '@utils/Input';
 import TableRow from '@utils/TableRow';
-import RemoveButton from '@specializations/RemoveButton';
+import RemoveButton from '@helpers/RemoveButton';
 
 
 class RemoveRow extends React.Component {

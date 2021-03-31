@@ -14,13 +14,7 @@ module.exports = {
         path: path.resolve(__dirname, testBase, 'dist'),
         filename: './bundle.test.js'
     },
-    resolve: {
-        alias: {
-            ...appConfig.resolve.alias,
-            '@utils': path.resolve(__dirname, testBase, 'utils')
-        },
-        extensions: appConfig.resolve.extensions
-    },
+    resolve: appConfig.resolve,
     module: {
         rules: [{
             test: /Spec\.js$/,

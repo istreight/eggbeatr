@@ -8,7 +8,7 @@
 
 import sinon from 'sinon';
 
-import Animator from  '@functions/Animator.js';
+import Animator from '@utils/Animator.js';
 
 
 class Watchers {
@@ -24,7 +24,6 @@ class Watchers {
             "dateNow": [Date, 'now'],
             "mathMax": [Math, 'max'],
             "mathMin": [Math, 'min'],
-            "windowOnWheel": [window, 'onwheel'],
             "windowScrollTo": [window, 'scrollTo'],
             "windowSetTimeout": [window, 'setTimeout'],
             "windowRequestAnimationFrame": [window, 'requestAnimationFrame']
@@ -36,21 +35,18 @@ class Watchers {
             "Animator": {
                 "mocks": [],
                 "spies": [
+                    "animatorSlide",
                     "animatorTickFade",
-                    "animatorTickSlide",
                     "mathMax",
-                    "mathMin"
+                    "mathMin",
+                    "windowScrollTo"
                 ],
                 "stubs": [
+                    "animatorTickSlide",
                     "dateNow",
                     "windowRequestAnimationFrame",
                     "windowSetTimeout"
                 ]
-            },
-            "FnScroll": {
-                "mocks": [],
-                "spies": ["animatorSlide", "windowScrollTo"],
-                "stubs": ["animatorTickSlide"]
             }
         };
     }

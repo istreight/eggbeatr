@@ -9,7 +9,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 
-import ExportToPDF from '@functions/ExportToPDF.js';
+import ExportToPDF from '@utils/ExportToPDF.js';
 
 const e = new ExportToPDF();
 

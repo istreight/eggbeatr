@@ -10,7 +10,7 @@
 import React from 'react';
 
 import UnorderedList from '@utils/UnorderedList';
-import FeatureDescription from '@specializations/FeatureDescription';
+import FeatureDescription from '@helpers/FeatureDescription';
 
 
 class About extends React.Component {

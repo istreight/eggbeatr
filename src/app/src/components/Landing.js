@@ -11,8 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Anchor from '@utils/Anchor';
-import Animator from '@functions/Animator';
-import FnScroll from '@functions/FnScroll';
+import Animator from '@utils/Animator';
 
 
 class Landing extends React.Component {
@@ -62,7 +61,7 @@ class Landing extends React.Component {
     getStarted() {
         var nextLocation = document.getElementById("dynamicInstructors");
 
-        FnScroll.tutorialScroll(null, nextLocation);
+        Animator.tutorialScroll(null, nextLocation);
     }
 
     render() {

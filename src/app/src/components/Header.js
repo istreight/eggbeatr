@@ -13,12 +13,12 @@ import PropTypes from 'prop-types';
 
 import Input from '@utils/Input';
 import Anchor from '@utils/Anchor';
-import Animator from '@functions/Animator';
-import SetList from '@specializations/SetList';
+import Animator from '@utils/Animator';
+import SetList from '@helpers/SetList';
 import UnorderedList from '@utils/UnorderedList';
-import EditButton from '@specializations/EditButton';
-import WaitIndicator from '@specializations/WaitIndicator';
-import ScrollingAnchor from '@specializations/ScrollingAnchor';
+import EditButton from '@helpers/EditButton';
+import WaitIndicator from '@helpers/WaitIndicator';
+import ScrollingAnchor from '@helpers/ScrollingAnchor';
 
 
 class Header extends React.Component {

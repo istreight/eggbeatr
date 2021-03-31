@@ -11,9 +11,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Tutorial from '@specializations/Tutorial';
-import PrivatesTable from '@specializations/PrivatesTable';
-import SectionDescription from '@specializations/SectionDescription';
+import Tutorial from '@helpers/Tutorial';
+import PrivatesTable from '@helpers/PrivatesTable';
+import SectionDescription from '@helpers/SectionDescription';
 
 
 class Privates extends React.Component {

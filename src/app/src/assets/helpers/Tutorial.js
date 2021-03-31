@@ -12,7 +12,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import Anchor from '@utils/Anchor';
-import FnScroll from '@functions/FnScroll';
+import Animator from '@utils/Animator';
 
 
 class Tutorial extends React.Component {
@@ -29,7 +29,7 @@ class Tutorial extends React.Component {
     handleClick() {
         var nextLocation = document.getElementById(this.props.nextName);
 
-        FnScroll.tutorialScroll(ReactDOM.findDOMNode(this), nextLocation);
+        Animator.tutorialScroll(ReactDOM.findDOMNode(this), nextLocation);
     }
 
     render() {

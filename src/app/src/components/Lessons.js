@@ -13,9 +13,9 @@ import PropTypes from 'prop-types';
 
 import Table from '@utils/Table';
 import Input from '@utils/Input';
-import Animator from '@functions/Animator';
-import Tutorial from '@specializations/Tutorial';
-import SectionDescription from '@specializations/SectionDescription';
+import Animator from '@utils/Animator';
+import Tutorial from '@helpers/Tutorial';
+import SectionDescription from '@helpers/SectionDescription';
 
 
 class Lessons extends React.Component {

@@ -10,7 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ToggleTable from '@specializations/ToggleTable';
+import ToggleTable from '@helpers/ToggleTable';
 
 
 class PrivatesTable extends React.Component {
