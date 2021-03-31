@@ -10,7 +10,7 @@ import test from 'ava';
 import sinon from 'sinon';
 
 import Animator from '@utils/Animator.js';
-import Watchers from '../../utils/Watchers.js';
+import Watchers from '@test.utils/Watchers.js';
 
 
 const w = new Watchers();
