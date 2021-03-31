@@ -17,7 +17,7 @@ First off, clone or [download the project](https://github.com/istreight/eggbeatr
 # Using git
 git clone https://github.com/istreight/eggbeatr.git
 
-#Or, using the GitHub CLI
+# Or, using the GitHub CLI
 gh repo clone istreight/eggbeatr
 ```
 
