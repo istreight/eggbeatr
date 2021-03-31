@@ -22,9 +22,7 @@ test.before((t) => {
     };
 });
 
-test.beforeEach((t) => {
-    t.log('utils/functions/AnimatorSpec.js');
-});
+test.beforeEach(() => {});
 
 test.afterEach.always(() => {
     // Reset the state of all fakes in the Watchers instance.
@@ -45,8 +43,15 @@ test.after.always(() => {
 \* ========================================================================== */
 
 
-async function macroTickFade({ t, expected, watcher,
-    callback = () => null, direction = 'In', duration = 100, last = 0
+async function macroTickFade({
+    t,
+    expected,
+    watcher,
+    callback = () => null,
+    direction = 'In',
+    duration = 100,
+    last = 0,
+    shortcircuit = 1
 }) {
     t.context.animator.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
 
@@ -56,18 +61,25 @@ async function macroTickFade({ t, expected, watcher,
         );
 
         if (t.title.includes('opacity')) {
-            t.assert(parseFloat(t.context.animator.ele.style.opacity) <= 1);
+            t.assert(parseFloat(t.context.animator.ele.style.opacity) <= 1, 'Element opacity > 1');
         }
 
         return watcher.callCount;
     };
 
-    t.is(await wrapper(), expected);
+    t.is(await wrapper(), expected, 'Watched function was not the expected number of times');
+    t.is(t.context.animator.windowRequestAnimationFrame.callCount + t.context.animator.windowSetTimeout.callCount, shortcircuit, 'Unexpected ending');
 };
 
-async function macroTickSlide({ t, expected, watcher,
-    callback = () => null, displace = () => null,
-    duration = 100, start = 0
+async function macroTickSlide({
+    t,
+    expected,
+    watcher,
+    callback = () => null,
+    displace = () => null,
+    duration = 100,
+    start = Date.now.wrappedMethod(),
+    shortcircuit = 1
 }) {
     t.context.animator.animatorTickSlide.callThrough();
     t.context.animator.dateNow.onFirstCall().returns(Date.now.wrappedMethod());
@@ -80,46 +92,58 @@ async function macroTickSlide({ t, expected, watcher,
         return watcher.callCount;
     };
 
-    t.is(await wrapper(), expected);
+    t.is(await wrapper(), expected, 'Watched function was not the expected number of times');
+    t.is(t.context.animator.windowRequestAnimationFrame.callCount, shortcircuit, 'Unexpected ending');
 }
 
-async function macroScroll({ t, expected,
-        next = window.document.createElement('div')
+async function macroScroll({
+    t,
+    expected,
+    next = window.document.createElement('div')
 }) {
     let watcher = t.context.animator;
 
     await Animator.scroll(next);
 
     if (next !== 'Garbage') {
+        // Check that manual scrolling has been disabled.
+        t.not(window.onwheel, null, 'Wheel scrolling was not disabled');
+
         watcher.animatorTickSlide.callArg(1);
         watcher.animatorTickSlide.callArg(2);
     }
 
     // Reset (HTML input) or don't set (invalid input) window.onwheel
-    t.is(window.onwheel, null);
-    t.is(watcher.animatorSlide.callCount, expected);
-    t.is(watcher.windowScrollTo.callCount, expected);
+    t.is(window.onwheel, null, 'Wheel scrolling was not reset');
+    t.is(watcher.animatorSlide.callCount, expected, 'Animator.slide was not called the expected number of times');
+    t.is(watcher.windowScrollTo.callCount, expected, 'Window.scrollTo was not called the expected number of times');
 }
 
-async function macroTutorialScroll({ t, expected,
-        current = window.document.createElement('div'),
-        next = window.document.createElement('div')
+async function macroTutorialScroll({
+    t,
+    expected,
+    current = window.document.createElement('div'),
+    next = window.document.createElement('div')
 }) {
     let watcher = t.context.animator;
 
     await Animator.tutorialScroll(current, next);
 
     if (![current, next].includes('Garbage')) {
+        // Check that manual scrolling has been disabled.
+        t.not(window.onwheel, null, 'Wheel scrolling was not disabled');
+
         watcher.animatorTickSlide.callArg(1);
         watcher.animatorTickSlide.callArg(2);
 
-        t.not(next.classList.contains('hide'));
+        t.false(next.classList.contains('hide'));
+        t.true(current.classList.contains('hide'));
     }
 
     // Reset (HTML input) or don't set (invalid input) window.onwheel.
-    t.is(window.onwheel, null);
-    t.is(watcher.animatorSlide.callCount, expected);
-    t.is(watcher.windowScrollTo.callCount, expected);
+    t.is(window.onwheel, null, 'Wheel scrolling was not reset');
+    t.is(watcher.animatorSlide.callCount, expected, 'Animator.slide was not called the expected number of times');
+    t.is(watcher.windowScrollTo.callCount, expected, 'Window.scrollTo was not called the expected number of times');
 }
 
 
@@ -132,10 +156,10 @@ async function macroTutorialScroll({ t, expected,
 
 
 
-function minimacroDuration(t, input) {
+function minimacroDuration(t, input, w = t.context.animator.mathMin) {
     return {
         "duration": input,
-        "watcher": t.context.animator.mathMin
+        "watcher": w
     };
 }
 
@@ -215,9 +239,10 @@ function minimacroNext(input, current = window.document.createElement('div')) {
 
 /* -------------------------------------------------------------------------- *\
 |* ---------------------------- fadeIn / fadeOut ---------------------------- *|
+|* -                   element, duration, delay, callback                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('fade [_tickFade called on fadeIn]', async (t) => {
+test.serial('[fadeIn] is executed fully', async (t) => {
     let expected = 1;
 
     await Animator.fadeIn(t.context.animator.ele, 1);
@@ -225,35 +250,37 @@ test.serial('fade [_tickFade called on fadeIn]', async (t) => {
     t.is(t.context.animator.animatorTickFade.callCount, expected);
 });
 
-test.serial('fade [_tickFade called on fadeOut]', async (t) => {
+test.serial('[fadeOut] is executed fully', async (t) => {
     let expected = 1;
 
+    t.log('_tickFade is called');
     await Animator.fadeOut(t.context.animator.ele, 1);
 
     t.is(t.context.animator.animatorTickFade.callCount, expected);
 });
 
 
-
 /* -------------------------------------------------------------------------- *\
 |* ----------------------------      slide      ----------------------------- *|
+|* -                      duration, display, callback                       - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('slide [_tickSlide called on slide]', async (t) => {
+test.serial('[slide] is executed fully', async (t) => {
     let expected = 1;
 
+    t.log('_tickSlide is called');
     await Animator.slide(0, () => null, () => null);
 
     t.is(t.context.animator.animatorTickSlide.callCount, expected);
 });
 
 
-
 /* -------------------------------------------------------------------------- *\
 |* ----------------------------    _tickFade    ----------------------------- *|
+|* -        fadeDirection, element, duration, delay, callback, last         - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('_tickFade [callback]', async (t) => {
+test.serial('[_tickFade] is executed fully when callback is set', async (t) => {
     let input = () => null;
     let expected = 1;
     let w, cb = w = sinon.spy(input);
@@ -262,6 +289,7 @@ test.serial('_tickFade [callback]', async (t) => {
     // Pass the spied-on function, not the original.
     t.context.animator.windowSetTimeout.callsArg(0);
 
+    t.log('Callback is called');
     macroTickFade({
         "t": t,
         "expected": expected,
@@ -271,8 +299,8 @@ test.serial('_tickFade [callback]', async (t) => {
 });
 
 
-test.serial('_tickFade [opacity < 1]', async (t) => {
-    let input = 0;
+test.serial('[_tickFade] is executed fully when opacity < 1', async (t) => {
+    let input = 0.1;
     let expected = 1;
 
     let args = minimacroOpacity(t, input);
@@ -283,7 +311,33 @@ test.serial('_tickFade [opacity < 1]', async (t) => {
     });
 });
 
-test.serial('_tickFade [opacity = 1]', async (t) => {
+test.serial('[_tickFade] is short circuit when opacity < 0 on "Out"', async (t) => {
+    let input = -1;
+    let expected = 0;
+
+    let args = minimacroOpacity(t, input);
+    macroTickFade({
+        "t": t,
+        "expected": expected,
+        "direction": 'Out',
+        ...args
+    });
+});
+
+test.serial('[_tickFade] is short circuit when opacity = 0 on "Out"', async (t) => {
+    let input = 0;
+    let expected = 0;
+
+    let args = minimacroOpacity(t, input);
+    macroTickFade({
+        "t": t,
+        "expected": expected,
+        "direction": 'Out',
+        ...args
+    });
+});
+
+test.serial('[_tickFade] is short circuit when opacity = 1 on "In"', async (t) => {
     let input = 1;
     let expected = 0;
 
@@ -295,7 +349,7 @@ test.serial('_tickFade [opacity = 1]', async (t) => {
     });
 });
 
-test.serial('_tickFade [opacity > 1]', async (t) => {
+test.serial('[_tickFade] is short circuit when opacity > 1 on "In"', async (t) => {
     let input = 2;
     let expected = 0;
 
@@ -308,35 +362,40 @@ test.serial('_tickFade [opacity > 1]', async (t) => {
 });
 
 
-test.serial('_tickFade [duration < 0]', async (t) => {
-    let input = -1;
+test.serial('[_tickFade] is short circuit when duration < 0 on "In"]', async (t) => {
+    let input = -2;
     let expected = 0;
 
-    let args = minimacroDuration(t, input);
+    t.log('Math.min is not called (direction = "In")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMin);
     macroTickFade({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
-test.serial('_tickFade [duration = 0]', async (t) => {
+test.serial('[_tickFade] is short circuit when duration = 0 on "In"]', async (t) => {
     let input = 0;
     let expected = 0;
 
-    let args = minimacroDuration(t, input);
+    t.log('Math.min is not called (direction = "In")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMin);
     macroTickFade({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
-test.serial('_tickFade [duration > 0]', async (t) => {
-    let input = 1;
+test.serial('[_tickFade] is executed fully when duration > 0 on "In"', async (t) => {
+    let input = 2;
     let expected = 1;
 
-    let args = minimacroDuration(t, input);
+    t.log('Math.min is called once (direction = "In")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMin);
     macroTickFade({
         "t": t,
         "expected": expected,
@@ -344,8 +403,52 @@ test.serial('_tickFade [duration > 0]', async (t) => {
     });
 });
 
+test.serial('[_tickFade] is short circuit when duration < 0 on "Out"', async (t) => {
+    let input = -2;
+    let expected = 0;
 
-test.serial('_tickFade [last < Date.now()]', async (t) => {
+    t.log('Math.max is not called (direction = "Out")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMax);
+    macroTickFade({
+        "t": t,
+        "expected": expected,
+        "direction": 'Out',
+        "shortcircuit": 0,
+        ...args
+    });
+});
+
+test.serial('[_tickFade] is executed fully when duration = 0 on "Out"', async (t) => {
+    let input = 0;
+    let expected = 0;
+
+    t.log('Math.max is called once (direction = "Out")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMax);
+    macroTickFade({
+        "t": t,
+        "expected": expected,
+        "direction": 'Out',
+        "shortcircuit": 0,
+        ...args
+    });
+});
+
+test.serial('[_tickFade] is executed fully when duration > 0 on "Out"', async (t) => {
+    let input = 2;
+    let expected = 1;
+
+    t.log('Math.max is called once (direction = "Out")');
+    let args = minimacroDuration(t, input, t.context.animator.mathMax);
+    macroTickFade({
+        "t": t,
+        "expected": expected,
+        "direction": 'Out',
+        ...args
+    });
+});
+
+
+test.serial('[_tickFade] is executed fully when last < Date.now()', async (t) => {
     let input = 0;
     let expected = 2;
 
@@ -357,7 +460,7 @@ test.serial('_tickFade [last < Date.now()]', async (t) => {
     });
 });
 
-test.serial('_tickFade [last = Date.now()]', async (t) => {
+test.serial('[_tickFade] is executed fully when last = Date.now()', async (t) => {
     let input = Date.now.wrappedMethod();
     let expected = 2;
 
@@ -369,7 +472,7 @@ test.serial('_tickFade [last = Date.now()]', async (t) => {
     });
 });
 
-test.serial('_tickFade [last > Date.now()]', async (t) => {
+test.serial('[_tickFade] is short circuit when last > Date.now()', async (t) => {
     let input = 2 * Date.now.wrappedMethod();
     let expected = 1;
 
@@ -377,12 +480,13 @@ test.serial('_tickFade [last > Date.now()]', async (t) => {
     macroTickFade({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
 
-test.serial('_tickFade [fade = "In"]', async (t) => {
+test.serial('[_tickFade] is executed fully when fade = "In"', async (t) => {
     let input = 'In';
     let expected = 1;
 
@@ -394,7 +498,7 @@ test.serial('_tickFade [fade = "In"]', async (t) => {
     });
 });
 
-test.serial('_tickFade [fade = "Out"]', async (t) => {
+test.serial('[_tickFade] is executed fully when fade = "Out"', async (t) => {
     let input = 'Out';
     let expected = 1;
 
@@ -406,7 +510,7 @@ test.serial('_tickFade [fade = "Out"]', async (t) => {
     });
 });
 
-test.serial('_tickFade [fade = "Garbage"]', async (t) => {
+test.serial('[_tickFade] is short circuit when fade = "Garbage"', async (t) => {
     let input = 'Garbage';
     let expected = 1;
 
@@ -414,6 +518,7 @@ test.serial('_tickFade [fade = "Garbage"]', async (t) => {
         "t": t,
         "expected": expected,
         "direction": input,
+        "shortcircuit": 0,
         "watcher": t.context.animator.dateNow
     });
 });
@@ -421,36 +526,42 @@ test.serial('_tickFade [fade = "Garbage"]', async (t) => {
 
 /* -------------------------------------------------------------------------- *\
 |* ----------------------------    _tickSlide    ---------------------------- *|
+|* -                  duration, displace, callback, start                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('_tickSlide [callback]', async (t) => {
+test.serial('[_tickSlide] is executed fully when callback is set', async (t) => {
     let expected = 1;
     let input = () => null;
     let w, cb = w = sinon.spy(input);
 
+    t.log('Callback is called');
     macroTickSlide({
         "t": t,
         "expected": expected,
         "callback": cb,
+        "shortcircuit": 0, // The callback is called instead.
+        "start": 0, // To force progress > 1.
         "watcher": w
     });
 });
 
 
-test.serial('_tickSlide [displace = fn]', async (t) => {
-    let input = () => null;
+test.serial('[_tickSlide] is executed fully when displace is a function', async (t) => {
+    let input = sinon.spy();
     let expected = 1;
 
-    let watcher, displace = watcher = sinon.spy(input);
+    t.context.animator.dateNow.onSecondCall().returns(Date.now.wrappedMethod());
+
+    t.log('Displace is called');
     macroTickSlide({
         "t": t,
         "expected": expected,
-        "displace": displace,
-        "watcher": watcher
+        "displace": input,
+        "watcher": input
     });
 });
 
-test.serial('_tickSlide [displace != fn]', async (t) => {
+test.serial('[_tickSlide] is short circuit when displace is not a function', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -458,24 +569,26 @@ test.serial('_tickSlide [displace != fn]', async (t) => {
         "t": t,
         "expected": expected,
         "displace": input,
+        "shortcircuit": 0,
         "watcher": t.context.animator.mathMin
     });
 });
 
 
-test.serial('_tickSlide [duration < 0]', async (t) => {
-    let input = -1;
+test.serial('[_tickSlide] is short circuit when duration < 0', async (t) => {
+    let input = -2;
     let expected = 0;
 
     let args = minimacroDuration(t, input);
     macroTickSlide({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
-test.serial('_tickSlide [duration = 0]', async (t) => {
+test.serial('[_tickSlide] is short circuit when duration = 0', async (t) => {
     let input = 0;
     let expected = 0;
 
@@ -483,12 +596,13 @@ test.serial('_tickSlide [duration = 0]', async (t) => {
     macroTickSlide({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
-test.serial('_tickSlide [duration > 0]', async (t) => {
-    let input = 1;
+test.serial('[_tickSlide] is executed fully when duration > 0', async (t) => {
+    let input = 2;
     let expected = 1;
 
     let args = minimacroDuration(t, input);
@@ -500,7 +614,7 @@ test.serial('_tickSlide [duration > 0]', async (t) => {
 });
 
 
-test.serial('_tickSlide [start < Date.now()]', async (t) => {
+test.serial('[_tickSlide] is executed fully when start < Date.now()', async (t) => {
     let input = 0;
     let expected = 1;
 
@@ -508,11 +622,12 @@ test.serial('_tickSlide [start < Date.now()]', async (t) => {
     macroTickSlide({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
-test.serial('_tickSlide [start = Date.now()]', async (t) => {
+test.serial('[_tickSlide] is executed fully when start = Date.now()', async (t) => {
     let input = Date.now.wrappedMethod();
     let expected = 1;
 
@@ -524,7 +639,7 @@ test.serial('_tickSlide [start = Date.now()]', async (t) => {
     });
 });
 
-test.serial('_tickSlide [start > Date.now()]', async (t) => {
+test.serial('[_tickSlide] is short circuit when start > Date.now()', async (t) => {
     let input = 2 * Date.now.wrappedMethod();
     let expected = 0;
 
@@ -532,15 +647,18 @@ test.serial('_tickSlide [start > Date.now()]', async (t) => {
     macroTickSlide({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
+
 /* -------------------------------------------------------------------------- *\
 |* -----------------------------     scroll     ----------------------------- *|
+|* -                                 next                                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('scroll [next = HTML object]', async (t) => {
+test.serial('[scroll] is executed fully when next = HTML object', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -552,7 +670,7 @@ test.serial('scroll [next = HTML object]', async (t) => {
     });
 });
 
-test.serial('scroll [next != HTML object]', async (t) => {
+test.serial('[scroll] is short circuit when next != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -560,6 +678,7 @@ test.serial('scroll [next != HTML object]', async (t) => {
     macroScroll({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
@@ -567,9 +686,10 @@ test.serial('scroll [next != HTML object]', async (t) => {
 
 /* -------------------------------------------------------------------------- *\
 |* ----------------------------- tutorialScroll ----------------------------- *|
+|* -                             current, next                              - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('tutorialScroll [current = HTML object]', async (t) => {
+test.serial('[tutorialScroll] is executed fully when current = HTML object', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -581,7 +701,7 @@ test.serial('tutorialScroll [current = HTML object]', async (t) => {
     });
 });
 
-test.serial('tutorialScroll [current != HTML object]', async (t) => {
+test.serial('[tutorialScroll] is short circuit when current != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -589,12 +709,13 @@ test.serial('tutorialScroll [current != HTML object]', async (t) => {
     macroTutorialScroll({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });
 
 
-test.serial('tutorialScroll [next = ribbon-section-footer]', async (t) => {
+test.serial('[tutorialScroll] is executed fully when next.class = ribbon-section-footer', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -606,7 +727,7 @@ test.serial('tutorialScroll [next = ribbon-section-footer]', async (t) => {
     });
 });
 
-test.serial('tutorialScroll [next = content-section-footer]', async (t) => {
+test.serial('[tutorialScroll] is executed fully when next.class = content-section-footer', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -618,7 +739,7 @@ test.serial('tutorialScroll [next = content-section-footer]', async (t) => {
     });
 });
 
-test.serial('tutorialScroll [next != HTML object]', async (t) => {
+test.serial('[tutorialScroll] is short circuit when next != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -626,6 +747,7 @@ test.serial('tutorialScroll [next != HTML object]', async (t) => {
     macroTutorialScroll({
         "t": t,
         "expected": expected,
+        "shortcircuit": 0,
         ...args
     });
 });

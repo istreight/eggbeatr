@@ -15,6 +15,16 @@ class Animator extends React.Component {
         super(props);
     }
 
+    /**
+     * Either increase or decrease, change the opacity of an HTML element.
+     * @param  {String} fadeDirection   Indicator of whether to increment or decrement the opacity of the element.
+     * @param  {HTMLElement} element    The HTML element with which to apply the change in opacity.
+     * @param  {Number} duration        Measure of how long the fade should take.
+     * @param  {Number} delay           Measure of how long to wait until the callback is called. Defaults to 0.
+     * @param  {Function} callback      Function to call after the duration has elapsed (and after a delay). Defaults to `() => null`.
+     * @param  {Number} last            The time since the last update in the opacity of the element. Defaults to `Date.now()`.
+     * @return {undefined}              There is no value returned.
+     */
     static _tickFade(fadeDirection, element, duration, delay = 0, callback = () => null, last = Date.now()) {
         let reqFrame, opacity, delta, now = Date.now();
 
@@ -50,6 +60,14 @@ class Animator extends React.Component {
         }
     }
 
+    /**
+     * Generate the values for smooth scrolling (horizontal or vertical) acuated via callback.
+     * @param  {Number} duration        Measure of how long to scroll.
+     * @param  {Function} displace      Function to translate the change of time into change of displacement on screen.
+     * @param  {Function} callback      Function to call after the duration has elapsed. Defaults to `() => null`.
+     * @param  {Number} start           The time since the start of calculations. Defaults to `Date.now()`.
+     * @return {undefined}              There is no value returned.
+     */
     static _tickSlide(duration, displace, callback = () => null, start = Date.now()) {
         let now = Date.now();
         let progress, timeFraction;
@@ -77,7 +95,12 @@ class Animator extends React.Component {
     }
 
     /**
-    * Custom function to smoothly fade a target element in.
+     * Reduces the opacity of an element to 0, then incrementally increases the opacity of the element throughout the duration.
+     * @param  {HTMLElement} element    The HTML element with which to incrementally make visible.
+     * @param  {Number} duration        Measure of how long the fade should take.
+     * @param  {Number} delay           Measure of how long to wait until the callback is called.
+     * @param  {Function} callback      Function to call after the duration has elapsed (and after a delay).
+     * @return {undefined}              There is no value returned.
      */
     static fadeIn(element, duration, delay, callback) {
         element.style.opacity = 0;
@@ -85,7 +108,12 @@ class Animator extends React.Component {
     }
 
     /**
-     * Custom function to smoothly fade a target element out.
+     * Boosts the opacity of an element to 1, then incrementally decreases the opacity of the element throughout the duration.
+     * @param  {HTMLElement} element    The HTML element with which to incrementally make invisible.
+     * @param  {Number} duration        Measure of how long the fade should take.
+     * @param  {Number} delay           Measure of how long to wait until the callback is called.
+     * @param  {Function} callback      Function to call after the duration has elapsed (and after a delay).
+     * @return {undefined}              There is no value returned.
      */
     static fadeOut(element, duration, delay, callback) {
         element.style.opacity = 1;
@@ -93,12 +121,21 @@ class Animator extends React.Component {
     }
 
     /**
-     * Custom function to slide an object in a cardinal direction.
+     * Perform calculations to sample an inverse polynomial curve over short intervals (i.e., for smooth scrolling).
+     * @param  {Number} duration        Measure of how long the slide should take.
+     * @param  {Function} display       Function to translate the change of time into change of displacement on screen.
+     * @param  {Function} callback      Function to call after the duration has elapsed.
+     * @return {undefined}              There is no value returned.
      */
     static slide(duration, display, callback) {
         this._tickSlide(duration, display, callback);
     }
 
+    /**
+     * Smooth scroll from the current window view to a target DOM element.
+     * @param  {HTMLElement} next       The DOM element to be in view after scrolling.
+     * @return {undefined}              There is no value returned.
+     */
     static scroll(next) {
         if (!next.nodeName) return;
 
@@ -115,7 +152,10 @@ class Animator extends React.Component {
     }
 
     /**
-     * Modification of the scroll function for Tutorial related buttons.
+     * Scroll from the current tutorial tool-tip to the next.
+     * @param  {HTMLElement} current    The tutorial tool-tip currently in view.
+     * @param  {HTMLElement} next       The tutorial tool-tip to be in view after scrolling.
+     * @return {undefined}              There is no value returned.
      */
     static tutorialScroll(current, next) {
         if (!((current && current.nodeName) || (next && next.nodeName))) return;
