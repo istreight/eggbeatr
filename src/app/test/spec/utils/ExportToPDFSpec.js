@@ -15,9 +15,7 @@ const e = new ExportToPDF();
 
 test.before(() => {});
 
-test.beforeEach((t) => {
-    t.log('utils/functions/ExportToPDFSpec.js');
-});
+test.beforeEach(() => {});
 
 test.afterEach.always(() => {});
 
@@ -33,65 +31,80 @@ test.after.always(() => {});
 
 
 
-async function macroDidDrawPage({ t, expected,
-    data = {}, setTitle = ''
+async function macroDidDrawPage({
+    t,
+    expected,
+    data = {},
+    setTitle = ''
 }) {
     let res = e._didDrawPage(data, setTitle);
 
     if (data.doc && data.doc.text) {
-        t.assert(data.doc.text.calledWith("Grid - " + setTitle));
+        t.assert(data.doc.text.calledWith("Grid - " + setTitle), 'PDF includes unexpected title text');
         t.is(data.doc.text.callCount, 1);
     }
 
-    t.deepEqual(res, expected);
+    t.deepEqual(res, expected, '_didDrawPage returned an unexpected value');
 }
 
-async function macroDrawLines({ t, expected,
-    doc = {}, lineCoordinates = [], tableCoordinates = []
+async function macroDrawLines({
+    t,
+    expected,
+    doc = {},
+    lineCoordinates = [],
+    tableCoordinates = []
 }) {
     let res = e._drawLines(doc, lineCoordinates, tableCoordinates);
 
-    let isValidDoc = (Object.keys(doc) > 0)
-        && Object.keys(doc).every((e) =>
-            ['line', 'setDrawColor', 'setLineWidth'].includes(e)
-                && (typeof doc[e] === 'function')
-    );
+    let isValidDoc = (Object.keys(doc) > 0) &&
+        Object.keys(doc).every((e) => ['line', 'setDrawColor', 'setLineWidth'].includes(e) &&
+            (typeof doc[e] === 'function')
+        );
 
-    if (doc  && isValidDoc) {
-        t.is(doc.line.callCount, expected);
-        t.is(doc.setDrawColor.callCount, Math.min(expected, 1));
-        t.is(doc.setLineWidth.callCount, Math.min(expected, 1));
+    if (doc && isValidDoc) {
+        t.is(doc.line.callCount, expected, 'doc.line was called an unexpected number of times');
+        t.is(doc.setDrawColor.callCount, Math.min(expected, 1), 'doc.setDrawColor was called an unexpected number of times');
+        t.is(doc.setLineWidth.callCount, Math.min(expected, 1), 'doc.setLineWidth was called an unexpected number of times');
     }
 
-    t.deepEqual(res, undefined);
+    t.deepEqual(res, undefined, '_drawLines returned an unexpected value');
 }
 
-async function macroDidDrawCell({ t, expected,
-    cell = {}, prevCell = {}, splitCellLines = [], isSplitCell = true
+async function macroDidDrawCell({
+    t,
+    expected,
+    cell = {},
+    prevCell = {},
+    splitCellLines = [],
+    isSplitCell = true
 }) {
     let res = e._didDrawCell(cell, prevCell, splitCellLines, isSplitCell);
 
-    t.deepEqual(res, expected);
+    t.deepEqual(res, expected, '_didDrawCell returned an unexpected value');
 }
 
-async function macroDidParseCell({ t, expected,
-    cell, prevCell = {}, isSplitCell = true
+async function macroDidParseCell({
+    t,
+    expected,
+    cell,
+    prevCell = {},
+    isSplitCell = true
 }) {
     let res = e._didParseCell(cell, prevCell, isSplitCell);
 
-    t.deepEqual(res, expected);
+    t.deepEqual(res, expected, '_didParseCell returned an unexpected value');
 }
 
 async function macroSnapshot(t) {
     // Return base64 string, instead of displaying PDF.
     e.setPDFOutput('dataurlstring');
 
-    // This is definitely something to be improved.
+    // TODO: This is definitely something to be improved.
     // The base64 string returned by 'doc.output' varies slightly with the same input (~80 bits) each export, with the earliest variation around 8000th byte (discovered experimentally).
     // Differences across different inputs vary much sooner and in much greater quantity.
     // In addition, multiple snapshots will not function alongside webpack bundling.
     let pdf = e.pdf('Test Grid');
-    t.snapshot(pdf.slice(0, 8100));
+    t.snapshot(pdf.slice(0, 8100), 'Snapshot did not match stored value');
 }
 
 
@@ -107,7 +120,9 @@ async function macroSnapshot(t) {
 function minimacroCell(input) {
     return {
         "cell": input,
-        "prevCell": { "text": ["Strokes"] }
+        "prevCell": {
+            "text": ["Strokes"]
+        }
     };
 }
 
@@ -133,10 +148,16 @@ function minimacroIsSplitCell(input) {
             "y": 1,
             "width": 2,
             "height": 3,
-            "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 }
+            "styles": {
+                "fillColor": 1,
+                "lineColor": 2,
+                "lineWidth": 3
+            }
         },
         "isSplitCell": input,
-        "prevCell": { "text": ["Strokes"] }
+        "prevCell": {
+            "text": ["Strokes"]
+        }
     };
 }
 
@@ -152,7 +173,9 @@ function minimacroLineCoordinates(input) {
     };
 }
 
-function minimacroPrevCell(input, c =  { "text": ["Strokes"] }) {
+function minimacroPrevCell(input, c = {
+    "text": ["Strokes"]
+}) {
     return {
         "cell": c,
         "prevCell": input
@@ -161,9 +184,13 @@ function minimacroPrevCell(input, c =  { "text": ["Strokes"] }) {
 
 function minimacroSetTitle(input) {
     return {
-        "data": { "doc": {
-            "text": sinon.stub().returnsArg(0)
-        }, "cursor": {}, "settings": {} },
+        "data": {
+            "doc": {
+                "text": sinon.stub().returnsArg(0)
+            },
+            "cursor": {},
+            "settings": {}
+        },
         "setTitle": input
     };
 }
@@ -178,7 +205,9 @@ function minimacroSplitCellLines(input) {
             "height": 3
         },
         "splitCellLines": input,
-        "prevCell": { "text": ["Strokes"] }
+        "prevCell": {
+            "text": ["Strokes"]
+        }
     };
 }
 
@@ -207,7 +236,7 @@ function minimacroTableCoordinates(input) {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test.skip('pdf [snapshot = 90% match]', async (t) => {
+test.skip('[pdf] is executed fully', async (t) => {
     document.body.innerHTML = `
     <div id="dynamicGrid">
     <div class="modal">
@@ -256,7 +285,22 @@ test.skip('pdf [snapshot = 90% match]', async (t) => {
         </div>
     `;
 
+    t.log('snapshot = 90% match');
     await macroSnapshot(t);
+});
+
+
+/* -------------------------------------------------------------------------- *\
+|* -----------------------------  setPDFOutput  ----------------------------- *|
+|* -                                 output                                 - *|
+\* -------------------------------------------------------------------------- */
+
+test('[setPDFOutput] is executed fully', async (t) => {
+    let input = 'Output';
+    let expected = 'Output';
+
+    e.setPDFOutput(input);
+    t.is(e._pdfOutput, expected);
 });
 
 
@@ -265,7 +309,7 @@ test.skip('pdf [snapshot = 90% match]', async (t) => {
 |* -                             data, setTitle                             - *|
 \* -------------------------------------------------------------------------- */
 
-test('_didDrawPage [data = object]', async (t) => {
+test('[_didDrawPage] is short circuit when data is an empty object', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -277,7 +321,7 @@ test('_didDrawPage [data = object]', async (t) => {
     });
 });
 
-test('_didDrawPage [data != object]', async (t) => {
+test('[_didDrawPage] is short circuit when data is not an object', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -289,15 +333,19 @@ test('_didDrawPage [data != object]', async (t) => {
     });
 });
 
-test('_didDrawPage [data keys w/ sub-keys]', async (t) => {
-    let input = { "doc": {
-        "text": sinon.stub()
-    }, "cursor": {
-        "x": 1,
-        "y": 1
-    }, "settings": {
-        "startY": 1
-    } };
+test('[_didDrawPage] is executed fully when data contains valid sub-key values', async (t) => {
+    let input = {
+        "doc": {
+            "text": sinon.stub()
+        },
+        "cursor": {
+            "x": 1,
+            "y": 1
+        },
+        "settings": {
+            "startY": 1
+        }
+    };
     let expected = [1, 1, 1, 1];
 
     let args = minimacroData(input);
@@ -308,8 +356,12 @@ test('_didDrawPage [data keys w/ sub-keys]', async (t) => {
     });
 });
 
-test('_didDrawPage [data keys w/o sub-keys]', async (t) => {
-    let input = { "doc": {}, "cursor": {}, "settings": {} };
+test('[_didDrawPage] is short circuit when data does not contains valid sub-key values', async (t) => {
+    let input = {
+        "doc": {},
+        "cursor": {},
+        "settings": {}
+    };
     let expected = undefined;
 
     let args = minimacroData(input);
@@ -320,10 +372,14 @@ test('_didDrawPage [data keys w/o sub-keys]', async (t) => {
     });
 });
 
-test('_didDrawPage [data keys w/ only doc.text]', async (t) => {
-    let input = { "doc": {
-        "text": sinon.stub()
-    }, "cursor": {}, "settings": {} };
+test('[_didDrawPage] is executed fully when data only contains a valid value for "text"', async (t) => {
+    let input = {
+        "doc": {
+            "text": sinon.stub()
+        },
+        "cursor": {},
+        "settings": {}
+    };
     let expected = [undefined, undefined, undefined, undefined];
 
     let args = minimacroData(input);
@@ -335,7 +391,7 @@ test('_didDrawPage [data keys w/ only doc.text]', async (t) => {
 });
 
 
-test('_didDrawPage [setTitle]', async (t) => {
+test('[_didDrawPage] is executed fully with a Set title set', async (t) => {
     let input = 'set title';
     let expected = [undefined, undefined, undefined, undefined];
 
@@ -353,7 +409,7 @@ test('_didDrawPage [setTitle]', async (t) => {
 |* -                 doc, lineCoordinates, tableCoordinates                 - *|
 \* -------------------------------------------------------------------------- */
 
-test('_drawLines [doc = object]', async (t) => {
+test('[_drawLines] is short circuit when doc is an empty object', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -365,7 +421,7 @@ test('_drawLines [doc = object]', async (t) => {
     });
 });
 
-test('_drawLines [doc != object]', async (t) => {
+test('[_drawLines] is short circuit when doc is not an object', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -377,7 +433,7 @@ test('_drawLines [doc != object]', async (t) => {
     });
 });
 
-test('_drawLines [doc keys = fn]', async (t) => {
+test('[_drawLines] is executed fully when doc contains valid keys with functions as values', async (t) => {
     let input = {
         "line": sinon.stub(),
         "setDrawColor": sinon.stub(),
@@ -393,7 +449,7 @@ test('_drawLines [doc keys = fn]', async (t) => {
     });
 });
 
-test('_drawLines [doc keys != fn]', async (t) => {
+test('[_drawLines] is short circuit when doc contains valid keys without functions as values', async (t) => {
     let input = {
         "line": '() => null',
         "setDrawColor": '() => null',
@@ -410,7 +466,7 @@ test('_drawLines [doc keys != fn]', async (t) => {
 });
 
 
-test('_drawLines [tableCoordinates = undefined]', async (t) => {
+test('[_drawLines] is short circuit when tableCoordinates is undefined', async (t) => {
     let input = undefined;
     let expected = 0;
 
@@ -422,7 +478,7 @@ test('_drawLines [tableCoordinates = undefined]', async (t) => {
     });
 });
 
-test('_drawLines [tableCoordinates.length = 0]', async (t) => {
+test('[_drawLines] is short circuit when tableCoordinates is an empty array', async (t) => {
     let input = [];
     let expected = 0;
 
@@ -434,7 +490,7 @@ test('_drawLines [tableCoordinates.length = 0]', async (t) => {
     });
 });
 
-test('_drawLines [tableCoordinates.length < 4]', async (t) => {
+test('[_drawLines] is short circuit when tableCoordinates has fewer than 4 elements', async (t) => {
     let input = [0, 1, 2];
     let expected = 0;
 
@@ -446,7 +502,7 @@ test('_drawLines [tableCoordinates.length < 4]', async (t) => {
     });
 });
 
-test('_drawLines [tableCoordinates.length = 4]', async (t) => {
+test('[_drawLines] is executed fully when tableCoordinates has exactly 4 elements', async (t) => {
     let input = [0, 1, 2, 3];
     let expected = 2;
 
@@ -458,7 +514,7 @@ test('_drawLines [tableCoordinates.length = 4]', async (t) => {
     });
 });
 
-test('_drawLines [tableCoordinates.values != number]', async (t) => {
+test('[_drawLines] is short circuit when tableCoordinates contains an elements that cannot be cast as numbers', async (t) => {
     let input = [0, '1', [], {}];
     let expected = 0;
 
@@ -471,7 +527,7 @@ test('_drawLines [tableCoordinates.values != number]', async (t) => {
 });
 
 
-test('_drawLines [lineCoordinates.length = 0]', async (t) => {
+test('[_drawLines] is short circuit when lineCoordinates is an empty array', async (t) => {
     let input = [];
     let expected = 2;
 
@@ -483,8 +539,11 @@ test('_drawLines [lineCoordinates.length = 0]', async (t) => {
     });
 });
 
-test('_drawLines [lineCoordinates.length > 1]', async (t) => {
-    let input = [[0, 1, 2, 3], [4, 5, 6, 7]];
+test('[_drawLines] is executed fully when lineCoordinates is a non-empty array', async (t) => {
+    let input = [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7]
+    ];
     let expected = input.length + 2;
 
     let args = minimacroLineCoordinates(input);
@@ -495,8 +554,11 @@ test('_drawLines [lineCoordinates.length > 1]', async (t) => {
     });
 });
 
-test('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
-    let input = [[0, 1, 2], [4, 5, 6, 7]];
+test('[_drawLines] is short circuit when lineCoordinates contains a subarray with a length not equal to 4', async (t) => {
+    let input = [
+        [0, 1, 2],
+        [4, 5, 6, 7]
+    ];
     let expected = 3; // tableCoordinates: 2, valid inputs: 1
 
     let args = minimacroLineCoordinates(input);
@@ -507,8 +569,10 @@ test('_drawLines [lineCoordinates subarray.length < 4]', async (t) => {
     });
 });
 
-test('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
-    let input = [[0, 1, 2, 3]];
+test('[_drawLines] is executed fully when lineCoordinates contains only 4-length subarrays', async (t) => {
+    let input = [
+        [0, 1, 2, 3]
+    ];
     let expected = input.length + 2;
 
     let args = minimacroLineCoordinates(input);
@@ -519,8 +583,10 @@ test('_drawLines [lineCoordinates subarray.length = 4]', async (t) => {
     });
 });
 
-test('_drawLines [lineCoordinates subarray.values != number]', async (t) => {
-    let input = [[0, '1', [], {}]];
+test('[_drawLines] is short circuit when lineCoordinates contains a subarray with elements that cannot be cast as numbers', async (t) => {
+    let input = [
+        [0, '1', [], {}]
+    ];
     let expected = 2;
 
     let args = minimacroLineCoordinates(input);
@@ -538,7 +604,7 @@ test('_drawLines [lineCoordinates subarray.values != number]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 
-test('_didDrawCell [cell = object]', async (t) => {
+test('[_didDrawCell] is short circuit when cell is an empty object', async (t) => {
     let input = {};
     let expected = [];
 
@@ -550,7 +616,7 @@ test('_didDrawCell [cell = object]', async (t) => {
     });
 });
 
-test('_didDrawCell [cell != object]', async (t) => {
+test('[_didDrawCell] is short circuit when cell is not an object', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -562,8 +628,10 @@ test('_didDrawCell [cell != object]', async (t) => {
     });
 });
 
-test('_didDrawCell [cell.text = array]', async (t) => {
-    let input = { "text": ['Garbage'] };
+test('[_didDrawCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
+    let input = {
+        "text": 'Garbage'
+    };
     let expected = [];
 
     let args = minimacroCell(input);
@@ -574,8 +642,10 @@ test('_didDrawCell [cell.text = array]', async (t) => {
     });
 });
 
-test('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
-    let input = { "text": ['Work'] };
+test('[_didDrawCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
+    let input = {
+        "text": ['Work']
+    };
     let expected = [];
 
     let args = minimacroCell(input);
@@ -586,8 +656,14 @@ test('_didDrawCell [cell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test('_didDrawCell [cell.text != array]', async (t) => {
-    let input = { "text": 'Garbage' };
+
+test('[_didDrawCell] is short circuit when cell does not include the key "text"', async (t) => {
+    let input = {
+        "x": 1,
+        "y": 2,
+        "height": 3,
+        "width": 4
+    };
     let expected = [];
 
     let args = minimacroCell(input);
@@ -598,20 +674,7 @@ test('_didDrawCell [cell.text != array]', async (t) => {
     });
 });
 
-
-test('_didDrawCell [cell = x, y, height, width]', async (t) => {
-    let input = { "x": 1, "y": 2, "height": 3, "width": 4  };
-    let expected = [];
-
-    let args = minimacroCell(input);
-    macroDidDrawCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
+test('[_didDrawCell] is executed fully when cell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -619,7 +682,9 @@ test('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
         "width": '2',
         "height": '3'
     };
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroCell(input);
     macroDidDrawCell({
@@ -629,7 +694,7 @@ test('_didDrawCell [cell values = non-numeric numbers]', async (t) => {
     });
 });
 
-test('_didDrawCell [cell values = non-numeric values]', async (t) => {
+test('[_didDrawCell] is short circuit when cell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -648,7 +713,7 @@ test('_didDrawCell [cell values = non-numeric values]', async (t) => {
 });
 
 
-test('_didDrawCell [cell = valid]', async (t) => {
+test('[_didDrawCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -656,7 +721,9 @@ test('_didDrawCell [cell = valid]', async (t) => {
         "width": 2,
         "height": 3
     };
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroCell(input);
     macroDidDrawCell({
@@ -667,7 +734,7 @@ test('_didDrawCell [cell = valid]', async (t) => {
 });
 
 
-test('_didDrawCell [prevCell = object]', async (t) => {
+test('[_didDrawCell] is short circuit when prevCell is an empty object', async (t) => {
     let input = {};
     let expected = [];
 
@@ -679,7 +746,7 @@ test('_didDrawCell [prevCell = object]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell != object]', async (t) => {
+test('[_didDrawCell] is short circuit when prevCell is not an object', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -691,8 +758,10 @@ test('_didDrawCell [prevCell != object]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell.text = array]', async (t) => {
-    let input = { "text": ['Garbage'] };
+test('[_didDrawCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
+    let input = {
+        "text": 'Garbage'
+    };
     let expected = [];
 
     let args = minimacroPrevCell(input);
@@ -703,8 +772,10 @@ test('_didDrawCell [prevCell.text = array]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
-    let input = { "text": ['Work'] };
+test('[_didDrawCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
+    let input = {
+        "text": ['Work']
+    };
     let expected = [];
 
     let args = minimacroPrevCell(input);
@@ -715,8 +786,13 @@ test('_didDrawCell [prevCell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell.text != array]', async (t) => {
-    let input = { "text": 'Garbage' };
+test('[_didDrawCell] is short circuit when prevCell does not include the key "text"', async (t) => {
+    let input = {
+        "x": 1,
+        "y": 2,
+        "height": 3,
+        "width": 4
+    };
     let expected = [];
 
     let args = minimacroPrevCell(input);
@@ -727,19 +803,7 @@ test('_didDrawCell [prevCell.text != array]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell = x, y, height, width]', async (t) => {
-    let input = { "x": 1, "y": 2, "height": 3, "width": 4 };
-    let expected = [];
-
-    let args = minimacroPrevCell(input);
-    macroDidDrawCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didDrawCell [prevCell values = non-numeric numbers]', async (t) => {
+test('[_didDrawCell] is executed fully when prevCell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -747,7 +811,9 @@ test('_didDrawCell [prevCell values = non-numeric numbers]', async (t) => {
         "width": '2',
         "height": '3'
     };
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroPrevCell(input);
     macroDidDrawCell({
@@ -757,7 +823,7 @@ test('_didDrawCell [prevCell values = non-numeric numbers]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell values = non-numeric values]', async (t) => {
+test('[_didDrawCell] is short circuit when prevCell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -775,7 +841,7 @@ test('_didDrawCell [prevCell values = non-numeric values]', async (t) => {
     });
 });
 
-test('_didDrawCell [prevCell = valid]', async (t) => {
+test('[_didDrawCell] is executed fully when prevCell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -783,7 +849,9 @@ test('_didDrawCell [prevCell = valid]', async (t) => {
         "width": 2,
         "height": 3
     };
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroPrevCell(input);
     macroDidDrawCell({
@@ -794,9 +862,11 @@ test('_didDrawCell [prevCell = valid]', async (t) => {
 });
 
 
-test('_didDrawCell [splitCellLines = array]', async (t) => {
+test('[_didDrawCell] is exectued fully when splitCellLines is an empty array', async (t) => {
     let input = [];
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroSplitCellLines(input);
     macroDidDrawCell({
@@ -806,7 +876,7 @@ test('_didDrawCell [splitCellLines = array]', async (t) => {
     });
 });
 
-test('_didDrawCell [splitCellLines != array]', async (t) => {
+test('[_didDrawCell] is short circuit when splitCellLines is not an array', async (t) => {
     let input = '[]';
     let expected = input;
 
@@ -819,9 +889,11 @@ test('_didDrawCell [splitCellLines != array]', async (t) => {
 });
 
 
-test('_didDrawCell [isSplitCell = true]', async (t) => {
+test('[_didDrawCell] is executed fully when isSplitCell is true', async (t) => {
     let input = true;
-    let expected = [[1, 1, 1, 4]];
+    let expected = [
+        [1, 1, 1, 4]
+    ];
 
     let args = minimacroIsSplitCell(input);
     macroDidDrawCell({
@@ -831,19 +903,7 @@ test('_didDrawCell [isSplitCell = true]', async (t) => {
     });
 });
 
-test('_didDrawCell [isSplitCell = truthy]', async (t) => {
-    let input = 'true';
-    let expected = [[1, 1, 1, 4]];
-
-    let args = minimacroIsSplitCell(input);
-    macroDidDrawCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didDrawCell [isSplitCell != true]', async (t) => {
+test('[_didDrawCell] is executed fully when isSplitCell is not true', async (t) => {
     let input = false;
     let expected = [];
 
@@ -862,7 +922,7 @@ test('_didDrawCell [isSplitCell != true]', async (t) => {
 \* -------------------------------------------------------------------------- */
 
 
-test('_didParseCell [cell = object]', async (t) => {
+test('[_didParseCell] is short circuit when cell is an empty object', async (t) => {
     let input = {};
     let expected = input;
 
@@ -874,7 +934,7 @@ test('_didParseCell [cell = object]', async (t) => {
     });
 });
 
-test('_didParseCell [cell != object]', async (t) => {
+test('[_didParseCell] is short circuit when cell is not an object', async (t) => {
     let input = '{}';
     let expected = input;
 
@@ -886,7 +946,7 @@ test('_didParseCell [cell != object]', async (t) => {
     });
 });
 
-test('_didParseCell [cell = undefined]', async (t) => {
+test('[_didParseCell] is short circuit when cell is undefined', async (t) => {
     let input = undefined;
     let expected = undefined;
 
@@ -898,37 +958,50 @@ test('_didParseCell [cell = undefined]', async (t) => {
     });
 });
 
-test('_didParseCell [cell.text = array]', async (t) => {
-    let input = { "text": ['Garbage'] };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell.text = 1/4 activity]', async (t) => {
-    let input = { "text": ['Work'] };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell.text = "Private"]', async (t) => {
+test('[_didParseCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
     let input = {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "text": 'Garbage'
+    };
+    let expected = input;
+
+    let args = minimacroCell(input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test('[_didParseCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
+    let input = {
+        "text": ['Work']
+    };
+    let expected = input;
+
+    let args = minimacroCell(input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test('[_didParseCell] is exectued fully when cell contains the key "text" paired with the value "Private"', async (t) => {
+    let input = {
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ['Private']
     };
     let expected = {
-        "styles": { "fillColor": [118, 118, 118], "lineColor": 1, "lineWidth": 0.001, "textColor": [255, 255, 255] },
+        "styles": {
+            "fillColor": [118, 118, 118],
+            "lineColor": 1,
+            "lineWidth": 0.001,
+            "textColor": [255, 255, 255]
+        },
         "text": ['Private']
     };
 
@@ -940,57 +1013,44 @@ test('_didParseCell [cell.text = "Private"]', async (t) => {
     });
 });
 
-test('_didParseCell [cell.text != array]', async (t) => {
-    let input = { "text": 'Garbage' };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell.styles = object]', async (t) => {
-    let input = { "styles": {} };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell.styles = color, width]', async (t) => {
-    let input = { "styles": { "lineColor": 1, "lineWidth": 2 } };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell.styles != object]', async (t) => {
-    let input = { "styles": 'Garbage' };
-    let expected = input;
-
-    let args = minimacroCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [cell = valid]', async (t) => {
+test('[_didParseCell] is short circuit when cell does not include the key "text"', async (t) => {
     let input = {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "lineColor": 1,
+            "lineWidth": 2
+        }
+    };
+    let expected = input;
+
+    let args = minimacroCell(input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test('[_didParseCell] is short circuit when cell includes the key "styles" paired with an invalid value', async (t) => {
+    let input = {
+        "styles": 'Garbage'
+    };
+    let expected = input;
+
+    let args = minimacroCell(input);
+    macroDidParseCell({
+        "t": t,
+        "expected": expected,
+        ...args
+    });
+});
+
+test('[_didParseCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
+    let input = {
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ['Work']
     };
     let expected = {
@@ -1014,17 +1074,25 @@ test('_didParseCell [cell = valid]', async (t) => {
 });
 
 
-test('_didParseCell [prevCell = object]', async (t) => {
+test('[_didParseCell] is short circuit when prevCell is an empty object', async (t) => {
     let input = {};
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Level 6"]
     };
 
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Level 6"]
-     });
+    });
     macroDidParseCell({
         "t": t,
         "expected": expected,
@@ -1032,17 +1100,25 @@ test('_didParseCell [prevCell = object]', async (t) => {
     });
 });
 
-test('_didParseCell [prevCell != object]', async (t) => {
+test('[_didParseCell] is short circuit when prevCell is not an object', async (t) => {
     let input = '{}';
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Level 7"]
     };
 
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Level 7"]
-     });
+    });
     macroDidParseCell({
         "t": t,
         "expected": expected,
@@ -1050,16 +1126,24 @@ test('_didParseCell [prevCell != object]', async (t) => {
     });
 });
 
-test('_didParseCell [prevCell = undefined]', async (t) => {
+test('[_didParseCell] is short circuit when prevCell is undefined', async (t) => {
     let input = undefined;
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Level 8"]
     };
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Level 8"]
-     });
+    });
     macroDidParseCell({
         "t": t,
         "expected": expected,
@@ -1067,17 +1151,27 @@ test('_didParseCell [prevCell = undefined]', async (t) => {
     });
 });
 
-test('_didParseCell [prevCell.text = array]', async (t) => {
-    let input = { "text": ['Garbage'] };
+test('[_didParseCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
+    let input = {
+        "text": 'Garbage'
+    };
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Level 9"]
     };
 
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Level 9"]
-     });
+    });
     macroDidParseCell({
         "t": t,
         "expected": expected,
@@ -1085,15 +1179,25 @@ test('_didParseCell [prevCell.text = array]', async (t) => {
     });
 });
 
-test('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
-    let input = { "text": ['Work'] };
+test('[_didParseCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
+    let input = {
+        "text": ['Work']
+    };
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Level 10"]
     };
 
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Level 10"]
     });
     macroDidParseCell({
@@ -1103,36 +1207,30 @@ test('_didParseCell [prevCell.text = 1/4 activity]', async (t) => {
     });
 });
 
-test('_didParseCell [prevCell.text != array]', async (t) => {
-    let input = { "text": { "property": 'Garbage' } };
-    let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
-        "text": ["Basics I"]
-     };
-
-    let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
-        "text": ["Basics I"]
-     });
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [prevCell = valid]', async (t) => {
+test('[_didParseCell] is exectued fully when cell contains valid values', async (t) => {
     let input = {
         "text": ['Work'],
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
     };
     let expected = {
-        "styles": { "fillColor": 1, "lineColor": 1, "lineWidth": 0.001 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 1,
+            "lineWidth": 0.001
+        },
         "text": ["Basics II"]
     };
 
     let args = minimacroPrevCell(input, {
-        "styles": { "fillColor": 1, "lineColor": 2, "lineWidth": 3 },
+        "styles": {
+            "fillColor": 1,
+            "lineColor": 2,
+            "lineWidth": 3
+        },
         "text": ["Basics II"]
     });
     macroDidParseCell({
@@ -1143,7 +1241,7 @@ test('_didParseCell [prevCell = valid]', async (t) => {
 });
 
 
-test('_didParseCell [isSplitCell = true]', async (t) => {
+test('[_didParseCell] is executed fully when isSplitCell is true', async (t) => {
     let input = true;
     let expected = {
         "height": 3,
@@ -1169,33 +1267,7 @@ test('_didParseCell [isSplitCell = true]', async (t) => {
     });
 });
 
-test('_didParseCell [isSplitCell = truthy]', async (t) => {
-    let input = 'true';
-    let expected = {
-        "height": 3,
-        "styles": {
-            "fillColor": 1,
-            "halign": 'right',
-            "lineColor": 1,
-            "lineWidth": 0.001,
-        },
-        "text": [
-            'Work',
-        ],
-        "width": 2,
-        "x": 0,
-        "y": 1
-    };
-
-    let args = minimacroIsSplitCell(input);
-    macroDidParseCell({
-        "t": t,
-        "expected": expected,
-        ...args
-    });
-});
-
-test('_didParseCell [isSplitCell != true]', async (t) => {
+test('[_didParseCell] is short citcuit when isSplitCell is not true', async (t) => {
     let input = false;
     let expected = {
         "height": 3,

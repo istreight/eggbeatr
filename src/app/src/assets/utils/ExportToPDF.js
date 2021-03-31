@@ -17,7 +17,7 @@ class ExportToPDF extends React.Component {
     constructor(props) {
         super(props);
 
-        this.pdfOutput = "dataurlnewwindow";
+        this._pdfOutput = "dataurlnewwindow";
         this.quarterActivities = [
             "",
             "Work"
@@ -36,15 +36,18 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-    * Set the output location of the generated PDF.
-    */
+     * Sets the output type of the generated PDF.
+     * @param {String} output           One of the jspdf output types.
+     */
     setPDFOutput(output) {
-        this.pdfOutput = output;
+        this._pdfOutput = output;
     }
 
     /**
-    * Export a Grid to a PDF document.
-    */
+     * Generates the PDF, in some format.
+     * @param  {String} setTitle        The Set title associated with this Grid.
+     * @return {[type]}                 The form of output of the PDF, dependent on _pdfOutput.
+     */
     pdf(setTitle) {
         let dateCreated, prevCell, numColumns;
 
@@ -108,7 +111,7 @@ class ExportToPDF extends React.Component {
                 "halign": "center",
                 "cellPadding": 16
             },
-            "alternateRowStyles" : {
+            "alternateRowStyles": {
                 "fillColor": [255, 255, 255],
                 "textColor": [45, 62, 80]
             },
@@ -145,14 +148,17 @@ class ExportToPDF extends React.Component {
 
         let filename = "grid-" + setTitle.replace(/\s/g, '') + "-" + dateCreated + ".egbtr.pdf";
 
-        return doc.output(this.pdfOutput, {
-            "filename":  filename
+        return doc.output(this._pdfOutput, {
+            "filename": filename
         });
     }
 
     /**
-    * Opertions performed as page is created.
-    */
+     * Hook to draw additional content to the PDF.
+     * @param  {Object} data            Metadata relating to the PDF page.
+     * @param  {String} setTitle        The Set title associated with this Grid.
+     * @return {Array}                  A box defining what space the PDF should occupy.
+     */
     _didDrawPage(data, setTitle) {
         let keys = ['doc', 'settings', 'cursor'];
         let intersection = Object.keys(data).filter(k => keys.includes(k));
@@ -170,15 +176,18 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-    * Operations performed on the cell as it is created.
-    */
+     * Hook to apply changes before the cell is drawn.
+     * @param  {Object}  cell           Metadata about the current cell being parsed.
+     * @param  {Object}  prevCell       Metadata about the previous cell parsed.
+     * @param  {Boolean} isSplitCell    Indicator if the current cell is part of a split table cell.
+     * @return {Object}                 The updated metadata of the current cell parsed.
+     */
     _didParseCell(cell, prevCell, isSplitCell) {
         if (isSplitCell) {
-            if (!( (cell && cell.text)
-                && cell.styles
-                && cell.styles.lineColor
-                && cell.styles.lineWidth)
-            ) return cell;
+            if (!((cell && cell.text) &&
+                    cell.styles &&
+                    cell.styles.lineColor &&
+                    cell.styles.lineWidth)) return cell;
 
             if (prevCell && prevCell.text) {
                 // halign is set to default to "center", which doesn't work for any of the quarterActivities.
@@ -204,16 +213,20 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-    * Draws the individual table cells in the PDF document.
-    */
+     * Hook to run after the cell has been drawn.
+     * @param  {Object}  cell               Metadata about the current cell being drawn.
+     * @param  {Object}  prevCell           Metadata about the previous cell drawn.
+     * @param  {Array}   splitCellLines     Array of values on where to draw split cell lines.
+     * @param  {Boolean} isSplitCell        Indicator if the current cell is part of a split table cell.
+     * @return {Array}                      The updated array with values on where to draw split cell lines.
+     */
     _didDrawCell(cell, prevCell, splitCellLines, isSplitCell) {
         let intersection, keys = ['x', 'y', 'width', 'height'];
 
-        if (!( isSplitCell
-            && (cell && cell.text)
-            && (prevCell && prevCell.text)
-            && Array.isArray(splitCellLines))
-        ) {
+        if (!(isSplitCell &&
+                (cell && cell.text) &&
+                (prevCell && prevCell.text) &&
+                Array.isArray(splitCellLines))) {
             return splitCellLines;
         }
 
@@ -255,19 +268,20 @@ class ExportToPDF extends React.Component {
     }
 
     /**
-    * Draws cell splitting lines and table borders in PDF document.
-    */
+     * Draws the split cell lines.
+     * @param  {Object} doc                 The PDF document.
+     * @param  {Array}  lineCoordinates     The starting and ending co-ordinates of the split cell lines.
+     * @param  {Array}  tableCoordinates    The positions of the top-left and bottom-right corners of the table.
+     * @return {undefined}                  There is no value returned.
+     */
     _drawLines(doc, lineCoordinates, tableCoordinates) {
-        if (!( doc
-            && typeof doc.line === 'function')
-        ) return;
-        if (!( Array.isArray(tableCoordinates)
-            && tableCoordinates.length === 4
-            && !tableCoordinates.some(isNaN))
-        ) return;
-        if (!( Array.isArray(lineCoordinates)
-            && lineCoordinates.every(Array.isArray))
-        ) return;
+        if (!(doc &&
+                typeof doc.line === 'function')) return;
+        if (!(Array.isArray(tableCoordinates) &&
+                tableCoordinates.length === 4 &&
+                !tableCoordinates.some(isNaN))) return;
+        if (!(Array.isArray(lineCoordinates) &&
+                lineCoordinates.every(Array.isArray))) return;
 
         let [tableX1, tableY1, tableX2, tableY2] = tableCoordinates;
 
