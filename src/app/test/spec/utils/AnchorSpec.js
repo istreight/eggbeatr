@@ -66,11 +66,12 @@ test('[constructor] is executed fully', async (t) => {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[componentDidMount] is executed fully', async (t) => {
+test('[componentDidMount] is executed fully when props includes props with default values', async (t) => {
+    let spy = sinon.spy();
     let div = document.createElement('div');
     let expected = {
-        "callback": () => 'not null',
-        "handleClick": () => 'not null',
+        "callback": spy,
+        "handleClick": () => 'returnValue',
         "styleClass": "some-class",
         "updateProps": false
     };
@@ -81,8 +82,32 @@ test('[componentDidMount] is executed fully', async (t) => {
         div
     );
 
+    t.is(spy.callCount, 1);
     t.not(anchor.node, null);
+    t.not(anchor.state.hyperlink, null);
     t.deepEqual(anchor.state, expected);
+});
+
+test('[componentDidMount] is executed fully when props includes props without default values', async (t) => {
+    let div = document.createElement('div');
+    let expected = {
+        "callback": () => null,
+        "handleClick": () => 'returnValue',
+        "styleClass": "some-class"
+    };
+
+    t.log('State is made up of the props passed in');
+    let anchor = ReactDOM.render(
+        React.createElement(Anchor, expected),
+        div
+    );
+
+    t.not(anchor.node, null);
+    t.not(anchor.state.hyperlink, null);
+    t.deepEqual(anchor.state, {
+        "updateProps": true,
+        ...expected
+    });
 });
 
 
