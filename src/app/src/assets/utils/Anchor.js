@@ -25,6 +25,12 @@ class Anchor extends React.Component {
         this.node = ReactDOM.findDOMNode(this);
     }
 
+    /**
+     * Return a new
+     * @param  {Object} nextProps An object describing the next state of an Anchor instance.
+     * @param  {Object} nextProps An object describing the previous state of an Anchor instance.
+     * @return {Object}           The new state of an Anchor instance.
+     */
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.updateProps) {
             return nextProps;
