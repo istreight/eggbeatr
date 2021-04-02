@@ -9,7 +9,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 
-import Watchers from '@utils/Watchers.js';
+import Watchers from '@test.utils/Watchers.js';
 
 
 const w = new Watchers();
@@ -20,10 +20,7 @@ test.before((t) => {
     };
 });
 
-test.beforeEach((t) => {
-    // [root: test/spec] e.g., 'components/componentSpec.js'
-    t.log('path/to/moduleSpec.js');
-});
+test.beforeEach((t) => {});
 
 test.afterEach.always(() => {
     // Reset the state of all fakes in the Watchers instance.
@@ -88,6 +85,7 @@ function minimacro(t, input) {
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------     fn1      ------------------------------ *|
+|* -                         parameter1, parameter2                         - *|
 \* -------------------------------------------------------------------------- */
 test.serial('fn1 [fn1 = expected]', async (t) => {
     let input = 'input';
@@ -103,6 +101,7 @@ test.serial('fn1 [fn1 = expected]', async (t) => {
 
 /* -------------------------------------------------------------------------- *\
 |* ------------------------------     fn2      ------------------------------ *|
+|* -                         parameter1, parameter2                         - *|
 \* -------------------------------------------------------------------------- */
 test.serial('fn2 [fn2 = expected]', async (t) => {
     let input = 'input';

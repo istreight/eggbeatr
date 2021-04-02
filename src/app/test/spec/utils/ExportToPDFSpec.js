@@ -3,7 +3,7 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  March 26th, 2021
  *
- * This file contains the test specification for the ExportToPDF function class.
+ * This file contains the test specification for the ExportToPDF utility class.
  */
 
 import test from 'ava';

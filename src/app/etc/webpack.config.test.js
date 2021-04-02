@@ -23,7 +23,8 @@ module.exports = {
     },
     module: {
         rules: [{
-            test: /Spec\.js$/,
+            test: /\.js$/,
+            exclude: [/node_modules/, /defaults/],
             use: {
                 loader:  'babel-loader',
                 options: {

@@ -3,7 +3,7 @@
  * AUTHOR:      Isaac Streight
  * START DATE:  March 23rd, 2021
  *
- * This file contains the test specification for the Animator function class.
+ * This file contains the test specification for the Animator utility class.
  */
 
 import test from 'ava';
