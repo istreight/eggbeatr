@@ -242,7 +242,7 @@ function minimacroNext(input, current = window.document.createElement('div')) {
 |* -                   element, duration, delay, callback                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[fadeIn] is executed fully', async (t) => {
+test.serial('[Animator fadeIn] is executed fully', async (t) => {
     let expected = 1;
 
     await Animator.fadeIn(t.context.animator.ele, 1);
@@ -250,7 +250,7 @@ test.serial('[fadeIn] is executed fully', async (t) => {
     t.is(t.context.animator.animatorTickFade.callCount, expected);
 });
 
-test.serial('[fadeOut] is executed fully', async (t) => {
+test.serial('[Animator fadeOut] is executed fully', async (t) => {
     let expected = 1;
 
     t.log('_tickFade is called');
@@ -265,7 +265,7 @@ test.serial('[fadeOut] is executed fully', async (t) => {
 |* -                      duration, display, callback                       - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[slide] is executed fully', async (t) => {
+test.serial('[Animator slide] is executed fully', async (t) => {
     let expected = 1;
 
     t.log('_tickSlide is called');
@@ -280,7 +280,7 @@ test.serial('[slide] is executed fully', async (t) => {
 |* -        fadeDirection, element, duration, delay, callback, last         - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[_tickFade] is executed fully when callback is set', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when callback is set', async (t) => {
     let input = () => null;
     let expected = 1;
     let w, cb = w = sinon.spy(input);
@@ -299,7 +299,7 @@ test.serial('[_tickFade] is executed fully when callback is set', async (t) => {
 });
 
 
-test.serial('[_tickFade] is executed fully when opacity < 1', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when opacity < 1', async (t) => {
     let input = 0.1;
     let expected = 1;
 
@@ -311,7 +311,7 @@ test.serial('[_tickFade] is executed fully when opacity < 1', async (t) => {
     });
 });
 
-test.serial('[_tickFade] is short circuit when opacity < 0 on "Out"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when opacity < 0 on "Out"', async (t) => {
     let input = -1;
     let expected = 0;
 
@@ -324,7 +324,7 @@ test.serial('[_tickFade] is short circuit when opacity < 0 on "Out"', async (t) 
     });
 });
 
-test.serial('[_tickFade] is short circuit when opacity = 0 on "Out"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when opacity = 0 on "Out"', async (t) => {
     let input = 0;
     let expected = 0;
 
@@ -337,7 +337,7 @@ test.serial('[_tickFade] is short circuit when opacity = 0 on "Out"', async (t) 
     });
 });
 
-test.serial('[_tickFade] is short circuit when opacity = 1 on "In"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when opacity = 1 on "In"', async (t) => {
     let input = 1;
     let expected = 0;
 
@@ -349,7 +349,7 @@ test.serial('[_tickFade] is short circuit when opacity = 1 on "In"', async (t) =
     });
 });
 
-test.serial('[_tickFade] is short circuit when opacity > 1 on "In"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when opacity > 1 on "In"', async (t) => {
     let input = 2;
     let expected = 0;
 
@@ -362,7 +362,7 @@ test.serial('[_tickFade] is short circuit when opacity > 1 on "In"', async (t) =
 });
 
 
-test.serial('[_tickFade] is short circuit when duration < 0 on "In"]', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when duration < 0 on "In"]', async (t) => {
     let input = -2;
     let expected = 0;
 
@@ -376,7 +376,7 @@ test.serial('[_tickFade] is short circuit when duration < 0 on "In"]', async (t)
     });
 });
 
-test.serial('[_tickFade] is short circuit when duration = 0 on "In"]', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when duration = 0 on "In"]', async (t) => {
     let input = 0;
     let expected = 0;
 
@@ -390,7 +390,7 @@ test.serial('[_tickFade] is short circuit when duration = 0 on "In"]', async (t)
     });
 });
 
-test.serial('[_tickFade] is executed fully when duration > 0 on "In"', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when duration > 0 on "In"', async (t) => {
     let input = 2;
     let expected = 1;
 
@@ -403,7 +403,7 @@ test.serial('[_tickFade] is executed fully when duration > 0 on "In"', async (t)
     });
 });
 
-test.serial('[_tickFade] is short circuit when duration < 0 on "Out"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when duration < 0 on "Out"', async (t) => {
     let input = -2;
     let expected = 0;
 
@@ -418,7 +418,7 @@ test.serial('[_tickFade] is short circuit when duration < 0 on "Out"', async (t)
     });
 });
 
-test.serial('[_tickFade] is executed fully when duration = 0 on "Out"', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when duration = 0 on "Out"', async (t) => {
     let input = 0;
     let expected = 0;
 
@@ -433,7 +433,7 @@ test.serial('[_tickFade] is executed fully when duration = 0 on "Out"', async (t
     });
 });
 
-test.serial('[_tickFade] is executed fully when duration > 0 on "Out"', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when duration > 0 on "Out"', async (t) => {
     let input = 2;
     let expected = 1;
 
@@ -448,7 +448,7 @@ test.serial('[_tickFade] is executed fully when duration > 0 on "Out"', async (t
 });
 
 
-test.serial('[_tickFade] is executed fully when last < Date.now()', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when last < Date.now()', async (t) => {
     let input = 0;
     let expected = 2;
 
@@ -460,7 +460,7 @@ test.serial('[_tickFade] is executed fully when last < Date.now()', async (t) =>
     });
 });
 
-test.serial('[_tickFade] is executed fully when last = Date.now()', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when last = Date.now()', async (t) => {
     let input = Date.now.wrappedMethod();
     let expected = 2;
 
@@ -472,7 +472,7 @@ test.serial('[_tickFade] is executed fully when last = Date.now()', async (t) =>
     });
 });
 
-test.serial('[_tickFade] is short circuit when last > Date.now()', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when last > Date.now()', async (t) => {
     let input = 2 * Date.now.wrappedMethod();
     let expected = 1;
 
@@ -486,7 +486,7 @@ test.serial('[_tickFade] is short circuit when last > Date.now()', async (t) => 
 });
 
 
-test.serial('[_tickFade] is executed fully when fade = "In"', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when fade = "In"', async (t) => {
     let input = 'In';
     let expected = 1;
 
@@ -498,7 +498,7 @@ test.serial('[_tickFade] is executed fully when fade = "In"', async (t) => {
     });
 });
 
-test.serial('[_tickFade] is executed fully when fade = "Out"', async (t) => {
+test.serial('[Animator _tickFade] is executed fully when fade = "Out"', async (t) => {
     let input = 'Out';
     let expected = 1;
 
@@ -510,7 +510,7 @@ test.serial('[_tickFade] is executed fully when fade = "Out"', async (t) => {
     });
 });
 
-test.serial('[_tickFade] is short circuit when fade = "Garbage"', async (t) => {
+test.serial('[Animator _tickFade] is short circuit when fade = "Garbage"', async (t) => {
     let input = 'Garbage';
     let expected = 1;
 
@@ -529,7 +529,7 @@ test.serial('[_tickFade] is short circuit when fade = "Garbage"', async (t) => {
 |* -                  duration, displace, callback, start                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[_tickSlide] is executed fully when callback is set', async (t) => {
+test.serial('[Animator _tickSlide] is executed fully when callback is set', async (t) => {
     let expected = 1;
     let input = () => null;
     let w, cb = w = sinon.spy(input);
@@ -546,7 +546,7 @@ test.serial('[_tickSlide] is executed fully when callback is set', async (t) => 
 });
 
 
-test.serial('[_tickSlide] is executed fully when displace is a function', async (t) => {
+test.serial('[Animator _tickSlide] is executed fully when displace is a function', async (t) => {
     let input = sinon.spy();
     let expected = 1;
 
@@ -561,7 +561,7 @@ test.serial('[_tickSlide] is executed fully when displace is a function', async 
     });
 });
 
-test.serial('[_tickSlide] is short circuit when displace is not a function', async (t) => {
+test.serial('[Animator _tickSlide] is short circuit when displace is not a function', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -575,7 +575,7 @@ test.serial('[_tickSlide] is short circuit when displace is not a function', asy
 });
 
 
-test.serial('[_tickSlide] is short circuit when duration < 0', async (t) => {
+test.serial('[Animator _tickSlide] is short circuit when duration < 0', async (t) => {
     let input = -2;
     let expected = 0;
 
@@ -588,7 +588,7 @@ test.serial('[_tickSlide] is short circuit when duration < 0', async (t) => {
     });
 });
 
-test.serial('[_tickSlide] is short circuit when duration = 0', async (t) => {
+test.serial('[Animator _tickSlide] is short circuit when duration = 0', async (t) => {
     let input = 0;
     let expected = 0;
 
@@ -601,7 +601,7 @@ test.serial('[_tickSlide] is short circuit when duration = 0', async (t) => {
     });
 });
 
-test.serial('[_tickSlide] is executed fully when duration > 0', async (t) => {
+test.serial('[Animator _tickSlide] is executed fully when duration > 0', async (t) => {
     let input = 2;
     let expected = 1;
 
@@ -614,7 +614,7 @@ test.serial('[_tickSlide] is executed fully when duration > 0', async (t) => {
 });
 
 
-test.serial('[_tickSlide] is executed fully when start < Date.now()', async (t) => {
+test.serial('[Animator _tickSlide] is executed fully when start < Date.now()', async (t) => {
     let input = 0;
     let expected = 1;
 
@@ -627,7 +627,7 @@ test.serial('[_tickSlide] is executed fully when start < Date.now()', async (t) 
     });
 });
 
-test.serial('[_tickSlide] is executed fully when start = Date.now()', async (t) => {
+test.serial('[Animator _tickSlide] is executed fully when start = Date.now()', async (t) => {
     let input = Date.now.wrappedMethod();
     let expected = 1;
 
@@ -639,7 +639,7 @@ test.serial('[_tickSlide] is executed fully when start = Date.now()', async (t) 
     });
 });
 
-test.serial('[_tickSlide] is short circuit when start > Date.now()', async (t) => {
+test.serial('[Animator _tickSlide] is short circuit when start > Date.now()', async (t) => {
     let input = 2 * Date.now.wrappedMethod();
     let expected = 0;
 
@@ -658,7 +658,7 @@ test.serial('[_tickSlide] is short circuit when start > Date.now()', async (t) =
 |* -                                 next                                   - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[scroll] is executed fully when next = HTML object', async (t) => {
+test.serial('[Animator scroll] is executed fully when next = HTML object', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -670,7 +670,7 @@ test.serial('[scroll] is executed fully when next = HTML object', async (t) => {
     });
 });
 
-test.serial('[scroll] is short circuit when next != HTML object', async (t) => {
+test.serial('[Animator scroll] is short circuit when next != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -689,7 +689,7 @@ test.serial('[scroll] is short circuit when next != HTML object', async (t) => {
 |* -                             current, next                              - *|
 \* -------------------------------------------------------------------------- */
 
-test.serial('[tutorialScroll] is executed fully when current = HTML object', async (t) => {
+test.serial('[Animator tutorialScroll] is executed fully when current = HTML object', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -701,7 +701,7 @@ test.serial('[tutorialScroll] is executed fully when current = HTML object', asy
     });
 });
 
-test.serial('[tutorialScroll] is short circuit when current != HTML object', async (t) => {
+test.serial('[Animator tutorialScroll] is short circuit when current != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 
@@ -715,7 +715,7 @@ test.serial('[tutorialScroll] is short circuit when current != HTML object', asy
 });
 
 
-test.serial('[tutorialScroll] is executed fully when next.class = ribbon-section-footer', async (t) => {
+test.serial('[Animator tutorialScroll] is executed fully when next.class = ribbon-section-footer', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -727,7 +727,7 @@ test.serial('[tutorialScroll] is executed fully when next.class = ribbon-section
     });
 });
 
-test.serial('[tutorialScroll] is executed fully when next.class = content-section-footer', async (t) => {
+test.serial('[Animator tutorialScroll] is executed fully when next.class = content-section-footer', async (t) => {
     let input = document.createElement('div');
     let expected = 1;
 
@@ -739,7 +739,7 @@ test.serial('[tutorialScroll] is executed fully when next.class = content-sectio
     });
 });
 
-test.serial('[tutorialScroll] is short circuit when next != HTML object', async (t) => {
+test.serial('[Animator tutorialScroll] is short circuit when next != HTML object', async (t) => {
     let input = 'Garbage';
     let expected = 0;
 

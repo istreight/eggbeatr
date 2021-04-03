@@ -295,7 +295,7 @@ test.skip('[pdf] is executed fully', async (t) => {
 |* -                                 output                                 - *|
 \* -------------------------------------------------------------------------- */
 
-test('[setPDFOutput] is executed fully', async (t) => {
+test('[ExportToPDF setPDFOutput] is executed fully', async (t) => {
     let input = 'Output';
     let expected = 'Output';
 
@@ -309,7 +309,7 @@ test('[setPDFOutput] is executed fully', async (t) => {
 |* -                             data, setTitle                             - *|
 \* -------------------------------------------------------------------------- */
 
-test('[_didDrawPage] is short circuit when data is an empty object', async (t) => {
+test('[ExportToPDF _didDrawPage] is short circuit when data is an empty object', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -321,7 +321,7 @@ test('[_didDrawPage] is short circuit when data is an empty object', async (t) =
     });
 });
 
-test('[_didDrawPage] is short circuit when data is not an object', async (t) => {
+test('[ExportToPDF _didDrawPage] is short circuit when data is not an object', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -333,7 +333,7 @@ test('[_didDrawPage] is short circuit when data is not an object', async (t) => 
     });
 });
 
-test('[_didDrawPage] is executed fully when data contains valid sub-key values', async (t) => {
+test('[ExportToPDF _didDrawPage] is executed fully when data contains valid sub-key values', async (t) => {
     let input = {
         "doc": {
             "text": sinon.stub()
@@ -356,7 +356,7 @@ test('[_didDrawPage] is executed fully when data contains valid sub-key values',
     });
 });
 
-test('[_didDrawPage] is short circuit when data does not contains valid sub-key values', async (t) => {
+test('[ExportToPDF _didDrawPage] is short circuit when data does not contains valid sub-key values', async (t) => {
     let input = {
         "doc": {},
         "cursor": {},
@@ -372,7 +372,7 @@ test('[_didDrawPage] is short circuit when data does not contains valid sub-key 
     });
 });
 
-test('[_didDrawPage] is executed fully when data only contains a valid value for "text"', async (t) => {
+test('[ExportToPDF _didDrawPage] is executed fully when data only contains a valid value for "text"', async (t) => {
     let input = {
         "doc": {
             "text": sinon.stub()
@@ -391,7 +391,7 @@ test('[_didDrawPage] is executed fully when data only contains a valid value for
 });
 
 
-test('[_didDrawPage] is executed fully with a Set title set', async (t) => {
+test('[ExportToPDF _didDrawPage] is executed fully with a Set title set', async (t) => {
     let input = 'set title';
     let expected = [undefined, undefined, undefined, undefined];
 
@@ -409,7 +409,7 @@ test('[_didDrawPage] is executed fully with a Set title set', async (t) => {
 |* -                 doc, lineCoordinates, tableCoordinates                 - *|
 \* -------------------------------------------------------------------------- */
 
-test('[_drawLines] is short circuit when doc is an empty object', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when doc is an empty object', async (t) => {
     let input = {};
     let expected = undefined;
 
@@ -421,7 +421,7 @@ test('[_drawLines] is short circuit when doc is an empty object', async (t) => {
     });
 });
 
-test('[_drawLines] is short circuit when doc is not an object', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when doc is not an object', async (t) => {
     let input = '{}';
     let expected = undefined;
 
@@ -433,7 +433,7 @@ test('[_drawLines] is short circuit when doc is not an object', async (t) => {
     });
 });
 
-test('[_drawLines] is executed fully when doc contains valid keys with functions as values', async (t) => {
+test('[ExportToPDF _drawLines] is executed fully when doc contains valid keys with functions as values', async (t) => {
     let input = {
         "line": sinon.stub(),
         "setDrawColor": sinon.stub(),
@@ -449,7 +449,7 @@ test('[_drawLines] is executed fully when doc contains valid keys with functions
     });
 });
 
-test('[_drawLines] is short circuit when doc contains valid keys without functions as values', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when doc contains valid keys without functions as values', async (t) => {
     let input = {
         "line": '() => null',
         "setDrawColor": '() => null',
@@ -466,7 +466,7 @@ test('[_drawLines] is short circuit when doc contains valid keys without functio
 });
 
 
-test('[_drawLines] is short circuit when tableCoordinates is undefined', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when tableCoordinates is undefined', async (t) => {
     let input = undefined;
     let expected = 0;
 
@@ -478,7 +478,7 @@ test('[_drawLines] is short circuit when tableCoordinates is undefined', async (
     });
 });
 
-test('[_drawLines] is short circuit when tableCoordinates is an empty array', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when tableCoordinates is an empty array', async (t) => {
     let input = [];
     let expected = 0;
 
@@ -490,7 +490,7 @@ test('[_drawLines] is short circuit when tableCoordinates is an empty array', as
     });
 });
 
-test('[_drawLines] is short circuit when tableCoordinates has fewer than 4 elements', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when tableCoordinates has fewer than 4 elements', async (t) => {
     let input = [0, 1, 2];
     let expected = 0;
 
@@ -502,7 +502,7 @@ test('[_drawLines] is short circuit when tableCoordinates has fewer than 4 eleme
     });
 });
 
-test('[_drawLines] is executed fully when tableCoordinates has exactly 4 elements', async (t) => {
+test('[ExportToPDF _drawLines] is executed fully when tableCoordinates has exactly 4 elements', async (t) => {
     let input = [0, 1, 2, 3];
     let expected = 2;
 
@@ -514,7 +514,7 @@ test('[_drawLines] is executed fully when tableCoordinates has exactly 4 element
     });
 });
 
-test('[_drawLines] is short circuit when tableCoordinates contains an elements that cannot be cast as numbers', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when tableCoordinates contains an elements that cannot be cast as numbers', async (t) => {
     let input = [0, '1', [], {}];
     let expected = 0;
 
@@ -527,7 +527,7 @@ test('[_drawLines] is short circuit when tableCoordinates contains an elements t
 });
 
 
-test('[_drawLines] is short circuit when lineCoordinates is an empty array', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when lineCoordinates is an empty array', async (t) => {
     let input = [];
     let expected = 2;
 
@@ -539,7 +539,7 @@ test('[_drawLines] is short circuit when lineCoordinates is an empty array', asy
     });
 });
 
-test('[_drawLines] is executed fully when lineCoordinates is a non-empty array', async (t) => {
+test('[ExportToPDF _drawLines] is executed fully when lineCoordinates is a non-empty array', async (t) => {
     let input = [
         [0, 1, 2, 3],
         [4, 5, 6, 7]
@@ -554,7 +554,7 @@ test('[_drawLines] is executed fully when lineCoordinates is a non-empty array',
     });
 });
 
-test('[_drawLines] is short circuit when lineCoordinates contains a subarray with a length not equal to 4', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when lineCoordinates contains a subarray with a length not equal to 4', async (t) => {
     let input = [
         [0, 1, 2],
         [4, 5, 6, 7]
@@ -569,7 +569,7 @@ test('[_drawLines] is short circuit when lineCoordinates contains a subarray wit
     });
 });
 
-test('[_drawLines] is executed fully when lineCoordinates contains only 4-length subarrays', async (t) => {
+test('[ExportToPDF _drawLines] is executed fully when lineCoordinates contains only 4-length subarrays', async (t) => {
     let input = [
         [0, 1, 2, 3]
     ];
@@ -583,7 +583,7 @@ test('[_drawLines] is executed fully when lineCoordinates contains only 4-length
     });
 });
 
-test('[_drawLines] is short circuit when lineCoordinates contains a subarray with elements that cannot be cast as numbers', async (t) => {
+test('[ExportToPDF _drawLines] is short circuit when lineCoordinates contains a subarray with elements that cannot be cast as numbers', async (t) => {
     let input = [
         [0, '1', [], {}]
     ];
@@ -604,7 +604,7 @@ test('[_drawLines] is short circuit when lineCoordinates contains a subarray wit
 \* -------------------------------------------------------------------------- */
 
 
-test('[_didDrawCell] is short circuit when cell is an empty object', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell is an empty object', async (t) => {
     let input = {};
     let expected = [];
 
@@ -616,7 +616,7 @@ test('[_didDrawCell] is short circuit when cell is an empty object', async (t) =
     });
 });
 
-test('[_didDrawCell] is short circuit when cell is not an object', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell is not an object', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -628,7 +628,7 @@ test('[_didDrawCell] is short circuit when cell is not an object', async (t) => 
     });
 });
 
-test('[_didDrawCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
     let input = {
         "text": 'Garbage'
     };
@@ -642,7 +642,7 @@ test('[_didDrawCell] is short circuit when cell includes the key "text" with an 
     });
 });
 
-test('[_didDrawCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
     let input = {
         "text": ['Work']
     };
@@ -657,7 +657,7 @@ test('[_didDrawCell] is short circuit when cell only includes the key "text" wit
 });
 
 
-test('[_didDrawCell] is short circuit when cell does not include the key "text"', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell does not include the key "text"', async (t) => {
     let input = {
         "x": 1,
         "y": 2,
@@ -674,7 +674,7 @@ test('[_didDrawCell] is short circuit when cell does not include the key "text"'
     });
 });
 
-test('[_didDrawCell] is executed fully when cell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when cell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -694,7 +694,7 @@ test('[_didDrawCell] is executed fully when cell contains values that can be cas
     });
 });
 
-test('[_didDrawCell] is short circuit when cell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when cell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -713,7 +713,7 @@ test('[_didDrawCell] is short circuit when cell contains values that cannot be c
 });
 
 
-test('[_didDrawCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -734,7 +734,7 @@ test('[_didDrawCell] is executed fully when cell contains values that are number
 });
 
 
-test('[_didDrawCell] is short circuit when prevCell is an empty object', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell is an empty object', async (t) => {
     let input = {};
     let expected = [];
 
@@ -746,7 +746,7 @@ test('[_didDrawCell] is short circuit when prevCell is an empty object', async (
     });
 });
 
-test('[_didDrawCell] is short circuit when prevCell is not an object', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell is not an object', async (t) => {
     let input = '{}';
     let expected = [];
 
@@ -758,7 +758,7 @@ test('[_didDrawCell] is short circuit when prevCell is not an object', async (t)
     });
 });
 
-test('[_didDrawCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
     let input = {
         "text": 'Garbage'
     };
@@ -772,7 +772,7 @@ test('[_didDrawCell] is short circuit when prevCell includes the key "text" with
     });
 });
 
-test('[_didDrawCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
     let input = {
         "text": ['Work']
     };
@@ -786,7 +786,7 @@ test('[_didDrawCell] is short circuit when prevCell only includes the key "text"
     });
 });
 
-test('[_didDrawCell] is short circuit when prevCell does not include the key "text"', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell does not include the key "text"', async (t) => {
     let input = {
         "x": 1,
         "y": 2,
@@ -803,7 +803,7 @@ test('[_didDrawCell] is short circuit when prevCell does not include the key "te
     });
 });
 
-test('[_didDrawCell] is executed fully when prevCell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when prevCell contains values that can be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": '0',
@@ -823,7 +823,7 @@ test('[_didDrawCell] is executed fully when prevCell contains values that can be
     });
 });
 
-test('[_didDrawCell] is short circuit when prevCell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when prevCell contains values that cannot be cast as numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 'a',
@@ -841,7 +841,7 @@ test('[_didDrawCell] is short circuit when prevCell contains values that cannot 
     });
 });
 
-test('[_didDrawCell] is executed fully when prevCell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when prevCell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "text": ['Work'],
         "x": 0,
@@ -862,7 +862,7 @@ test('[_didDrawCell] is executed fully when prevCell contains values that are nu
 });
 
 
-test('[_didDrawCell] is exectued fully when splitCellLines is an empty array', async (t) => {
+test('[ExportToPDF _didDrawCell] is exectued fully when splitCellLines is an empty array', async (t) => {
     let input = [];
     let expected = [
         [1, 1, 1, 4]
@@ -876,7 +876,7 @@ test('[_didDrawCell] is exectued fully when splitCellLines is an empty array', a
     });
 });
 
-test('[_didDrawCell] is short circuit when splitCellLines is not an array', async (t) => {
+test('[ExportToPDF _didDrawCell] is short circuit when splitCellLines is not an array', async (t) => {
     let input = '[]';
     let expected = input;
 
@@ -889,7 +889,7 @@ test('[_didDrawCell] is short circuit when splitCellLines is not an array', asyn
 });
 
 
-test('[_didDrawCell] is executed fully when isSplitCell is true', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when isSplitCell is true', async (t) => {
     let input = true;
     let expected = [
         [1, 1, 1, 4]
@@ -903,7 +903,7 @@ test('[_didDrawCell] is executed fully when isSplitCell is true', async (t) => {
     });
 });
 
-test('[_didDrawCell] is executed fully when isSplitCell is not true', async (t) => {
+test('[ExportToPDF _didDrawCell] is executed fully when isSplitCell is not true', async (t) => {
     let input = false;
     let expected = [];
 
@@ -922,7 +922,7 @@ test('[_didDrawCell] is executed fully when isSplitCell is not true', async (t) 
 \* -------------------------------------------------------------------------- */
 
 
-test('[_didParseCell] is short circuit when cell is an empty object', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell is an empty object', async (t) => {
     let input = {};
     let expected = input;
 
@@ -934,7 +934,7 @@ test('[_didParseCell] is short circuit when cell is an empty object', async (t) 
     });
 });
 
-test('[_didParseCell] is short circuit when cell is not an object', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell is not an object', async (t) => {
     let input = '{}';
     let expected = input;
 
@@ -946,7 +946,7 @@ test('[_didParseCell] is short circuit when cell is not an object', async (t) =>
     });
 });
 
-test('[_didParseCell] is short circuit when cell is undefined', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell is undefined', async (t) => {
     let input = undefined;
     let expected = undefined;
 
@@ -958,7 +958,7 @@ test('[_didParseCell] is short circuit when cell is undefined', async (t) => {
     });
 });
 
-test('[_didParseCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell includes the key "text" with an invalid value', async (t) => {
     let input = {
         "text": 'Garbage'
     };
@@ -972,7 +972,7 @@ test('[_didParseCell] is short circuit when cell includes the key "text" with an
     });
 });
 
-test('[_didParseCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell only includes the key "text" with a valid value', async (t) => {
     let input = {
         "text": ['Work']
     };
@@ -986,7 +986,7 @@ test('[_didParseCell] is short circuit when cell only includes the key "text" wi
     });
 });
 
-test('[_didParseCell] is exectued fully when cell contains the key "text" paired with the value "Private"', async (t) => {
+test('[ExportToPDF _didParseCell] is exectued fully when cell contains the key "text" paired with the value "Private"', async (t) => {
     let input = {
         "styles": {
             "fillColor": 1,
@@ -1013,7 +1013,7 @@ test('[_didParseCell] is exectued fully when cell contains the key "text" paired
     });
 });
 
-test('[_didParseCell] is short circuit when cell does not include the key "text"', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell does not include the key "text"', async (t) => {
     let input = {
         "styles": {
             "lineColor": 1,
@@ -1030,7 +1030,7 @@ test('[_didParseCell] is short circuit when cell does not include the key "text"
     });
 });
 
-test('[_didParseCell] is short circuit when cell includes the key "styles" paired with an invalid value', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when cell includes the key "styles" paired with an invalid value', async (t) => {
     let input = {
         "styles": 'Garbage'
     };
@@ -1044,7 +1044,7 @@ test('[_didParseCell] is short circuit when cell includes the key "styles" paire
     });
 });
 
-test('[_didParseCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
+test('[ExportToPDF _didParseCell] is executed fully when cell contains values that are numbers and the key "text" is paired with a valid value', async (t) => {
     let input = {
         "styles": {
             "fillColor": 1,
@@ -1074,7 +1074,7 @@ test('[_didParseCell] is executed fully when cell contains values that are numbe
 });
 
 
-test('[_didParseCell] is short circuit when prevCell is an empty object', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when prevCell is an empty object', async (t) => {
     let input = {};
     let expected = {
         "styles": {
@@ -1100,7 +1100,7 @@ test('[_didParseCell] is short circuit when prevCell is an empty object', async 
     });
 });
 
-test('[_didParseCell] is short circuit when prevCell is not an object', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when prevCell is not an object', async (t) => {
     let input = '{}';
     let expected = {
         "styles": {
@@ -1126,7 +1126,7 @@ test('[_didParseCell] is short circuit when prevCell is not an object', async (t
     });
 });
 
-test('[_didParseCell] is short circuit when prevCell is undefined', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when prevCell is undefined', async (t) => {
     let input = undefined;
     let expected = {
         "styles": {
@@ -1151,7 +1151,7 @@ test('[_didParseCell] is short circuit when prevCell is undefined', async (t) =>
     });
 });
 
-test('[_didParseCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when prevCell includes the key "text" with an invalid value', async (t) => {
     let input = {
         "text": 'Garbage'
     };
@@ -1179,7 +1179,7 @@ test('[_didParseCell] is short circuit when prevCell includes the key "text" wit
     });
 });
 
-test('[_didParseCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
+test('[ExportToPDF _didParseCell] is short circuit when prevCell only includes the key "text" with a valid value', async (t) => {
     let input = {
         "text": ['Work']
     };
@@ -1207,7 +1207,7 @@ test('[_didParseCell] is short circuit when prevCell only includes the key "text
     });
 });
 
-test('[_didParseCell] is exectued fully when cell contains valid values', async (t) => {
+test('[ExportToPDF _didParseCell] is exectued fully when cell contains valid values', async (t) => {
     let input = {
         "text": ['Work'],
         "styles": {
@@ -1241,7 +1241,7 @@ test('[_didParseCell] is exectued fully when cell contains valid values', async 
 });
 
 
-test('[_didParseCell] is executed fully when isSplitCell is true', async (t) => {
+test('[ExportToPDF _didParseCell] is executed fully when isSplitCell is true', async (t) => {
     let input = true;
     let expected = {
         "height": 3,
@@ -1267,7 +1267,7 @@ test('[_didParseCell] is executed fully when isSplitCell is true', async (t) => 
     });
 });
 
-test('[_didParseCell] is short citcuit when isSplitCell is not true', async (t) => {
+test('[ExportToPDF _didParseCell] is short citcuit when isSplitCell is not true', async (t) => {
     let input = false;
     let expected = {
         "height": 3,

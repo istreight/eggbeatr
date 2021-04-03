@@ -12,28 +12,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Anchor from '@utils/Anchor.js';
-import Watchers from '@test.utils/Watchers.js';
 
 
-const w = new Watchers();
+test.before(() => {});
 
-test.before((t) => {
-    t.context.module = {
-        ...w.getAllWatchers('Anchor')
-    };
-});
+test.beforeEach(() => {});
 
-test.beforeEach((t) => {});
+test.afterEach.always(() => {});
 
-test.afterEach.always(() => {
-    // Reset the state of all fakes in the Watchers instance.
-    w.reset();
-});
-
-test.after.always(() => {
-    // Restore the Watchers instance sandbox.
-    w.restore();
-});
+test.after.always(() => {});
 
 
 
@@ -49,15 +36,17 @@ test.after.always(() => {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[constructor] is executed fully', async (t) => {
-    let input = new Anchor();
+test('[Anchor constructor] is executed fully', async (t) => {
+    let input = new Anchor({ "key": "value" });
     let expected = {
         "node": null,
-        "state": {}
+        "state": {
+            "key": "value"
+        }
     };
 
-    t.is(input.node, expected.node);
-    t.deepEqual(input.state, expected.state);
+    t.is(input.node, expected.node, 'Anchor node is not set as expected');
+    t.deepEqual(input.state, expected.state, 'Anchor state is not set as expected');
 });
 
 
@@ -66,7 +55,7 @@ test('[constructor] is executed fully', async (t) => {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[componentDidMount] is executed fully when props includes props with default values', async (t) => {
+test('[Anchor componentDidMount] is executed fully when props includes props with default values', async (t) => {
     let spy = sinon.spy();
     let div = document.createElement('div');
     let expected = {
@@ -82,13 +71,13 @@ test('[componentDidMount] is executed fully when props includes props with defau
         div
     );
 
-    t.is(spy.callCount, 1);
-    t.not(anchor.node, null);
-    t.not(anchor.state.hyperlink, null);
-    t.deepEqual(anchor.state, expected);
+    t.is(spy.callCount, 1, 'Anchor callback is called an unexpected number of times');
+    t.not(anchor.node, null, 'Anchor node is set unexpectedly');
+    t.not(anchor.state.hyperlink, null, 'Unspecified prop is set unexpectedly');
+    t.deepEqual(anchor.state, expected, 'Anchor state is not set as expected');
 });
 
-test('[componentDidMount] is executed fully when props includes props without default values', async (t) => {
+test('[Anchor componentDidMount] is executed fully when props includes props without default values', async (t) => {
     let div = document.createElement('div');
     let expected = {
         "callback": () => null,
@@ -102,12 +91,12 @@ test('[componentDidMount] is executed fully when props includes props without de
         div
     );
 
-    t.not(anchor.node, null);
-    t.not(anchor.state.hyperlink, null);
+    t.not(anchor.node, null, 'Anchor node is set unexpectedly');
+    t.not(anchor.state.hyperlink, null, 'Unspecified prop is set unexpectedly');
     t.deepEqual(anchor.state, {
         "updateProps": true,
         ...expected
-    });
+    }, 'Anchor state is not set as expected');
 });
 
 
@@ -116,22 +105,22 @@ test('[componentDidMount] is executed fully when props includes props without de
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[getDerivedStateFromProps] is executed fully when updateProps is true', async (t) => {
+test('[Anchor getDerivedStateFromProps] is executed fully when updateProps is true', async (t) => {
     let expected = {
         "updateProps": true
     };
 
     let props = Anchor.getDerivedStateFromProps(expected, 'Garbage');
-    t.is(props, expected);
+    t.is(props, expected, 'Props update is not accepted as expected');
 });
 
-test('[getDerivedStateFromProps] is executed fully when updateProps is not true', async (t) => {
+test('[Anchor getDerivedStateFromProps] is executed fully when updateProps is not true', async (t) => {
     let expected = {
         "updateProps": false
     };
 
     let props = Anchor.getDerivedStateFromProps('Garbage', expected);
-    t.is(props, expected);
+    t.is(props, expected, 'Props update is not rejected as expected');
 });
 
 
@@ -140,10 +129,10 @@ test('[getDerivedStateFromProps] is executed fully when updateProps is not true'
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[render] renders without crashing', async (t) => {
+test('[Anchor render] renders without crashing', async (t) => {
     let div = document.createElement('div');
     let props = {
-        "handleClick": () => 'not null',
+        "handleClick": () => 'returnValue',
         "styleClass": "some-class"
     };
 
