@@ -15,13 +15,19 @@ class Input extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
 
     componentDidMount() {
         this.props.callback(this);
     }
 
+    /**
+     * Update the state of the checkbox.
+     * @return {undefined} There is no value returned.
+     */
     handleChange(e) {
         this.setState({
             "value": e.target.value

@@ -1,9 +1,9 @@
 /**
- * FILENAME:    AnchorSpec.js
+ * FILENAME:    InputSpec.js
  * AUTHOR:      Isaac Streight
  * START DATE:  April 1st, 2021
  *
- * This file contains the test specification for the Anchor utility class.
+ * This file contains the test specification for the Input utility class.
  */
 
 import test from 'ava';
@@ -11,7 +11,7 @@ import sinon from 'sinon';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Anchor from '@utils/Anchor.js';
+import Input from '@utils/Input.js';
 
 
 test.before(() => {});
@@ -36,19 +36,17 @@ test.after.always(() => {});
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[Anchor constructor] is executed fully', async (t) => {
-    let input = new Anchor({
+test('[Input constructor] is executed fully', async (t) => {
+    let input = new Input({
         "key": "value"
     });
     let expected = {
-        "node": null,
         "state": {
             "key": "value"
         }
     };
 
-    t.is(input.node, expected.node, 'Anchor node is not set as expected');
-    t.deepEqual(input.state, expected.state, 'Anchor state is not set as expected');
+    t.deepEqual(input.state, expected.state, 'State not set as expected');
 });
 
 
@@ -57,72 +55,76 @@ test('[Anchor constructor] is executed fully', async (t) => {
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[Anchor componentDidMount] is executed fully when props includes props with default values', async (t) => {
+test('[Input componentDidMount] is executed fully when props includes props with default values', async (t) => {
     let spy = sinon.spy();
     let div = document.createElement('div');
     let expected = {
         "callback": spy,
-        "handleClick": () => 'returnValue',
-        "styleClass": "some-class",
-        "updateProps": false
+        "checked": false,
+        "handleBlur": () => null,
+        "styleClass": "",
+        "type": "text",
+        "value": ""
     };
 
     t.log('State is made up of the props passed in');
-    let anchor = ReactDOM.render(
-        React.createElement(Anchor, expected),
+    let input = ReactDOM.render(
+        React.createElement(Input, expected),
         div
     );
 
-    t.is(spy.callCount, 1, 'Anchor callback is called an unexpected number of times');
-    t.not(anchor.node, null, 'Anchor node is set unexpectedly');
-    t.not(anchor.state.hyperlink, null, 'Unspecified prop is set unexpectedly');
-    t.deepEqual(anchor.state, expected, 'Anchor state is not set as expected');
+    t.is(spy.callCount, 1, 'Callback called an unexpected number of times');
+    t.deepEqual(input.state, expected, 'State not set as expected');
 });
 
-test('[Anchor componentDidMount] is executed fully when props includes props without default values', async (t) => {
+test('[Input componentDidMount] is executed fully when props includes props without default values', async (t) => {
     let div = document.createElement('div');
     let expected = {
         "callback": () => null,
-        "handleClick": () => 'returnValue',
-        "styleClass": "some-class"
+        "handleBlur": () => null,
+        "type": "text"
     };
 
     t.log('State is made up of the props passed in');
-    let anchor = ReactDOM.render(
-        React.createElement(Anchor, expected),
+    let input = ReactDOM.render(
+        React.createElement(Input, expected),
         div
     );
 
-    t.not(anchor.node, null, 'Anchor node is set unexpectedly');
-    t.not(anchor.state.hyperlink, null, 'Unspecified prop is set unexpectedly');
-    t.deepEqual(anchor.state, {
-        "updateProps": true,
+    t.deepEqual(input.state, {
+        "checked": false,
+        "styleClass": "",
+        "value": "",
         ...expected
-    }, 'Anchor state is not set as expected');
+    }, 'State not set as expected');
 });
 
 
 /* -------------------------------------------------------------------------- *\
-|* ------------------------ getDerivedStateFromProps ------------------------ *|
+|* ------------------------       handleChange       ------------------------ *|
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[Anchor getDerivedStateFromProps] is executed fully when updateProps is true', async (t) => {
+test('[Input handleChange] is executed fully', async (t) => {
+    let props = {
+        "type": 'text'
+    };
     let expected = {
-        "updateProps": true
+        "target": {
+            "value": 'Garbage'
+        }
     };
 
-    let props = Anchor.getDerivedStateFromProps(expected, 'Garbage');
-    t.is(props, expected, 'Props update is not accepted as expected');
-});
+    let div = document.createElement('div');
+    let input = React.createElement(Input, props);
 
-test('[Anchor getDerivedStateFromProps] is executed fully when updateProps is not true', async (t) => {
-    let expected = {
-        "updateProps": false
-    };
+    ReactDOM.render(input, div, function () {
+        sinon.stub(this, 'setState').callsFake(() => this.state.value = expected.target.value);
 
-    let props = Anchor.getDerivedStateFromProps('Garbage', expected);
-    t.is(props, expected, 'Props update is not rejected as expected');
+        this.handleChange(expected);
+
+        t.is(this.state.value, 'Garbage', 'Value not set as expected');
+    });
 });
 
 
@@ -131,17 +133,16 @@ test('[Anchor getDerivedStateFromProps] is executed fully when updateProps is no
 |* -                                                                        - *|
 \* -------------------------------------------------------------------------- */
 
-test('[Anchor render] renders without crashing', async (t) => {
+test('[Input render] renders without crashing', async (t) => {
     let div = document.createElement('div');
     let props = {
-        "handleClick": () => 'returnValue',
-        "styleClass": "some-class"
+        "type": 'text'
     };
 
     ReactDOM.render(
-        React.createElement(Anchor, props),
+        React.createElement(Input, props),
         div
     );
 
-    t.is(div.getElementsByClassName('some-class').length, 1);
+    t.is(div.getElementsByTagName('input').length, 1);
 });

@@ -37,7 +37,9 @@ test.after.always(() => {});
 \* -------------------------------------------------------------------------- */
 
 test('[Checkbox constructor] is executed fully', async (t) => {
-    let input = new Checkbox({ "key": "value" });
+    let input = new Checkbox({
+        "key": "value"
+    });
     let expected = {
         "state": {
             "key": "value"
@@ -110,7 +112,7 @@ test('[Checkbox handleChange] is executed fully when checked is false', async (t
     let div = document.createElement('div');
     let checkbox = React.createElement(Checkbox, props);
 
-    ReactDOM.render(checkbox, div, function() {
+    ReactDOM.render(checkbox, div, function () {
         sinon.stub(this, 'setState').callsFake(() => this.state.checked = !this.state.checked);
 
         this.handleChange();
@@ -131,7 +133,7 @@ test('[Checkbox handleChange] is executed fully when checked is true', async (t)
     let div = document.createElement('div');
     let checkbox = React.createElement(Checkbox, props);
 
-    ReactDOM.render(checkbox, div, function() {
+    ReactDOM.render(checkbox, div, function () {
         sinon.stub(this, 'setState').callsFake(() => this.state.checked = !this.state.checked);
 
         this.handleChange();
@@ -156,7 +158,7 @@ test('[Checkbox setChecked] is executed fully', async (t) => {
     let div = document.createElement('div');
     let checkbox = React.createElement(Checkbox, props);
 
-    ReactDOM.render(checkbox, div, function() {
+    ReactDOM.render(checkbox, div, function () {
         sinon.stub(this, 'setState').callsFake(() => this.state.checked = expected);
 
         this.setChecked(expected);
@@ -180,12 +182,12 @@ test('[Checkbox setDisabled] is executed fully', async (t) => {
     let div = document.createElement('div');
     let checkbox = React.createElement(Checkbox, props);
 
-    ReactDOM.render(checkbox, div, function() {
+    ReactDOM.render(checkbox, div, function () {
         sinon.stub(this, 'setState').callsFake(() => this.state.disabled = expected);
 
         this.setDisabled(expected);
 
-        t.is(this.state.disabled, expected,  'Disabled not set as expected');
+        t.is(this.state.disabled, expected, 'Disabled not set as expected');
     });
 });
 

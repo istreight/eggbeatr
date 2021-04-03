@@ -17,7 +17,9 @@ class Anchor extends React.Component {
         super(props);
 
         this.node = null;
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
 
     componentDidMount() {
@@ -26,7 +28,7 @@ class Anchor extends React.Component {
     }
 
     /**
-     * Return a new
+     * Return a new set of props.
      * @param  {Object} nextProps An object describing the next state of an Anchor instance.
      * @param  {Object} nextProps An object describing the previous state of an Anchor instance.
      * @return {Object}           The new state of an Anchor instance.
