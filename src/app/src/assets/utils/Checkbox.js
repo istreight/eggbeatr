@@ -22,20 +22,32 @@ class Checkbox extends React.Component {
         this.props.callback(this);
     }
 
+    /**
+     * Update the state of the checkbox.
+     * @return {undefined} There is no value returned.
+     */
     handleChange() {
-        this.toggleValue(!this.state.checked);
+        this.setChecked(!this.state.checked);
         this.state.handleChange(!this.state.checked);
     }
 
-    toggleState(disable) {
+    /**
+     * Set the checked state of the checkbox.
+     * @param {Boolean} enable A boolean relating to the checked/unchecked status of the checkbox.
+     */
+    setChecked(enable) {
         this.setState({
-            "disabled": disable
+            "checked": enable
         });
     }
 
-    toggleValue(enable) {
+    /**
+     * Set the ability of the checkbox to be checked.
+     * @param {Boolean} disable A boolean relating to the enabled/disabled status of the checkbox.
+     */
+    setDisabled(disable) {
         this.setState({
-            "checked": enable
+            "disabled": disable
         });
     }
 

@@ -33,7 +33,7 @@ class PrivatesOnlyCheckbox extends React.Component {
     }
 
     toggleState(enable) {
-        this.checkbox.toggleState(enable);
+        this.checkbox.setDisabled(enable);
     }
 
     render() {
