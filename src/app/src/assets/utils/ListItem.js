@@ -15,9 +15,17 @@ class ListItem extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { ...props };
+        this.state = {
+            ...props
+        };
     }
 
+    /**
+     * Return a new set of props.
+     * @param  {Object} nextProps An object describing the next state of an Anchor instance.
+     * @param  {Object} nextProps An object describing the previous state of an Anchor instance.
+     * @return {Object}           The new state of an Anchor instance.
+     */
     static getDerivedStateFromProps(nextProps) {
         return nextProps;
     }
